@@ -1,0 +1,1 @@
+The attached file is a short story. Extract its style profile. Organise your answer using running text. Also, do not acknowledge this prompt, just provide the answer straightaway.

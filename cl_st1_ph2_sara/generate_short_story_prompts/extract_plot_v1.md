@@ -1,0 +1,1 @@
+The attached file is a short story. Extract its plot. Do not include the title in your answer. Also, do not acknowledge this prompt, just provide the answer straightaway.

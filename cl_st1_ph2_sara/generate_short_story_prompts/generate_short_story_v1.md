@@ -1,0 +1,1 @@
+Use the attached plot and style information to write a short story considering a length closer to <word_count> words, just provide the answer straightaway.

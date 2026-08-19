@@ -1,0 +1,78 @@
+# Conda environment clean up and set up procedure
+# Download 'condaenv.yaml'
+# Open an Anaconda Prompt terminal
+# cd Downloads
+# conda env list
+# conda remove --name my_env --all
+# conda env create --file condaenv.yaml
+# conda activate my_env
+# conda list
+# conda deactivate
+# exit
+# Regarding Google Cloud Python APIs, please check https://github.com/googleapis/google-cloud-python
+name: my_env
+channels:
+  - anaconda
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.13.11
+  - beautifulsoup4
+  - bibtexparser
+#  - boto3
+#  - cffconvert
+#  - dash
+#  - demoji
+  - deno
+#  - folium
+#  - gensim
+#  - google-cloud-storage
+#  - google-cloud-translate
+#  - google-cloud-videointelligence
+#  - google-cloud-vision
+  - google-genai
+  - ipython
+  - jupyterlab
+#  - jupyterlab-variableinspector
+#  - jupytext
+  - lxml
+  - matplotlib
+  - nltk
+  - numpy
+  - openai
+  - openpyxl
+  - pandas
+  - pandas-stubs
+#  - pandoc
+  - plotly
+  - pyarrow
+#  - pyinstaller
+#  - pypdf
+#  - pyside6
+#  - pySmartDL
+#  - pyspark
+  - pytest
+  - python-docx
+  - python-dotenv
+  - requests
+  - scikit-learn
+  - scipy
+  - scipy-stubs
+  - seaborn
+  - selenium
+#  - spacy
+#  - spyder
+#  - statsmodels
+  - tabulate
+  - tqdm
+  - validators
+  - wordcloud
+#  - yake
+  - yt-dlp
+  - pip
+  - pip:
+#      - factor_analyzer
+#      - gogettr
+      - pymupdf
+#      - truthbrush
+#      - webvtt-py
