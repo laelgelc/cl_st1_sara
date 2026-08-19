@@ -1,8 +1,8 @@
 {
-  "run_id": "20260819T205735Z_424f7bd6",
+  "run_id": "20260819T204620Z_ab91242e",
   "programme": "generate_llm_short_story.py",
-  "start_time": "2026-08-19T20:57:35Z",
-  "end_time": "2026-08-19T21:01:22Z",
+  "start_time": "2026-08-19T20:46:20Z",
+  "end_time": "2026-08-19T20:49:48Z",
   "project_phase": "Phase 2",
   "methodological_description": "Traditional / Functional Multi-dimensional Analysis of human-authored and LLM-generated fiction for variation of style",
   "paths": {
@@ -16,7 +16,7 @@
     "generation_prompt_template": "generate_short_story_prompts/generate_short_story_v1.md",
     "log_file": "corpus/03_llm/generate_llm_short_story.log",
     "manifest_file": "corpus/03_llm/generate_llm_short_story_manifest.json",
-    "timestamped_manifest_file": "corpus/03_llm/generate_llm_short_story_manifest_20260819T205735Z_424f7bd6.json"
+    "timestamped_manifest_file": "corpus/03_llm/generate_llm_short_story_manifest_20260819T204620Z_ab91242e.json"
   },
   "environment": {
     "env_file": "env/.env",

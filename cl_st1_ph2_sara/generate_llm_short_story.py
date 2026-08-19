@@ -24,6 +24,7 @@ import logging
 import os
 import re
 import sys
+import threading
 import time
 import traceback
 import uuid
@@ -36,6 +37,8 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 PROGRAMME_NAME = "generate_llm_short_story.py"
 WORD_COUNT_PLACEHOLDER = "<word_count>"
 SUPPORTED_TEXT_SUFFIXES = {".txt"}
+TEMPERATURE_UNSUPPORTED_MODELS: set[str] = set()
+TEMPERATURE_SUPPORT_LOCK = threading.Lock()
 
 
 # ---------------------------------------------------------------------------
@@ -544,17 +547,40 @@ def call_openai_with_retries(
             }
 
             temperature_sent = False
-            if temperature is not None:
+            with TEMPERATURE_SUPPORT_LOCK:
+                model_supports_temperature = model not in TEMPERATURE_UNSUPPORTED_MODELS
+
+            if temperature is not None and model_supports_temperature:
                 kwargs["temperature"] = temperature
                 temperature_sent = True
 
             try:
                 response = client.responses.create(**kwargs)
             except TypeError:
-                # Some model/API combinations may not accept temperature.
+                # Some SDK/model/API combinations may not accept temperature.
                 kwargs.pop("temperature", None)
                 temperature_sent = False
+                with TEMPERATURE_SUPPORT_LOCK:
+                    TEMPERATURE_UNSUPPORTED_MODELS.add(model)
                 response = client.responses.create(**kwargs)
+            except Exception as exc:
+                error_text = str(exc)
+                if (
+                    "Unsupported parameter" in error_text
+                    and "temperature" in error_text
+                    and "temperature" in kwargs
+                ):
+                    logging.warning(
+                        "Model %s does not support temperature; omitting temperature for subsequent requests.",
+                        model,
+                    )
+                    kwargs.pop("temperature", None)
+                    temperature_sent = False
+                    with TEMPERATURE_SUPPORT_LOCK:
+                        TEMPERATURE_UNSUPPORTED_MODELS.add(model)
+                    response = client.responses.create(**kwargs)
+                else:
+                    raise
 
             text = extract_response_text(response)
             metadata = api_metadata_from_response(response)
