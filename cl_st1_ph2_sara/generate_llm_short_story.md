@@ -37,7 +37,75 @@ The same model should be used for all three stages through a single `--model` co
 
 ---
 
-### 2. Core methodological requirement: segregated LLM calls
+### 2. Portability and path-resolution requirement
+
+The programme should be portable across machines and clone locations.
+
+The programme must not depend on machine-specific absolute paths such as a particular user home directory. Relative paths should be resolved against the directory where `generate_llm_short_story.py` itself is located.
+
+The default project layout is assumed to be:
+
+```plain text
+cl_st1_sara/
+  cl_st1_ph1_sara/
+    corpus/
+      short_stories.ndjson
+  cl_st1_ph2_sara/
+    generate_llm_short_story.py
+    corpus/
+      01_human/
+      02_plot_style/
+      03_llm/
+    env/
+      .env
+    generate_short_story_prompts/
+      extract_plot_v1.md
+      extract_style_v1.md
+      generate_short_story_v1.md
+```
+
+
+Default paths should therefore be project-situated rather than machine-situated:
+
+```plain text
+corpus/01_human
+../cl_st1_ph1_sara/corpus/short_stories.ndjson
+generate_short_story_prompts/extract_plot_v1.md
+generate_short_story_prompts/extract_style_v1.md
+generate_short_story_prompts/generate_short_story_v1.md
+env/.env
+corpus/02_plot_style
+corpus/03_llm
+```
+
+
+The programme should work when run from the Phase 2 directory:
+
+```shell script
+python generate_llm_short_story.py --test-limit 1
+```
+
+
+and should also work when invoked from another working directory using the script path:
+
+```shell script
+python /path/to/cl_st1_sara/cl_st1_ph2_sara/generate_llm_short_story.py --test-limit 1
+```
+
+
+The only default layout assumption is that `cl_st1_ph1_sara/` and `cl_st1_ph2_sara/` are sibling directories. If the Phase 1 metadata is elsewhere, the user should be able to override the path with:
+
+```shell script
+python generate_llm_short_story.py \
+  --metadata-ndjson /path/to/short_stories.ndjson
+```
+
+
+Absolute paths passed through CLI arguments should also be supported.
+
+---
+
+### 3. Core methodological requirement: segregated LLM calls
 
 The programme must treat the three stages as separate API interactions.
 
@@ -80,9 +148,9 @@ Recommended metadata field:
 
 ---
 
-### 3. Inputs
+### 4. Inputs
 
-#### 3.1 Human-authored short-story directory
+#### 4.1 Human-authored short-story directory
 
 The programme should read human-authored short stories from:
 
@@ -117,7 +185,7 @@ The programme should process files in natural filename order unless another orde
 
 ---
 
-#### 3.2 Phase 1 short-story metadata
+#### 4.2 Phase 1 short-story metadata
 
 The programme should read Phase 1 short-story metadata from:
 
@@ -166,7 +234,7 @@ Per-story failure, not global failure, should occur if:
 
 ---
 
-#### 3.3 Prompt-template directory
+#### 4.3 Prompt-template directory
 
 The default prompt-template directory is:
 
@@ -222,7 +290,7 @@ The programme should record SHA-256 hashes for all three prompt templates.
 
 ---
 
-#### 3.4 Environment file
+#### 4.4 Environment file
 
 The programme should load environment variables from:
 
@@ -276,9 +344,9 @@ The actual API key value must never be written to per-story JSON metadata, run m
 
 ---
 
-### 4. Prompt handling
+### 5. Prompt handling
 
-#### 4.1 Plot-extraction prompt
+#### 5.1 Plot-extraction prompt
 
 The programme should load the plot-extraction prompt template from the path specified by:
 
@@ -311,7 +379,7 @@ The `.txt` file should contain only the clean plot extraction returned by the mo
 
 ---
 
-#### 4.2 Style-profile extraction prompt
+#### 5.2 Style-profile extraction prompt
 
 The programme should load the style-profile extraction prompt template from the path specified by:
 
@@ -344,7 +412,7 @@ The `.txt` file should contain only the clean style-profile extraction returned 
 
 ---
 
-#### 4.3 Generation prompt
+#### 5.3 Generation prompt
 
 The programme should load the generation prompt template from the path specified by:
 
@@ -407,9 +475,9 @@ The `.txt` file should contain only the clean generated short story.
 
 ---
 
-### 5. Output directories
+### 6. Output directories
 
-#### 5.1 Plot and style output directory
+#### 6.1 Plot and style output directory
 
 The programme should save extracted plot and style-profile files in:
 
@@ -437,7 +505,7 @@ For each human story:
 
 ---
 
-#### 5.2 LLM-generated short-story output directory
+#### 6.2 LLM-generated short-story output directory
 
 The programme should save generated LLM short stories in:
 
@@ -464,7 +532,7 @@ For each human story:
 
 ---
 
-#### 5.3 Per-story metadata output
+#### 6.3 Per-story metadata output
 
 For each processed story, the programme should write a JSON metadata file.
 
@@ -486,7 +554,7 @@ This JSON file should contain full reproducibility metadata for all three stages
 
 ---
 
-### 6. Per-story output naming
+### 7. Per-story output naming
 
 Given an input file:
 
@@ -511,7 +579,7 @@ If the input filename contains characters that are valid on the current filesyst
 
 ---
 
-### 7. LLM submission strategy
+### 8. LLM submission strategy
 
 For each story, the programme should perform up to three LLM calls:
 
@@ -573,7 +641,7 @@ The neutral methodological note is allowed because it records the segregation re
 
 ---
 
-### 8. Existing-output skipping and reprocessing
+### 9. Existing-output skipping and reprocessing
 
 The programme should skip existing successful outputs unless `--reprocess` is provided.
 
@@ -598,13 +666,13 @@ If only intermediate files exist, the programme may reuse them unless `--reproce
 
 Recommended behaviour:
 
-| Existing artefacts | `--reprocess` absent | `--reprocess` present |
-|---|---|---|
-| Existing successful full output | Skip story | Re-run all stages |
-| Existing plot only | Reuse plot, run style and generation | Re-run all stages |
-| Existing style only | Reuse style, run plot and generation | Re-run all stages |
-| Existing plot and style, no generated story | Reuse plot/style, run generation | Re-run all stages |
-| Existing failed JSON | Retry story | Re-run all stages |
+| Existing artefacts                          | `--reprocess` absent                 | `--reprocess` present |
+|---------------------------------------------|--------------------------------------|-----------------------|
+| Existing successful full output             | Skip story                           | Re-run all stages     |
+| Existing plot only                          | Reuse plot, run style and generation | Re-run all stages     |
+| Existing style only                         | Reuse style, run plot and generation | Re-run all stages     |
+| Existing plot and style, no generated story | Reuse plot/style, run generation     | Re-run all stages     |
+| Existing failed JSON                        | Retry story                          | Re-run all stages     |
 
 The per-run manifest should record whether each stage was:
 
@@ -615,7 +683,7 @@ The per-run manifest should record whether each stage was:
 
 ---
 
-### 9. Model configuration
+### 10. Model configuration
 
 The programme should use one model setting for all stages.
 
@@ -674,7 +742,7 @@ because it is the highest-capability GPT-5.6 tier and is preferable for final li
 
 ---
 
-### 10. Temperature and generation parameters
+### 11. Temperature and generation parameters
 
 Recommended default:
 
@@ -706,9 +774,18 @@ If temperature is supported and sent:
 ```
 
 
+The programme should avoid repeatedly sending unsupported temperature parameters. If the API reports that the selected model does not support `temperature`, the programme should:
+
+1. retry the current request without `temperature`;
+2. remember for the remainder of the run that this model does not support `temperature`;
+3. omit `temperature` from later requests using the same model;
+4. record safe metadata indicating whether temperature was sent to the API.
+
+For concurrent execution, this model-level temperature-support cache should be thread-safe.
+
 ---
 
-### 11. Per-story JSON metadata
+### 12. Per-story JSON metadata
 
 For each story, the programme should write a JSON file:
 
@@ -717,7 +794,7 @@ corpus/03_llm/<BASENAME>_llm.json
 ```
 
 
-#### 11.1 Recommended success structure
+#### 12.1 Recommended success structure
 
 ```json
 {
@@ -821,7 +898,7 @@ corpus/03_llm/<BASENAME>_llm.json
 ```
 
 
-#### 11.2 Recommended failure structure
+#### 12.2 Recommended failure structure
 
 ```json
 {
@@ -889,7 +966,7 @@ corpus/03_llm/<BASENAME>_llm.json
 
 ---
 
-### 12. Run-level outputs
+### 13. Run-level outputs
 
 The programme should write run-level logs and manifests.
 
@@ -927,6 +1004,8 @@ The run manifest should include:
 - prompt-template hashes;
 - model configuration;
 - temperature configuration;
+- whether temperature was sent to the API where available;
+- whether temperature was identified as unsupported for the selected model;
 - test-mode configuration;
 - processing order;
 - number of human stories discovered;
@@ -980,23 +1059,24 @@ Recommended environment block:
 
 ---
 
-### 13. Processing order
+### 14. Processing order
 
 Default processing order:
 
 1. Parse command-line arguments.
-2. Validate global input paths and options.
-3. Load environment variables from `--env-file`, if the file exists.
-4. Check whether `OPENAI_API_KEY` is available in the process environment.
-5. Fail before API calls if `OPENAI_API_KEY` is unavailable.
-6. Initialise the OpenAI client without logging the API key.
-7. Load and validate prompt templates.
-8. Confirm that the generation template contains `<word_count>`.
-9. Load and validate the metadata NDJSON file.
-10. Discover `.txt` files in the human-story directory.
-11. Apply `--start-filename`, if provided.
-12. Apply test-mode limit, if enabled.
-13. For each selected human-story file:
+2. Resolve relative paths against the directory containing `generate_llm_short_story.py`.
+3. Validate global input paths and options.
+4. Load environment variables from `--env-file`, if the file exists.
+5. Check whether `OPENAI_API_KEY` is available in the process environment.
+6. Fail before API calls if `OPENAI_API_KEY` is unavailable.
+7. Initialise the OpenAI client without logging the API key.
+8. Load and validate prompt templates.
+9. Confirm that the generation template contains `<word_count>`.
+10. Load and validate the metadata NDJSON file.
+11. Discover `.txt` files in the human-story directory.
+12. Apply `--start-filename`, if provided.
+13. Apply test-mode limit, if enabled.
+14. For each selected human-story file:
     - derive basename;
     - locate or compute output paths;
     - skip existing successful output unless `--reprocess`;
@@ -1009,59 +1089,59 @@ Default processing order:
     - perform generation using a fresh request containing only plot/style/word count;
     - write generated short story;
     - write per-story JSON metadata.
-14. Write run-level manifest and log.
+15. Write run-level manifest and log.
 
 Processing should continue after per-story failures.
 
 ---
 
-### 14. Command-line interface
+### 15. Command-line interface
 
 Recommended CLI arguments:
 
-| Argument | Default | Purpose |
-|---|---:|---|
-| `--human-dir PATH` | `corpus/01_human` | Human-authored short-story input directory |
-| `--metadata-ndjson PATH` | `../cl_st1_ph1_sara/corpus/short_stories.ndjson` | Phase 1 metadata containing `word_count` |
-| `--plot-prompt-template PATH` | `generate_short_story_prompts/extract_plot_v1.md` | Plot-extraction prompt template |
-| `--style-prompt-template PATH` | `generate_short_story_prompts/extract_style_v1.md` | Style-profile extraction prompt template |
-| `--generation-prompt-template PATH` | `generate_short_story_prompts/generate_short_story_v1.md` | Story-generation prompt template |
-| `--env-file PATH` | `env/.env` | Optional `.env` file from which to load `OPENAI_API_KEY` and related settings |
-| `--plot-style-dir PATH` | `corpus/02_plot_style` | Output directory for extracted plot/style files |
-| `--llm-dir PATH` | `corpus/03_llm` | Output directory for generated LLM short stories and metadata |
-| `--model MODEL` | `gpt-5.6-sol` | GPT model used for all three stages |
-| `--temperature FLOAT` | `0` | Generation temperature, omitted if unsupported |
-| `--test-mode` | enabled | Process limited number of stories |
-| `--no-test-mode` | disabled | Process all stories |
-| `--test-limit N` | `5` | Number of stories to attempt in test mode |
-| `--start-filename FILENAME` | `None` | Resume processing from a given human-story filename |
-| `--reprocess` | `False` | Regenerate existing outputs |
-| `--workers N` | `1` | Number of concurrent workers |
-| `--max-retries N` | `2` | API retry attempts per LLM call |
-| `--retry-backoff-seconds FLOAT` | `5.0` | Initial retry backoff |
-| `--log-file PATH` | `<llm-dir>/generate_llm_short_story.log` | Optional explicit log file path |
-| `--manifest-file PATH` | `<llm-dir>/generate_llm_short_story_manifest.json` | Optional explicit run manifest path |
+| Argument                            |                                                   Default | Purpose                                                                       |
+|-------------------------------------|----------------------------------------------------------:|-------------------------------------------------------------------------------|
+| `--human-dir PATH`                  |                                         `corpus/01_human` | Human-authored short-story input directory                                    |
+| `--metadata-ndjson PATH`            |          `../cl_st1_ph1_sara/corpus/short_stories.ndjson` | Phase 1 metadata containing `word_count`                                      |
+| `--plot-prompt-template PATH`       |         `generate_short_story_prompts/extract_plot_v1.md` | Plot-extraction prompt template                                               |
+| `--style-prompt-template PATH`      |        `generate_short_story_prompts/extract_style_v1.md` | Style-profile extraction prompt template                                      |
+| `--generation-prompt-template PATH` | `generate_short_story_prompts/generate_short_story_v1.md` | Story-generation prompt template                                              |
+| `--env-file PATH`                   |                                                `env/.env` | Optional `.env` file from which to load `OPENAI_API_KEY` and related settings |
+| `--plot-style-dir PATH`             |                                    `corpus/02_plot_style` | Output directory for extracted plot/style files                               |
+| `--llm-dir PATH`                    |                                           `corpus/03_llm` | Output directory for generated LLM short stories and metadata                 |
+| `--model MODEL`                     |                                             `gpt-5.6-sol` | GPT model used for all three stages                                           |
+| `--temperature FLOAT`               |                                                       `0` | Generation temperature, omitted if unsupported                                |
+| `--test-mode`                       |                                                   enabled | Process limited number of stories                                             |
+| `--no-test-mode`                    |                                                  disabled | Process all stories                                                           |
+| `--test-limit N`                    |                                                       `5` | Number of stories to attempt in test mode                                     |
+| `--start-filename FILENAME`         |                                                    `None` | Resume processing from a given human-story filename                           |
+| `--reprocess`                       |                                                   `False` | Regenerate existing outputs                                                   |
+| `--workers N`                       |                                                       `1` | Number of concurrent workers                                                  |
+| `--max-retries N`                   |                                                       `2` | API retry attempts per LLM call                                               |
+| `--retry-backoff-seconds FLOAT`     |                                                     `5.0` | Initial retry backoff                                                         |
+| `--log-file PATH`                   |                  `<llm-dir>/generate_llm_short_story.log` | Optional explicit log file path                                               |
+| `--manifest-file PATH`              |        `<llm-dir>/generate_llm_short_story_manifest.json` | Optional explicit run manifest path                                           |
 
 Optional future arguments:
 
-| Argument | Purpose |
-|---|---|
-| `--plot-model MODEL` | Use a separate model for plot extraction |
-| `--style-model MODEL` | Use a separate model for style extraction |
-| `--generation-model MODEL` | Use a separate model for story generation |
-| `--allow-missing-word-count` | Continue with a fallback word count if metadata lacks `word_count`; not recommended |
-| `--word-count-tolerance FLOAT` | Record target tolerance for generated story length |
-| `--sanitize-filenames` | Write outputs using filesystem-normalised filenames |
-| `--metadata-match-field FIELD` | Force metadata matching through a specific field |
-| `--dry-run` | Validate inputs and planned outputs without API calls |
+| Argument                       | Purpose                                                                             |
+|--------------------------------|-------------------------------------------------------------------------------------|
+| `--plot-model MODEL`           | Use a separate model for plot extraction                                            |
+| `--style-model MODEL`          | Use a separate model for style extraction                                           |
+| `--generation-model MODEL`     | Use a separate model for story generation                                           |
+| `--allow-missing-word-count`   | Continue with a fallback word count if metadata lacks `word_count`; not recommended |
+| `--word-count-tolerance FLOAT` | Record target tolerance for generated story length                                  |
+| `--sanitize-filenames`         | Write outputs using filesystem-normalised filenames                                 |
+| `--metadata-match-field FIELD` | Force metadata matching through a specific field                                    |
+| `--dry-run`                    | Validate inputs and planned outputs without API calls                               |
 
 For the current version, only one `--model` should be implemented.
 
 ---
 
-### 15. Example commands
+### 16. Example commands
 
-#### 15.1 Default test run
+#### 16.1 Default test run
 
 ```shell script
 python generate_llm_short_story.py
@@ -1082,7 +1162,7 @@ This should:
 
 ---
 
-#### 15.2 Full run
+#### 16.2 Full run
 
 ```shell script
 python generate_llm_short_story.py --no-test-mode
@@ -1091,7 +1171,7 @@ python generate_llm_short_story.py --no-test-mode
 
 ---
 
-#### 15.3 Reprocess all stories
+#### 16.3 Reprocess all stories
 
 ```shell script
 python generate_llm_short_story.py \
@@ -1102,7 +1182,7 @@ python generate_llm_short_story.py \
 
 ---
 
-#### 15.4 Resume from a specific filename
+#### 16.4 Resume from a specific filename
 
 ```shell script
 python generate_llm_short_story.py \
@@ -1113,7 +1193,7 @@ python generate_llm_short_story.py \
 
 ---
 
-#### 15.5 Use a different GPT-5.6 tier
+#### 16.5 Use a different GPT-5.6 tier
 
 ```shell script
 python generate_llm_short_story.py \
@@ -1124,7 +1204,7 @@ python generate_llm_short_story.py \
 
 ---
 
-#### 15.6 Use newer prompt-template versions
+#### 16.6 Use newer prompt-template versions
 
 ```shell script
 python generate_llm_short_story.py \
@@ -1137,7 +1217,7 @@ python generate_llm_short_story.py \
 
 ---
 
-#### 15.7 Use a non-default environment file
+#### 16.7 Use a non-default environment file
 
 ```shell script
 python generate_llm_short_story.py \
@@ -1147,7 +1227,27 @@ python generate_llm_short_story.py \
 
 ---
 
-### 16. Validation rules
+#### 16.8 Invoke from outside the Phase 2 directory
+
+```shell script
+python /path/to/cl_st1_sara/cl_st1_ph2_sara/generate_llm_short_story.py \
+  --test-limit 1
+```
+
+
+---
+
+#### 16.9 Use a non-default Phase 1 metadata location
+
+```shell script
+python generate_llm_short_story.py \
+  --metadata-ndjson /path/to/short_stories.ndjson
+```
+
+
+---
+
+### 17. Validation rules
 
 The programme should fail before API calls if:
 
@@ -1177,7 +1277,7 @@ Per-story failures should not stop the full run.
 
 ---
 
-### 17. Per-story failure handling
+### 18. Per-story failure handling
 
 A story should be marked as failed, but the run should continue, if:
 
@@ -1207,7 +1307,7 @@ A failed `.txt` LLM story output is not required. A failed `.json` metadata file
 
 ---
 
-### 18. Logging requirements
+### 19. Logging requirements
 
 The programme should log:
 
@@ -1228,6 +1328,7 @@ The programme should log:
 - reused intermediate outputs;
 - failures and error messages;
 - retry attempts;
+- temperature unsupported warnings, without exposing request payloads;
 - final counts.
 
 The programme must not log:
@@ -1236,11 +1337,11 @@ The programme must not log:
 - full raw API authentication headers;
 - unnecessary full request payloads containing complete copyrighted story text.
 
-The programme may log hashes, paths, and boolean availability status for reproducibility.
+The programme may log hashes, paths, boolean availability status, and safe model-parameter support status for reproducibility.
 
 ---
 
-### 19. Reproducibility requirements
+### 20. Reproducibility requirements
 
 The programme should record enough information to reproduce a run:
 
@@ -1259,6 +1360,7 @@ The programme should record enough information to reproduce a run:
 - model name;
 - temperature;
 - whether temperature was sent to the API;
+- whether temperature was identified as unsupported for the selected model, where available;
 - API response metadata;
 - output paths;
 - output hashes;
@@ -1273,47 +1375,54 @@ The run manifest and per-story JSON files should be sufficient to determine:
 4. which GPT model was used;
 5. whether the environment file was used or whether the key came from the process environment;
 6. whether outputs were newly generated or reused;
-7. whether the generation request was segregated from the original story.
+7. whether the generation request was segregated from the original story;
+8. whether default relative paths were resolved against the programme directory or overridden by CLI arguments.
 
 ---
 
-### 20. Acceptance criteria
+### 21. Acceptance criteria
 
 The programme is acceptable when:
 
 1. It is named `generate_llm_short_story.py`.
-2. It reads human-authored `.txt` stories from `corpus/01_human/`.
-3. It reads `word_count` metadata from `../cl_st1_ph1_sara/corpus/short_stories.ndjson`.
-4. It reads prompt templates from external Markdown files.
-5. Prompt text is not hardcoded into the programme.
-6. The plot prompt path is configurable with `--plot-prompt-template`.
-7. The style prompt path is configurable with `--style-prompt-template`.
-8. The generation prompt path is configurable with `--generation-prompt-template`.
-9. The generation prompt template must contain `<word_count>`.
-10. The programme replaces `<word_count>` with the matched metadata value for each story.
-11. The programme supports `--env-file`, defaulting to `env/.env`.
-12. The programme loads environment variables from `env/.env` when present.
-13. The programme can also use `OPENAI_API_KEY` from the process environment if the `.env` file is absent.
-14. The programme fails before API calls if `OPENAI_API_KEY` is unavailable.
-15. The programme never logs, prints, or writes the API key value.
-16. The programme uses one `--model` argument for all three stages.
-17. The default model is `gpt-5.6-sol`.
-18. For each human story, the programme creates a plot extraction.
-19. Plot outputs are saved in `corpus/02_plot_style/` with the `_plot.txt` suffix.
-20. For each human story, the programme creates a style-profile extraction.
-21. Style outputs are saved in `corpus/02_plot_style/` with the `_style.txt` suffix.
-22. For each human story, the programme generates an LLM short story from plot, style profile, and target word count.
-23. LLM-generated stories are saved in `corpus/03_llm/` with the `_llm.txt` suffix.
-24. The generation request does not include the original human-authored story.
-25. The generation request does not reuse extraction-stage context containing the original story.
-26. Per-story JSON metadata records the segregation status.
-27. Existing successful outputs are skipped unless `--reprocess` is used.
-28. Intermediate plot/style files may be reused unless `--reprocess` is used.
-29. Per-story failures are logged and do not stop the full run.
-30. The programme writes a run-level manifest.
-31. The programme writes a run-level log.
-32. The programme supports test mode and full-run mode.
-33. The programme supports resuming from a specified filename.
-34. Prompt hashes, output hashes, model configuration, target word count, environment metadata, and metadata matching information are recorded.
-35. The resulting generated subcorpus mirrors the human-authored subcorpus story by story.
-36. The workflow is appropriate for subsequent Traditional / Functional Multi-dimensional Analysis of stylistic variation.
+2. It uses project-situated default paths resolved relative to the programme directory.
+3. It does not depend on machine-specific absolute paths.
+4. It can be invoked from outside the Phase 2 directory.
+5. Absolute or non-default paths can be supplied through CLI arguments.
+6. It reads human-authored `.txt` stories from `corpus/01_human/`.
+7. It reads `word_count` metadata from `../cl_st1_ph1_sara/corpus/short_stories.ndjson`.
+8. It reads prompt templates from external Markdown files.
+9. Prompt text is not hardcoded into the programme.
+10. The plot prompt path is configurable with `--plot-prompt-template`.
+11. The style prompt path is configurable with `--style-prompt-template`.
+12. The generation prompt path is configurable with `--generation-prompt-template`.
+13. The generation prompt template must contain `<word_count>`.
+14. The programme replaces `<word_count>` with the matched metadata value for each story.
+15. The programme supports `--env-file`, defaulting to `env/.env`.
+16. The programme loads environment variables from `env/.env` when present.
+17. The programme can also use `OPENAI_API_KEY` from the process environment if the `.env` file is absent.
+18. The programme fails before API calls if `OPENAI_API_KEY` is unavailable.
+19. The programme never logs, prints, or writes the API key value.
+20. The programme uses one `--model` argument for all three stages.
+21. The default model is `gpt-5.6-sol`.
+22. The programme can omit `temperature` when the selected model does not support it.
+23. After discovering that a model does not support `temperature`, the programme avoids repeatedly sending the unsupported parameter for that model during the same run.
+24. For each human story, the programme creates a plot extraction.
+25. Plot outputs are saved in `corpus/02_plot_style/` with the `_plot.txt` suffix.
+26. For each human story, the programme creates a style-profile extraction.
+27. Style outputs are saved in `corpus/02_plot_style/` with the `_style.txt` suffix.
+28. For each human story, the programme generates an LLM short story from plot, style profile, and target word count.
+29. LLM-generated stories are saved in `corpus/03_llm/` with the `_llm.txt` suffix.
+30. The generation request does not include the original human-authored story.
+31. The generation request does not reuse extraction-stage context containing the original story.
+32. Per-story JSON metadata records the segregation status.
+33. Existing successful outputs are skipped unless `--reprocess` is used.
+34. Intermediate plot/style files may be reused unless `--reprocess` is used.
+35. Per-story failures are logged and do not stop the full run.
+36. The programme writes a run-level manifest.
+37. The programme writes a run-level log.
+38. The programme supports test mode and full-run mode.
+39. The programme supports resuming from a specified filename.
+40. Prompt hashes, output hashes, model configuration, target word count, environment metadata, and metadata matching information are recorded.
+41. The resulting generated subcorpus mirrors the human-authored subcorpus story by story.
+42. The workflow is appropriate for subsequent Traditional / Functional Multi-dimensional Analysis of stylistic variation.
