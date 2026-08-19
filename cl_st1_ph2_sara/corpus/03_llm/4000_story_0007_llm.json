@@ -1,0 +1,159 @@
+{
+  "story_filename": "4000_story_0007.txt",
+  "story_basename": "4000_story_0007",
+  "status": "success",
+  "input": {
+    "human_story_file": "corpus/01_human/4000_story_0007.txt",
+    "metadata_ndjson": "/home/eyamrog/PycharmProjects/cl_st1_sara/cl_st1_ph1_sara/corpus/short_stories.ndjson",
+    "plot_prompt_template": "generate_short_story_prompts/extract_plot_v1.md",
+    "style_prompt_template": "generate_short_story_prompts/extract_style_v1.md",
+    "generation_prompt_template": "generate_short_story_prompts/generate_short_story_v1.md",
+    "env_file": "env/.env"
+  },
+  "output": {
+    "plot_file": "corpus/02_plot_style/4000_story_0007_plot.txt",
+    "style_file": "corpus/02_plot_style/4000_story_0007_style.txt",
+    "llm_story_file": "corpus/03_llm/4000_story_0007_llm.txt",
+    "metadata_file": "corpus/03_llm/4000_story_0007_llm.json"
+  },
+  "environment": {
+    "env_file": "env/.env",
+    "env_file_found": true,
+    "openai_api_key_available": true,
+    "openai_api_key_source": "env_file_or_process_environment",
+    "openai_api_key_logged": false
+  },
+  "metadata_match": {
+    "status": "matched",
+    "matching_field": "source_path",
+    "matching_value": "corpus/4000_stories_fixed/4000_story_0007.txt",
+    "word_count": 2957,
+    "row": {
+      "url": "https://americanliterature.com/author/achmed-abdullah/short-story/the-dance-on-the-hill",
+      "title": "The Dance on the Hill",
+      "collection_title": null,
+      "author": "Achmed Abdullah",
+      "story_id": "4000_story_0007",
+      "word_count": 2957,
+      "source_path": "corpus/4000_stories_fixed/4000_story_0007.txt",
+      "within_iqr": true,
+      "selected": true
+    }
+  },
+  "hashes": {
+    "human_story_sha256": "71bb8190502690a27017596be3df47b7e86af61f025807619b025910c4e54911",
+    "metadata_ndjson_sha256": "09d1f1b6eb44262f01f4c6c1f5fbe445c17e54b996a6a98e938c4f79178eeca0",
+    "plot_prompt_template_sha256": "940629b1de40c52e68582151be36aceff06b9c13327aa088686590627fc575a4",
+    "style_prompt_template_sha256": "15669ce5f919c877d3d4095c290239bfd14b9d8195175dcdc063dc544c1df991",
+    "generation_prompt_template_sha256": "5d8c63cf0566d18ab476ce89b6045bfc5c1dd41c1d8f7bfe76b0bedcbab4afcf",
+    "rendered_generation_prompt_sha256": "793083024e5ebeeb6ea283b1840ea08321aff68c65d9177489420a3783689846",
+    "plot_output_sha256": "4215498cc827fd4db0873315f17b2aaa4cffc1b23a376875cde73cf9ecd5092f",
+    "style_output_sha256": "837c29e423cf6aa3102d1504594adfe1fb350a3106e15a44db5d37febb1b1700",
+    "llm_story_output_sha256": "e56cc1209910e31ce6317773a79726141f5a9c5b403ad9e5bc82fa383bf6c495"
+  },
+  "prompt_placeholders": {
+    "generation_word_count_placeholder_found": true,
+    "generation_word_count_placeholder_replaced": true,
+    "word_count_replacement_value": 2957
+  },
+  "model": {
+    "configured_model": "gpt-5.6-sol",
+    "plot_extraction_model": "gpt-5.6-sol",
+    "style_extraction_model": "gpt-5.6-sol",
+    "generation_model": "gpt-5.6-sol"
+  },
+  "segregation": {
+    "plot_extraction_received_original_story": true,
+    "style_extraction_received_original_story": true,
+    "generation_received_original_story": false,
+    "generation_request_reused_extraction_context": false,
+    "generation_request_reused_uploaded_original_file": false,
+    "generation_input_source": "persisted_plot_style_outputs_and_metadata_word_count_only"
+  },
+  "stages": {
+    "plot_extraction": {
+      "status": "success",
+      "submitted_to_llm": true,
+      "reused_existing_output": false,
+      "response_text": "Mortazu Khan hurries across the Afghan mountains to fetch an English doctor for his wife, Azeena, who is suffering through a dangerous childbirth. Though speed is essential, he is attacked by a mother bear and becomes trapped in a prolonged struggle around a fir tree. Armed only with a dagger, he wounds the bear but gradually exhausts himself as precious hours pass.\n\nWhen he discovers a cub hiding in the tree, Mortazu understands that the bear, like him, is fighting to protect her young. With compassion and respect rather than hatred, he confronts her in the open and kills her by stabbing her heart, suffering severe wounds himself. He then takes the orphaned cub, intending it as a companion for his hoped-for son, and continues toward Ghuzni for the doctor, bleeding but still hurrying.",
+      "api_metadata": {
+        "id": "resp_0c7e57e8c8a6875a006a861d10d01487d299c2343c5bbc3398",
+        "model": "gpt-5.6-sol",
+        "created_at": 1787174160.0,
+        "status": "completed",
+        "usage": {
+          "input_tokens": 3950,
+          "input_tokens_details": {
+            "cache_write_tokens": 3947,
+            "cached_tokens": 0
+          },
+          "output_tokens": 210,
+          "output_tokens_details": {
+            "reasoning_tokens": 38
+          },
+          "total_tokens": 4160
+        }
+      },
+      "duration_seconds": 5.566,
+      "error": null
+    },
+    "style_extraction": {
+      "status": "success",
+      "submitted_to_llm": true,
+      "reused_existing_output": false,
+      "response_text": "The story uses a vivid, muscular adventure style, combining panoramic landscape description with tightly sustained physical action. Its opening establishes an exoticised Central Asian setting through named mountains, bazaars, local plants, clothing, weapons, religious customs and transliterated expressions. This geographical specificity gives the narrative a strong sense of place, although the repeated emphasis on cultural difference, “hillmen,” folk medicine and picturesque speech reflects the conventions—and stereotypes—of older imperial adventure fiction.\n\nThe narration is third-person limited, closely aligned with Mortazu Khan’s perceptions and practical reasoning. The narrator moves easily between external observation, interior thought and imagined dialogue, allowing the protagonist’s urgency, humour, fear and remorse to shape the scene without using a fully stream-of-consciousness method. Mortazu Khan is characterised primarily through movement, bodily endurance, earthy invective, devotion to his wife and instinctive religious speech. His thoughts are direct and concrete: distances, time, speed, weapons and immediate risks matter more than abstraction. Yet the perspective broadens emotionally near the end, when he recognises the bear’s maternal motive and sees her as a fellow creature defending her young.\n\nThe diction is sensuous and highly visual. Colours recur with painterly precision—rust-brown bracken, azure gentians, blue-gray fur, ochre moss, gold and lavender peaks—while smells, textures and sounds make the landscape physically immediate. Rough bark, torn moss, bleeding toes, steam, saliva and sticky blood give the struggle a tactile, sometimes visceral quality. Similes are plentiful and forceful, often drawn from machinery, animals or natural motion: arms move like propeller blades, the bear slides with the precision of roller-skates, and Mortazu Khan eventually seems to “stream” like a liquid wave. Personification intensifies the environment, with stones clattering mockingly, twigs whining, the wind soaring and sunlight dipping down to observe the fight.\n\nSentence structure varies according to pace. Long, layered sentences dominate the landscape passages and accumulate topographical or sensory detail through participial phrases and coordinated clauses. During the confrontation, the prose shifts toward fragments, exclamations, abrupt repetitions and onomatopoeia: “Plump!”, “Waughrrr!”, “Wheet-wheet!” These compressed units imitate charges, evasions and impacts. Repeated words and constructions—“circling, circling,” “again and again and again,” “hurrying, hurrying”—create rhythmic insistence and convey exhaustion, dwindling time and obsessive purpose. Dashes and ellipses frequently interrupt the syntax, registering sudden thoughts or the pressure of Azeena’s unseen peril.\n\nThe action is prolonged through iterative narration. The bear repeatedly charges, misses, brakes and turns while Mortazu Khan circles the tree. Each recurrence adds a new physical cost: shredded moss, broken sandals, bleeding feet, raw hands and failing breath. This repetition risks stasis but is used deliberately to make the ordeal feel exhausting and to sustain suspense around the passage of time. References to the rising and dipping sun and to Azeena “dying” away beyond the hills keep the fight connected to the larger deadline.\n\nDialogue is theatrical, comic and culturally marked. Mortazu Khan’s insults, prayers and apostrophes to “Bibi Bear” turn the combat into a grotesque verbal duel. The bear’s roars are rendered almost as replies, giving the scene a mock-conversational structure. Humour arises from the contrast between mortal danger and elaborate abuse, as well as from the bear’s ungainly movements and “hurt, childish intonation.” This comedy does not erase the threat; instead, it makes the later shift toward pity more effective.\n\nTonally, the story moves from picturesque travel narrative to urgent quest, then to comic-grotesque combat, bodily horror and finally sentimental reconciliation. The central irony is that Mortazu Khan and the bear are fighting for parallel reasons: each is driven by concern for offspring. Once the cub is revealed, the language of hostility gives way to respect, kinship and tenderness. The killing remains violent, but the narration stresses that the blows contain “no hatred.” The closing adoption of the cub resolves the conflict through symbolic substitution, linking the hoped-for human child with the orphaned animal and ending on a mixture of injury, compassion and renewed haste.\n\nOverall, the style is energetic, ornate and cinematic. It relies on strong colour, emphatic rhythm, anthropomorphism, physical detail and melodramatic emotional reversals. Beneath its adventure-story surface, it uses mirrored parenthood to transform a simple man-versus-animal struggle into a compact fable about courage, necessity and compassion.",
+      "api_metadata": {
+        "id": "resp_0d4c8f838b15a6ed006a861d1653cc87d29d9fb5111cb01628",
+        "model": "gpt-5.6-sol",
+        "created_at": 1787174166.0,
+        "status": "completed",
+        "usage": {
+          "input_tokens": 3950,
+          "input_tokens_details": {
+            "cache_write_tokens": 3947,
+            "cached_tokens": 0
+          },
+          "output_tokens": 1020,
+          "output_tokens_details": {
+            "reasoning_tokens": 70
+          },
+          "total_tokens": 4970
+        }
+      },
+      "duration_seconds": 25.495,
+      "error": null
+    },
+    "generation": {
+      "status": "success",
+      "submitted_to_llm": true,
+      "reused_existing_output": false,
+      "response_text": "### The Bear of the Shibar Pass\n\nAt dawn the mountains beyond the Shibar Pass were lavender and gold, but Mortazu Khan had no eyes for their beauty.\n\nHe ran eastward with his sheepskin coat flung open and the tail of his blue turban streaming behind him. Loose stones shot from under his rawhide sandals and rattled down the slope as if the mountain mocked his haste. Below, the valleys lay blue with shadow. Above, the Hindu Kush lifted peak beyond peak into the paling sky, each summit touched by sunlight while the villages remained cold and dark.\n\nGhuzni was still many miles away.\n\n“Run, son of a slow-footed camel,” Mortazu told himself. “Run, or Azeena dies while you admire the scenery.”\n\nAt the thought of her he ran harder.\n\nBefore sunrise he had left her in the women’s room of his father’s mud-walled house, her black hair wet against her face, her hands twisting the quilt. Old Bibi Gul, the village midwife, had knelt between her knees with an expression that Mortazu did not like. She had burnt herbs, muttered prayers, warmed oil, ordered water, then sent everyone out except the women. An hour later she had come to the courtyard.\n\n“The child will not come.”\n\n“Then persuade it.”\n\n“I have persuaded children into the world since your beard was softer than flour. This one does not listen.”\n\nMortazu had stared at her.\n\n“What must be done?”\n\n“Fetch the English doctor from Ghuzni.”\n\nThere was no horse in the village swift enough for the broken mountain path. Mortazu’s own gray mare had gone lame the week before, and the mullah’s pony was a round-bellied philosopher who considered speed an insult. So Mortazu had buckled on his knife, stuffed bread into his sash, kissed Azeena’s burning forehead, and set out on foot.\n\nNow, as the sun climbed, he followed a goat track through rust-colored bracken. Blue gentians stared up between stones. Dwarf juniper scratched his leggings, and resinous wind came down from the fir woods smelling of snow, earth and distant rain.\n\nHe knew every turn. Two miles to the black cliff; three more to the shepherds’ spring; then the long descent to the Ghuzni road. If Allah put wings on his heels, he could reach the doctor before noon and return by night.\n\nIf the doctor came.\n\nIf Azeena lived.\n\nIf the child—\n\nHe would not complete that thought.\n\n“It is a son,” he said aloud. “A loud son with the appetite of ten wolves. He is waiting only to cause trouble. Therefore I must hurry and welcome him properly.”\n\nA marmot whistled from a boulder.\n\n“You laugh?” Mortazu called. “May your children all be born with the faces of tax collectors!”\n\nThe marmot vanished. Mortazu grinned despite himself and ran on.\n\nThe track entered a stand of mountain firs where the light became green and cold. Their trunks rose straight and red-brown from a floor of needles, moss and fallen cones. No birds sang there. Even the wind moved softly, combing the upper branches while the earth below held its breath.\n\nMortazu noticed the silence.\n\nHe slowed.\n\nA patch of moss had been ripped open beside the path. In the black soil were five deep marks, then five more. The prints were broad as dinner platters. A rotten stump had been torn apart, and pale grubs writhed in the splinters.\n\n“Bear,” he murmured.\n\nHis hand went to the hilt of his choora, the long Khyber knife tucked into his sash. It was a good blade, narrow at the point and heavy along the back, but a knife was an argument best offered to a man. Against a bear it was little more than a shining tooth.\n\nHe listened.\n\nNothing.\n\nThe Ghuzni road lay beyond the wood. To turn aside would cost an hour, perhaps two. Azeena had no hours to spare.\n\nMortazu went forward, stepping lightly.\n\nTwenty paces farther on, a dead branch cracked behind him.\n\nHe turned.\n\nThe bear stood between two firs.\n\nShe was enormous—not black, as she had first appeared among the shadows, but blue-gray along the shoulders, with brown fur matted beneath her belly. Her small eyes shone under a pale brow. She raised her head and sniffed, lips twitching. A string of saliva hung from her jaw.\n\nMortazu backed one step.\n\n“Peace, Bibi,” he said. “I am a married man on urgent business. You have your road; I have mine.”\n\nThe bear swung her head.\n\nHe moved sideways.\n\nShe moved with him.\n\nThen she charged.\n\nThere was no warning roar, no theatrical rising upon the hind legs. One moment she stood beneath the firs; the next she came low and swift, paws drumming the earth, fur rippling over her shoulders.\n\nMortazu leapt behind the nearest tree.\n\nThe bear struck the trunk.\n\nWhump!\n\nBark burst outward. The fir trembled from roots to crown, dropping a shower of needles. Mortazu spun around it while a paw as large as a shovel swept after him and missed his back by the width of a finger.\n\n“Daughter of an avalanche!”\n\nThe bear wheeled. For so huge a creature she turned horribly fast, digging her claws into the moss and flinging up black soil. Mortazu went the opposite way, keeping the trunk between them.\n\nShe lunged right.\n\nHe darted left.\n\nShe reversed.\n\nHe reversed.\n\nRound the fir they went, the bear snorting, Mortazu’s sandals sliding over needles. He heard her claws score the bark. He smelled her rank breath. Once her muzzle appeared so close around the trunk that he struck at it instinctively. The knife sliced her lip.\n\nShe recoiled with a roar.\n\n“Wah! You see?” Mortazu shouted. “Go away, grandmother! I am made of bone and bad temper.”\n\nBlood brightened the fur around her mouth. She licked it, puzzled. Then her ears flattened.\n\nThe second charge was more furious.\n\nShe came around the tree instead of at it, swiping as she ran. Mortazu circled, circled, the fir rough beneath his left palm, his knife held low in his right. Her paw tore the hem from his coat. He stabbed at her foreleg and felt the blade enter, but not deeply. She bellowed and flung herself backward, sitting almost like a scolded child.\n\nFor one absurd instant Mortazu wanted to laugh.\n\nThen the bear surged up again.\n\nHe ran around the trunk.\n\nAgain she followed. Again and again and again—right, left, right—each rush crushing fern and shredding moss, each turn sending cones popping beneath her weight. The wood, lately so silent, filled with panting, snarling, scraping, the slap of Mortazu’s feet, the harsh cough of his breath.\n\nThe sun climbed between the branches.\n\nGhuzni waited beyond the hills.\n\nAzeena waited farther behind him.\n\n“A little faster, husband,” he imagined her saying. “There is no need to trouble yourself. I am only dying.”\n\n“I am occupied!” he gasped aloud.\n\nThe bear roared.\n\n“Yes, and this lady objects to my leaving!”\n\nHe feinted to the right, darted left and tried to break away toward the track.\n\nThe bear cut him off.\n\nHer speed astonished him. She slid down the slope through dead needles, struck a sapling aside and appeared before him in a tumble of fur and teeth. Mortazu turned so sharply that his sandal strap snapped. He fell against the fir, ducked beneath a swinging paw and felt claws plough across his shoulder.\n\nHis coat opened like rotten cloth.\n\nHeat ran down his back.\n\nHe stabbed upward. The knife sank into the loose flesh below the bear’s neck. She jerked away, wrenching the hilt from his hand, and the blade flew into the bracken.\n\nMortazu stared after it.\n\nThe bear stared at him.\n\n“Now,” he whispered, “we are both offended.”\n\nShe rushed.\n\nHe sprang upward and caught the lowest branch of the fir. His bare foot scraped the trunk; his broken sandal dropped away. With a heave that tore fire through his wounded shoulder, he dragged himself onto the branch.\n\nThe bear reared below.\n\nHer claws ripped through his remaining sandal and grazed his heel. Mortazu climbed higher, kicking among the boughs until he reached a fork perhaps twelve feet above the ground. There he clung, breathing in short, painful gulps.\n\nThe bear dropped to all fours and paced around the trunk.\n\nBlood dripped from her mouth and neck. Blood ran from Mortazu’s shoulder to his elbow, gathered at his fingertips and fell in slow dark beads.\n\nPlip.\n\nPlip.\n\nThe bear watched each drop strike the moss.\n\n“Go,” Mortazu told her. “You have won. I shall remain in this tree until I grow cones.”\n\nShe sat down.\n\nMortazu cursed her ancestry back through thirty generations. He accused her father of stealing onions, her mother of marrying a pig, her grandfathers of cheating blind beggars in the Kabul bazaar. The bear listened with her head tilted. When he paused for breath, she gave a low moan.\n\n“A reply? Your eloquence is remarkable.”\n\nThe bear put her forepaws against the trunk and climbed.\n\nMortazu’s humour vanished.\n\nShe came slowly, her claws biting through the bark, her body hugging the fir. The whole tree shuddered beneath her weight. Mortazu climbed, branches lashing his face. Resin stuck to his palms. Needles entered his torn shoulder. He went higher until the trunk narrowed and swayed.\n\nBelow, the bear climbed on.\n\n“Allah preserve me,” he muttered.\n\nThe upper branches bent in the wind. Through gaps in the foliage he saw the world spread below: ochre ridges, gray ravines, distant snow burning white against the deep blue sky. Somewhere beyond those ridges Azeena lay with her teeth clenched, fighting for one breath and then another.\n\nThe bear reached the fork where he had rested.\n\nMortazu climbed farther.\n\nThe trunk bowed.\n\nFor a moment man and beast hung above the mountains, both breathing hard, both stained with blood.\n\nThen the bear’s weight betrayed her. A branch cracked beneath her hindquarters. She scrambled, bark flying, and slid downward with a startled, almost indignant grunt. She struck the lower fork, bounced, clutched at the trunk and dropped heavily to the ground.\n\nThud!\n\nThe earth shook.\n\nMortazu laughed until his shoulder punished him.\n\n“Excellent climbing, Bibi! Shall I summon the birds to applaud?”\n\nThe bear rose, shook herself and looked up.\n\nThere was hurt in her roar—anger, certainly, but something else, a complaining note like that of a child denied a sweet. She circled the tree once, then settled again at its foot.\n\nShe would wait.\n\nMortazu looked at the sun.\n\nNearly half the morning gone.\n\nHe could not remain. Yet to descend was to place himself beneath those claws. His knife lay somewhere under the torn bracken, glinting perhaps three strides from the trunk. If he could reach it—\n\nHe tested a branch extending over the slope. It bent but held. Beyond its tip stood another fir, six feet away. Too far to jump safely, especially with one shoulder failing.\n\nSix feet or Azeena.\n\nMortazu edged outward.\n\nThe branch dipped. Needles whispered around him. Below, the bear rose and followed, walking beneath him.\n\nHe crawled farther. The branch bowed like a drawn bow. The neighboring fir seemed to move closer, then farther as the wind swayed both trees.\n\n“Bismillah.”\n\nHe stood unsteadily.\n\nThe bear gathered herself below.\n\nMortazu jumped.\n\nHis hands struck the second tree. One caught a branch; the other slipped. His body swung against the trunk, crushing breath from him. Pain burst through his shoulder in a white flash. For an instant he hung by one arm over the bear’s open jaws.\n\nThen he hooked a knee across the branch and rolled onto it.\n\nThe bear rose beneath him, snapping.\n\n“Too slow!”\n\nMortazu descended the far side of the tree, using the trunk as a shield. The instant his bare feet touched earth, he ran for the bracken.\n\nBehind him came the pounding of paws.\n\nHe saw the knife—a stripe of silver beneath a fern.\n\nHe dived.\n\nThe bear’s paw struck his thigh and spun him across the ground. Stones and sky whirled together. He closed his hand around the knife as he rolled, came up on one knee and slashed blindly.\n\nThe blade opened the bear’s nose.\n\nShe recoiled with a coughing roar. Mortazu staggered toward the first fir. His left leg dragged; four parallel cuts burned across his thigh. He reached the trunk just before she charged again.\n\nRound they went.\n\nBut now the dance had changed.\n\nMortazu’s bare feet were bleeding. His wounded leg answered slowly. His breath scraped like a saw in his chest. The bear, though cut in three places, seemed fashioned from rage and sinew. She rushed, braked, wheeled, rushed again. The fir became slick beneath Mortazu’s bloody hand. Torn moss gathered underfoot. Once he slipped and saved himself only by driving the knife into the bark.\n\nMinutes stretched until they seemed longer than years.\n\nCircling, circling.\n\nThe sun looked down through the branches, bright and indifferent.\n\nMortazu began to see darkness at the edges of things. He knew what would happen. His leg would fail. He would stumble. The bear would strike him down, and somewhere beyond the pass Azeena would wait for a husband who had become meat beneath a fir tree.\n\n“No,” he whispered.\n\nThe bear charged.\n\nMortazu sprang aside. Her shoulder slammed the trunk, and she reeled.\n\nHe could have stabbed behind her ear. The knife was raised. The place was open.\n\nYet before he struck, a sound came from above.\n\n“Wheet—wheet!”\n\nMortazu froze.\n\nThe bear froze also.\n\nA small shape moved among the branches of the first fir. It was no bird. A round blue-gray face peered down between sprays of needles, ears wide, eyes black and frightened.\n\nA cub.\n\nMortazu stared upward.\n\nThe cub gave another thin cry.\n\nThe mother bear lifted her muzzle. Her whole body changed. The rage went out of her stance; the great shoulders sagged. She answered with a soft, throaty murmur, and the cub crept farther into the branches.\n\nMortazu lowered the knife.\n\nSo. That was why she had attacked without hunger, why she had guarded the track, why she had waited beneath the tree and endured wounds rather than retreat. Her cub had climbed there at his approach. She had not been hunting him.\n\nShe had been keeping him from her child.\n\nFrom Azeena came the memory of a cry in the dark room.\n\nThe child will not come.\n\nHe looked at the bear, and in her small fierce eyes he saw no monster. He saw a mother whose world was hidden in a tree.\n\n“Ah, Bibi,” he said quietly. “Then we are two fools on the same business.”\n\nThe bear watched him.\n\nHe could not leave while she lived. If he tried to run, she would overtake him. If he climbed again, the sun would fall and Azeena might die. There was no peace to be made between them now. Too much blood lay on the moss.\n\nMortazu tightened his grip on the knife.\n\n“I bear you no anger,” he said. “But my child also waits.”\n\nHe stepped away from the tree into the open.\n\nThe bear gave a warning cough.\n\n“No more dancing.”\n\nHe spread his feet, though one leg trembled. The knife he held close to his body, point upward. His heart hammered so violently that the mountains seemed to pulse with it.\n\nThe bear came forward.\n\nNot at once. Not wildly. She advanced three paces, testing him, blood dark along her muzzle. Mortazu stood still.\n\n“Come, mother.”\n\nShe rose on her hind legs.\n\nShe towered above him, huge against the sunlight, forepaws lifted, claws curved and black. For a breath she seemed to contain all the strength of the mountains—the falling rock, the winter storm, the flood tearing cedar roots from a gorge.\n\nThen she fell upon him.\n\nMortazu stepped inside the sweep of her paw.\n\nThe claws struck his ribs and ripped downward. At the same instant he drove the knife beneath her foreleg with both hands.\n\nThe blade went in to the hilt.\n\nHot blood poured over his wrists.\n\nThe bear’s weight crushed him. She roared once, a sound so vast that the firs flung it from trunk to trunk and the cliffs returned it broken. Mortazu twisted the knife deeper, seeking the heart.\n\nThere was no hatred in the thrust. Only necessity. Only sorrow. Only Azeena.\n\nThe bear shuddered.\n\nHer jaws closed on the shoulder already torn, but without force. Her breath rushed hot across his cheek. Then she sank sideways, carrying him down beneath her.\n\nFor a while Mortazu knew nothing but fur, darkness and the iron smell of blood.\n\nHe clawed his way free.\n\nThe bear lay on the moss, one forepaw curved toward her chest. Her eyes were open. The wind stirred the fur at her neck.\n\nAbove, the cub cried.\n\nMortazu knelt. His hands shook. Blood streamed from his side and thigh; his coat hung in ribbons. He touched the bear’s broad head.\n\n“May the Maker judge between us,” he whispered. “You fought well.”\n\nThe cub cried again.\n\nMortazu looked at the sun. Time—time was running like water through broken fingers.\n\nHe tore strips from his coat, bound his ribs and thigh, and packed moss beneath the cloth to slow the bleeding. Every knot made sparks burst before his eyes. Then he recovered his knife, wiped it on the earth and put it back into his sash.\n\nHe might have gone then.\n\nInstead he looked up.\n\nThe cub clung to a branch, no larger than a shepherd’s dog, shivering. Without its mother it would starve, or fall to wolves, or be taken by winter. Mortazu sighed.\n\n“Do not make me climb another tree.”\n\nThe cub answered, “Wheet!”\n\n“Your arguments resemble your mother’s.”\n\nHe climbed slowly. Twice his wounded leg slipped. The cub backed toward the end of the branch, showing tiny teeth. Mortazu spoke to it as he would to a frightened child.\n\n“Peace, little mountain prince. I have done you a great wrong, and I cannot mend it. Come, then. You shall bite someone else.”\n\nHe took off what remained of his turban and cast the cloth over the cub. It struggled, squealing and clawing, but he gathered it against his chest and descended.\n\nOn the ground he wrapped it securely, leaving its nose uncovered. The cub smelled of fir needles, milk and wild earth. Its heart beat against him like a trapped bird.\n\nMortazu glanced once more at the mother bear.\n\nThen he turned eastward.\n\nHe could no longer run properly, but he ran nevertheless—limping, stumbling, half falling down the slope. Each stride opened fire in his wounds. Blood soaked the bandages. The cub bounced beneath his arm and complained in thin, indignant whistles.\n\n“Hush,” Mortazu panted. “We go for a doctor.”\n\nThe trees thinned. Sunlight poured across the hillside. Far below, the road to Ghuzni shone pale beside a river, and beyond it rose the dusty roofs, minarets and crowded bazaars of the town.\n\n“Azeena waits,” he told the cub. “And perhaps a boy waits also. You shall grow together. You shall teach him to climb trees, and he shall teach you not to attack honest travelers.”\n\nThe cub sneezed.\n\n“Yes, yes. Your mother was brave. I shall tell him that too.”\n\nMortazu Khan gathered the last of his strength and hurried down toward Ghuzni, bleeding under the brilliant mountain sky, carrying one mother’s orphan to save another mother’s child.",
+      "api_metadata": {
+        "id": "resp_0e7fdf5ec50a46c7006a861d2fcc8c87d2acad74cd086cde36",
+        "model": "gpt-5.6-sol",
+        "created_at": 1787174191.0,
+        "status": "completed",
+        "usage": {
+          "input_tokens": 1239,
+          "input_tokens_details": {
+            "cache_write_tokens": 1236,
+            "cached_tokens": 0
+          },
+          "output_tokens": 4347,
+          "output_tokens_details": {
+            "reasoning_tokens": 156
+          },
+          "total_tokens": 5586
+        }
+      },
+      "duration_seconds": 118.166,
+      "error": null,
+      "target_word_count": 2957
+    }
+  },
+  "temperature": 0.0,
+  "temperature_sent_to_api": false,
+  "created_at": "2026-08-19T21:16:00Z",
+  "duration_seconds": 149.297,
+  "error": null
+}

@@ -1,7 +1,7 @@
 {
   "story_filename": "4000_story_0004.txt",
   "story_basename": "4000_story_0004",
-  "status": "success",
+  "status": "skipped_existing",
   "input": {
     "human_story_file": "corpus/01_human/4000_story_0004.txt",
     "metadata_ndjson": "/home/eyamrog/PycharmProjects/cl_st1_sara/cl_st1_ph1_sara/corpus/short_stories.ndjson",
@@ -154,6 +154,7 @@
   "temperature": 0.0,
   "temperature_sent_to_api": false,
   "created_at": "2026-08-19T20:57:35Z",
-  "duration_seconds": 227.125,
-  "error": null
+  "duration_seconds": 0.001,
+  "error": null,
+  "skipped_at": "2026-08-19T21:12:58Z"
 }
