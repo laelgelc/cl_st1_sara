@@ -1,0 +1,83 @@
+{
+  "run_id": "20260819T204322Z_cf3faa8b",
+  "programme": "generate_llm_short_story.py",
+  "start_time": "2026-08-19T20:43:22Z",
+  "end_time": "2026-08-19T20:43:41Z",
+  "project_phase": "Phase 2",
+  "methodological_description": "Traditional / Functional Multi-dimensional Analysis of human-authored and LLM-generated fiction for variation of style",
+  "paths": {
+    "human_story_input_directory": "corpus/01_human",
+    "metadata_ndjson": "/home/eyamrog/PycharmProjects/cl_st1_sara/cl_st1_ph1_sara/corpus/short_stories.ndjson",
+    "plot_style_output_directory": "corpus/02_plot_style",
+    "llm_story_output_directory": "corpus/03_llm",
+    "env_file": "env/.env",
+    "plot_prompt_template": "generate_short_story_prompts/extract_plot_v1.md",
+    "style_prompt_template": "generate_short_story_prompts/extract_style_v1.md",
+    "generation_prompt_template": "generate_short_story_prompts/generate_short_story_v1.md",
+    "log_file": "corpus/03_llm/generate_llm_short_story.log",
+    "manifest_file": "corpus/03_llm/generate_llm_short_story_manifest.json",
+    "timestamped_manifest_file": "corpus/03_llm/generate_llm_short_story_manifest_20260819T204322Z_cf3faa8b.json"
+  },
+  "environment": {
+    "env_file": "env/.env",
+    "env_file_found": true,
+    "openai_api_key_available": true,
+    "openai_api_key_source": "env_file_or_process_environment",
+    "openai_api_key_logged": false
+  },
+  "prompt_hashes": {
+    "plot_prompt_template_sha256": "940629b1de40c52e68582151be36aceff06b9c13327aa088686590627fc575a4",
+    "style_prompt_template_sha256": "15669ce5f919c877d3d4095c290239bfd14b9d8195175dcdc063dc544c1df991",
+    "generation_prompt_template_sha256": "5d8c63cf0566d18ab476ce89b6045bfc5c1dd41c1d8f7bfe76b0bedcbab4afcf"
+  },
+  "model_configuration": {
+    "model": "gpt-5.6-sol",
+    "temperature": 0.0
+  },
+  "test_mode": {
+    "enabled": true,
+    "test_limit": 1
+  },
+  "processing": {
+    "reprocess": false,
+    "workers": 1,
+    "max_retries": 2,
+    "retry_backoff_seconds": 5.0,
+    "start_filename": null,
+    "order": "natural_filename_order"
+  },
+  "counts": {
+    "human_stories_discovered": 1013,
+    "stories_planned": 1,
+    "stories_succeeded": 0,
+    "stories_failed": 1,
+    "stories_skipped": 0,
+    "submitted_plot_extraction": 0,
+    "submitted_style_extraction": 0,
+    "submitted_generation": 0,
+    "failed_metadata_matching": 0,
+    "failed_missing_word_count": 0,
+    "failed_api_errors": 1,
+    "failed_empty_llm_responses": 0
+  },
+  "strategy": {
+    "study_method": "Traditional / Functional Multi-dimensional Analysis",
+    "corpus_design": "human_authored_subcorpus_mirrored_by_llm_generated_subcorpus_story_by_story",
+    "llm_family": "GPT",
+    "model_used_for_all_stages": "gpt-5.6-sol",
+    "stage_1": "plot_extraction_from_original_human_story",
+    "stage_2": "style_profile_extraction_from_original_human_story",
+    "stage_3": "short_story_generation_from_extracted_plot_style_and_target_word_count_only",
+    "generation_context_segregation": "fresh_stateless_generation_request_without_original_story"
+  },
+  "stories": [
+    {
+      "story_filename": "4000_story_0004.txt",
+      "story_basename": "4000_story_0004",
+      "status": "failed",
+      "metadata_file": "corpus/03_llm/4000_story_0004_llm.json",
+      "llm_story_file": "corpus/03_llm/4000_story_0004_llm.txt",
+      "error": "LLM request failed after 3 attempt(s): Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': None}}"
+    }
+  ]
+}

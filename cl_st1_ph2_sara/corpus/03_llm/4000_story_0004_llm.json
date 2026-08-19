@@ -1,0 +1,104 @@
+{
+  "story_filename": "4000_story_0004.txt",
+  "story_basename": "4000_story_0004",
+  "status": "failed",
+  "input": {
+    "human_story_file": "corpus/01_human/4000_story_0004.txt",
+    "metadata_ndjson": "/home/eyamrog/PycharmProjects/cl_st1_sara/cl_st1_ph1_sara/corpus/short_stories.ndjson",
+    "plot_prompt_template": "generate_short_story_prompts/extract_plot_v1.md",
+    "style_prompt_template": "generate_short_story_prompts/extract_style_v1.md",
+    "generation_prompt_template": "generate_short_story_prompts/generate_short_story_v1.md",
+    "env_file": "env/.env"
+  },
+  "output": {
+    "plot_file": "corpus/02_plot_style/4000_story_0004_plot.txt",
+    "style_file": "corpus/02_plot_style/4000_story_0004_style.txt",
+    "llm_story_file": "corpus/03_llm/4000_story_0004_llm.txt",
+    "metadata_file": "corpus/03_llm/4000_story_0004_llm.json"
+  },
+  "environment": {
+    "env_file": "env/.env",
+    "env_file_found": true,
+    "openai_api_key_available": true,
+    "openai_api_key_source": "env_file_or_process_environment",
+    "openai_api_key_logged": false
+  },
+  "metadata_match": {
+    "status": "matched",
+    "matching_field": "source_path",
+    "matching_value": "corpus/4000_stories_fixed/4000_story_0004.txt",
+    "word_count": 4424,
+    "row": {
+      "url": "https://americanliterature.com/author/achmed-abdullah/short-story/an-indian-jataka",
+      "title": "An Indian Jataka",
+      "collection_title": null,
+      "author": "Achmed Abdullah",
+      "story_id": "4000_story_0004",
+      "word_count": 4424,
+      "source_path": "corpus/4000_stories_fixed/4000_story_0004.txt",
+      "within_iqr": true,
+      "selected": true
+    }
+  },
+  "hashes": {
+    "human_story_sha256": "8d5e10c3e1d33a93452c171c377d6a308a45775a9dc30153928490b8985358f3",
+    "metadata_ndjson_sha256": "09d1f1b6eb44262f01f4c6c1f5fbe445c17e54b996a6a98e938c4f79178eeca0",
+    "plot_prompt_template_sha256": "940629b1de40c52e68582151be36aceff06b9c13327aa088686590627fc575a4",
+    "style_prompt_template_sha256": "15669ce5f919c877d3d4095c290239bfd14b9d8195175dcdc063dc544c1df991",
+    "generation_prompt_template_sha256": "5d8c63cf0566d18ab476ce89b6045bfc5c1dd41c1d8f7bfe76b0bedcbab4afcf",
+    "rendered_generation_prompt_sha256": "44cd33c447ad34685620306b45895d92a756bd9ef9eb7934d6bae130ab7b7dbf"
+  },
+  "prompt_placeholders": {
+    "generation_word_count_placeholder_found": true,
+    "generation_word_count_placeholder_replaced": true,
+    "word_count_replacement_value": 4424
+  },
+  "model": {
+    "configured_model": "gpt-5.6-sol",
+    "plot_extraction_model": "gpt-5.6-sol",
+    "style_extraction_model": "gpt-5.6-sol",
+    "generation_model": "gpt-5.6-sol"
+  },
+  "segregation": {
+    "plot_extraction_received_original_story": null,
+    "style_extraction_received_original_story": null,
+    "generation_received_original_story": false,
+    "generation_request_reused_extraction_context": false,
+    "generation_request_reused_uploaded_original_file": false,
+    "generation_input_source": "persisted_plot_style_outputs_and_metadata_word_count_only"
+  },
+  "stages": {
+    "plot_extraction": {
+      "status": "not_started",
+      "submitted_to_llm": false,
+      "reused_existing_output": false,
+      "response_text": null,
+      "api_metadata": {},
+      "duration_seconds": 0,
+      "error": null
+    },
+    "style_extraction": {
+      "status": "not_started",
+      "submitted_to_llm": false,
+      "reused_existing_output": false,
+      "response_text": null,
+      "api_metadata": {},
+      "duration_seconds": 0,
+      "error": null
+    },
+    "generation": {
+      "status": "not_started",
+      "submitted_to_llm": false,
+      "reused_existing_output": false,
+      "response_text": null,
+      "api_metadata": {},
+      "duration_seconds": 0,
+      "error": null
+    }
+  },
+  "temperature": 0.0,
+  "temperature_sent_to_api": false,
+  "created_at": "2026-08-19T20:43:23Z",
+  "duration_seconds": 17.633,
+  "error": "LLM request failed after 3 attempt(s): Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': None}}"
+}
