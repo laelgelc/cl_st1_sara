@@ -2,11 +2,7 @@
 
 The final human-authored corpus was constructed using a two-stage length-controlled and author-balanced sampling procedure aimed to select approximately 1000 short stories.
 
-First, short stories were restricted to those whose word counts fell within the interquartile range (IQR) of the full word-count distribution ([Table 1](#table-1)), corresponding to the range between 1913 and 5540 words. [Table 2](#table-2) depicts the authors and their respective number of stories that fall within the IQR, or 2045.
-
-This IQR-based restriction was used as a method for reducing length-related heterogeneity, since word count can influence many corpus-linguistic measures and the distribution of literary text lengths is unlikely to be normal. The IQR provides a non-parametric measure of central spread and limits the influence of unusually short or long texts.
-
-Second, the IQR-filtered short stories were balanced by author using a maximum contribution threshold. Authors with 13 or fewer eligible short stories were retained in full, while authors with more than 13 eligible short stories were randomly downsampled to 13 ([Table 3](#table-3)). This capped author-stratified design reduced the risk that prolific authors would dominate the corpus and treated authorial style as a potential source of clustering. The cap was selected as a calibrated design parameter to produce an analytical corpus of 1013 short stories while maintaining broad author coverage. Sensitivity checks showed that a cap of 12 yielded 972 short stories, whereas a cap of 20 yielded 1242 short stories; the selected threshold therefore represented a practical compromise between corpus size, feasibility, and authorial balance. The resulting corpus should be understood as a controlled analytical sample rather than a proportionally representative sample of the original source corpus.
+First, short stories were restricted to those whose word counts fell within the interquartile range (IQR) of the full word-count distribution ([Table 1](#table-1)), corresponding to the range between 1913 and 5540 words.
 
 <a id="table-1"></a>
 
@@ -25,6 +21,8 @@ Second, the IQR-filtered short stories were balanced by author using a maximum c
 
 **Variable:** `word_count`  
 **dtype:** `float64`
+
+[Table 2](#table-2) depicts the authors and their respective number of stories that fall within the IQR, or 2045. This IQR-based restriction was used as a method for reducing length-related heterogeneity, since word count can influence many corpus-linguistic measures and the distribution of literary text lengths is unlikely to be normal. The IQR provides a non-parametric measure of central spread and limits the influence of unusually short or long texts.
 
 <a id="table-2"></a>
 
@@ -201,6 +199,8 @@ Second, the IQR-filtered short stories were balanced by author using a maximum c
 | William Faulkner            |        1 |
 | William James Lampton       |        1 |
 | **Total**                   | **2045** |
+
+Second, the IQR-filtered short stories were balanced by author using a maximum contribution threshold. Authors with 13 or fewer eligible short stories were retained in full, while authors with more than 13 eligible short stories were randomly downsampled to 13 ([Table 3](#table-3)). This capped author-stratified design reduced the risk that prolific authors would dominate the corpus and treated authorial style as a potential source of clustering. The cap was selected as a calibrated design parameter to produce an analytical corpus of 1013 short stories while maintaining broad author coverage. Sensitivity checks showed that a cap of 12 yielded 972 short stories, whereas a cap of 20 yielded 1242 short stories; the selected threshold therefore represented a practical compromise between corpus size, feasibility, and authorial balance. The resulting corpus should be understood as a controlled analytical sample rather than a proportionally representative sample of the original source corpus.
 
 <a id="table-3"></a>
 
