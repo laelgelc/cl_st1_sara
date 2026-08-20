@@ -2,16 +2,20 @@
 """
 generate_llm_short_story.py
 
-Create an LLM-generated short-story subcorpus that mirrors the human-authored
+Create LLM-generated short-story subcorpora that mirror the human-authored
 short-story subcorpus story by story.
 
 Workflow per human-authored story:
 1. Extract plot from original human story.
 2. Extract style profile from original human story.
-3. Generate a new LLM short story from extracted plot, extracted style profile,
-   and the target word_count only.
+3. Generate a new plot/style-guided LLM short story from extracted plot,
+   extracted style profile, and the target word_count only.
+4. Generate a second free LLM short story from a self-contained free-generation
+   prompt only.
 
-The generation request is deliberately segregated from the original human story.
+The plot/style-guided generation request is deliberately segregated from the
+original human story. The free-generation request is also segregated and does
+not receive the original story, plot, style profile, or word_count.
 """
 
 from __future__ import annotations
@@ -159,7 +163,6 @@ def extract_response_text(response: Any) -> str:
     if isinstance(output_text, str) and output_text.strip():
         return output_text.strip()
 
-    # Fallback for SDK object shapes.
     output = getattr(response, "output", None)
     parts: List[str] = []
     if output:
@@ -213,10 +216,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--plot-prompt-template", default="generate_short_story_prompts/extract_plot_v1.md")
     parser.add_argument("--style-prompt-template", default="generate_short_story_prompts/extract_style_v1.md")
     parser.add_argument("--generation-prompt-template", default="generate_short_story_prompts/generate_short_story_v1.md")
+    parser.add_argument("--free-generation-prompt-template", default="generate_short_story_prompts/generate_free_short_story_v1.md")
     parser.add_argument("--env-file", default="env/.env")
 
     parser.add_argument("--plot-style-dir", default="corpus/02_plot_style")
     parser.add_argument("--llm-dir", default="corpus/03_llm")
+    parser.add_argument("--llm-free-dir", default="corpus/04_llm_free")
 
     parser.add_argument("--model", default="gpt-5.6-sol")
     parser.add_argument("--temperature", type=float, default=0.0)
@@ -248,10 +253,12 @@ class Config:
     plot_prompt_template: Path
     style_prompt_template: Path
     generation_prompt_template: Path
+    free_generation_prompt_template: Path
     env_file: Path
 
     plot_style_dir: Path
     llm_dir: Path
+    llm_free_dir: Path
 
     model: str
     temperature: float
@@ -289,9 +296,11 @@ def make_config(args: argparse.Namespace) -> Config:
         plot_prompt_template=resolve_path(args.plot_prompt_template, script_dir),
         style_prompt_template=resolve_path(args.style_prompt_template, script_dir),
         generation_prompt_template=resolve_path(args.generation_prompt_template, script_dir),
+        free_generation_prompt_template=resolve_path(args.free_generation_prompt_template, script_dir),
         env_file=resolve_path(args.env_file, script_dir),
         plot_style_dir=resolve_path(args.plot_style_dir, script_dir),
         llm_dir=llm_dir,
+        llm_free_dir=resolve_path(args.llm_free_dir, script_dir),
         model=args.model,
         temperature=args.temperature,
         test_mode=args.test_mode,
@@ -349,6 +358,7 @@ def validate_directories(config: Config) -> None:
 
     config.plot_style_dir.mkdir(parents=True, exist_ok=True)
     config.llm_dir.mkdir(parents=True, exist_ok=True)
+    config.llm_free_dir.mkdir(parents=True, exist_ok=True)
 
 
 def load_prompt(path: Path, label: str) -> str:
@@ -455,7 +465,6 @@ def candidate_basename(value: Any) -> Optional[str]:
     if not value:
         return None
 
-    # Some metadata may contain paths.
     basename = Path(value).name
     if basename:
         return basename
@@ -557,7 +566,6 @@ def call_openai_with_retries(
             try:
                 response = client.responses.create(**kwargs)
             except TypeError:
-                # Some SDK/model/API combinations may not accept temperature.
                 kwargs.pop("temperature", None)
                 temperature_sent = False
                 with TEMPERATURE_SUPPORT_LOCK:
@@ -654,6 +662,10 @@ def build_generation_request(
     )
 
 
+def build_free_generation_request(free_generation_prompt: str) -> str:
+    return free_generation_prompt
+
+
 # ---------------------------------------------------------------------------
 # Per-story processing
 # ---------------------------------------------------------------------------
@@ -687,13 +699,17 @@ def build_base_story_metadata(
             "plot_prompt_template": relpath(config.plot_prompt_template, config.script_dir),
             "style_prompt_template": relpath(config.style_prompt_template, config.script_dir),
             "generation_prompt_template": relpath(config.generation_prompt_template, config.script_dir),
+            "free_generation_prompt_template": relpath(config.free_generation_prompt_template, config.script_dir),
             "env_file": relpath(config.env_file, config.script_dir),
         },
         "output": {
             "plot_file": relpath(output_paths["plot"], config.script_dir),
             "style_file": relpath(output_paths["style"], config.script_dir),
             "llm_story_file": relpath(output_paths["llm_story"], config.script_dir),
+            "llm_story_metadata_file": relpath(output_paths["metadata"], config.script_dir),
             "metadata_file": relpath(output_paths["metadata"], config.script_dir),
+            "llm_free_story_file": relpath(output_paths["llm_free_story"], config.script_dir),
+            "llm_free_metadata_file": relpath(output_paths["llm_free_metadata"], config.script_dir),
         },
         "environment": environment_metadata,
         "metadata_match": {
@@ -714,6 +730,7 @@ def build_base_story_metadata(
             "plot_extraction_model": config.model,
             "style_extraction_model": config.model,
             "generation_model": config.model,
+            "free_generation_model": config.model,
         },
         "segregation": {
             "plot_extraction_received_original_story": None,
@@ -722,11 +739,17 @@ def build_base_story_metadata(
             "generation_request_reused_extraction_context": False,
             "generation_request_reused_uploaded_original_file": False,
             "generation_input_source": "persisted_plot_style_outputs_and_metadata_word_count_only",
+            "free_generation_received_original_story": False,
+            "free_generation_received_plot": False,
+            "free_generation_received_style_profile": False,
+            "free_generation_received_word_count": False,
+            "free_generation_input_source": "self_contained_free_generation_prompt_only",
         },
         "stages": {
             "plot_extraction": stage_not_started(),
             "style_extraction": stage_not_started(),
             "generation": stage_not_started(),
+            "free_generation": stage_not_started(),
         },
         "temperature": config.temperature,
         "temperature_sent_to_api": False,
@@ -736,14 +759,32 @@ def build_base_story_metadata(
     }
 
 
-def existing_success(metadata_path: Path, llm_story_path: Path, plot_path: Path, style_path: Path) -> bool:
-    if not (metadata_path.exists() and llm_story_path.exists() and plot_path.exists() and style_path.exists()):
+def existing_success(
+    metadata_path: Path,
+    llm_story_path: Path,
+    llm_free_metadata_path: Path,
+    llm_free_story_path: Path,
+    plot_path: Path,
+    style_path: Path,
+) -> bool:
+    required_paths = (
+        metadata_path,
+        llm_story_path,
+        llm_free_metadata_path,
+        llm_free_story_path,
+        plot_path,
+        style_path,
+    )
+    if not all(path.exists() for path in required_paths):
         return False
+
     try:
-        data = json.loads(metadata_path.read_text(encoding="utf-8"))
+        guided_data = json.loads(metadata_path.read_text(encoding="utf-8"))
+        free_data = json.loads(llm_free_metadata_path.read_text(encoding="utf-8"))
     except Exception:
         return False
-    return data.get("status") == "success"
+
+    return guided_data.get("status") == "success" and free_data.get("status") == "success"
 
 
 def process_one_story(
@@ -756,6 +797,7 @@ def process_one_story(
     plot_prompt: str,
     style_prompt: str,
     generation_prompt_template: str,
+    free_generation_prompt: str,
     prompt_hashes: Dict[str, str],
     environment_metadata: Dict[str, Any],
 ) -> Dict[str, Any]:
@@ -767,6 +809,8 @@ def process_one_story(
         "style": config.plot_style_dir / f"{basename}_style.txt",
         "llm_story": config.llm_dir / f"{basename}_llm.txt",
         "metadata": config.llm_dir / f"{basename}_llm.json",
+        "llm_free_story": config.llm_free_dir / f"{basename}_llm_free.txt",
+        "llm_free_metadata": config.llm_free_dir / f"{basename}_llm_free.json",
     }
 
     story_metadata = build_base_story_metadata(config, story_file, output_paths, environment_metadata)
@@ -775,6 +819,8 @@ def process_one_story(
         if not config.reprocess and existing_success(
             output_paths["metadata"],
             output_paths["llm_story"],
+            output_paths["llm_free_metadata"],
+            output_paths["llm_free_story"],
             output_paths["plot"],
             output_paths["style"],
         ):
@@ -816,7 +862,6 @@ def process_one_story(
         }
         story_metadata["hashes"]["rendered_generation_prompt_sha256"] = sha256_text(rendered_generation_prompt)
 
-        # Plot extraction
         plot_stage_start = time.time()
         if output_paths["plot"].exists() and not config.reprocess:
             plot_text = read_text_file(output_paths["plot"]).strip()
@@ -857,7 +902,6 @@ def process_one_story(
         story_metadata["segregation"]["plot_extraction_received_original_story"] = True
         story_metadata["hashes"]["plot_output_sha256"] = sha256_text(plot_text)
 
-        # Style extraction
         style_stage_start = time.time()
         if output_paths["style"].exists() and not config.reprocess:
             style_text = read_text_file(output_paths["style"]).strip()
@@ -898,7 +942,6 @@ def process_one_story(
         story_metadata["segregation"]["style_extraction_received_original_story"] = True
         story_metadata["hashes"]["style_output_sha256"] = sha256_text(style_text)
 
-        # Generation. This deliberately does not include story_text.
         generation_stage_start = time.time()
         generation_request = build_generation_request(
             rendered_generation_prompt,
@@ -935,6 +978,41 @@ def process_one_story(
             }
         )
 
+        free_generation_stage_start = time.time()
+        free_generation_request = build_free_generation_request(free_generation_prompt)
+
+        llm_free_story_text, api_metadata, temperature_sent = call_openai_with_retries(
+            client,
+            model=config.model,
+            prompt=free_generation_request,
+            temperature=config.temperature,
+            max_retries=config.max_retries,
+            retry_backoff_seconds=config.retry_backoff_seconds,
+        )
+        write_text_file(output_paths["llm_free_story"], llm_free_story_text)
+
+        story_metadata["temperature_sent_to_api"] = story_metadata["temperature_sent_to_api"] or temperature_sent
+        story_metadata["hashes"]["llm_free_story_output_sha256"] = sha256_text(llm_free_story_text)
+        story_metadata["stages"]["free_generation"].update(
+            {
+                "status": "success",
+                "submitted_to_llm": True,
+                "reused_existing_output": False,
+                "response_text": llm_free_story_text,
+                "api_metadata": api_metadata,
+                "duration_seconds": round(time.time() - free_generation_stage_start, 3),
+                "error": None,
+            }
+        )
+
+        free_story_metadata = {
+            **story_metadata,
+            "status": "success",
+            "free_generation_only_metadata": True,
+            "primary_free_output_file": relpath(output_paths["llm_free_story"], config.script_dir),
+        }
+        write_json_file(output_paths["llm_free_metadata"], free_story_metadata)
+
         story_metadata["status"] = "success"
         story_metadata["error"] = None
 
@@ -942,8 +1020,6 @@ def process_one_story(
         story_metadata["status"] = "failed"
         story_metadata["error"] = str(exc)
 
-        # Mark current not-started/started stages as failed only if no stage-specific
-        # error already exists.
         for stage_name, stage in story_metadata.get("stages", {}).items():
             if stage.get("status") == "not_started":
                 stage["error"] = None
@@ -957,6 +1033,17 @@ def process_one_story(
             write_json_file(output_paths["metadata"], story_metadata)
         except Exception as write_exc:
             logging.error("Could not write per-story metadata for %s: %s", story_file.name, write_exc)
+
+        try:
+            if not output_paths["llm_free_metadata"].exists():
+                free_story_metadata = {
+                    **story_metadata,
+                    "free_generation_only_metadata": True,
+                    "primary_free_output_file": relpath(output_paths["llm_free_story"], config.script_dir),
+                }
+                write_json_file(output_paths["llm_free_metadata"], free_story_metadata)
+        except Exception as write_exc:
+            logging.error("Could not write per-story free metadata for %s: %s", story_file.name, write_exc)
 
     return story_metadata
 
@@ -974,6 +1061,7 @@ def count_statuses(results: List[Dict[str, Any]]) -> Dict[str, int]:
         "submitted_plot_extraction": 0,
         "submitted_style_extraction": 0,
         "submitted_generation": 0,
+        "submitted_free_generation": 0,
         "failed_metadata_matching": 0,
         "failed_missing_word_count": 0,
         "failed_api_errors": 0,
@@ -996,6 +1084,8 @@ def count_statuses(results: List[Dict[str, Any]]) -> Dict[str, int]:
             counts["submitted_style_extraction"] += 1
         if stages.get("generation", {}).get("submitted_to_llm"):
             counts["submitted_generation"] += 1
+        if stages.get("free_generation", {}).get("submitted_to_llm"):
+            counts["submitted_free_generation"] += 1
 
         error = result.get("error") or ""
         if "match" in error.lower() and "metadata" in error.lower():
@@ -1035,10 +1125,12 @@ def build_manifest(
             "metadata_ndjson": relpath(config.metadata_ndjson, config.script_dir),
             "plot_style_output_directory": relpath(config.plot_style_dir, config.script_dir),
             "llm_story_output_directory": relpath(config.llm_dir, config.script_dir),
+            "llm_free_story_output_directory": relpath(config.llm_free_dir, config.script_dir),
             "env_file": relpath(config.env_file, config.script_dir),
             "plot_prompt_template": relpath(config.plot_prompt_template, config.script_dir),
             "style_prompt_template": relpath(config.style_prompt_template, config.script_dir),
             "generation_prompt_template": relpath(config.generation_prompt_template, config.script_dir),
+            "free_generation_prompt_template": relpath(config.free_generation_prompt_template, config.script_dir),
             "log_file": relpath(config.log_file, config.script_dir),
             "manifest_file": relpath(config.manifest_file, config.script_dir),
             "timestamped_manifest_file": relpath(config.timestamped_manifest_file, config.script_dir),
@@ -1068,21 +1160,26 @@ def build_manifest(
         },
         "strategy": {
             "study_method": "Traditional / Functional Multi-dimensional Analysis",
-            "corpus_design": "human_authored_subcorpus_mirrored_by_llm_generated_subcorpus_story_by_story",
+            "corpus_design": "human_authored_subcorpus_mirrored_by_two_llm_generated_subcorpora_story_by_story",
             "llm_family": "GPT",
             "model_used_for_all_stages": config.model,
             "stage_1": "plot_extraction_from_original_human_story",
             "stage_2": "style_profile_extraction_from_original_human_story",
-            "stage_3": "short_story_generation_from_extracted_plot_style_and_target_word_count_only",
+            "stage_3": "plot_style_guided_short_story_generation_from_extracted_plot_style_and_target_word_count_only",
+            "stage_4": "free_short_story_generation_from_self_contained_prompt_only",
             "generation_context_segregation": "fresh_stateless_generation_request_without_original_story",
+            "free_generation_context_segregation": "fresh_stateless_free_generation_request_without_original_story_plot_style_or_word_count",
         },
         "stories": [
             {
                 "story_filename": result.get("story_filename"),
                 "story_basename": result.get("story_basename"),
                 "status": result.get("status"),
-                "metadata_file": result.get("output", {}).get("metadata_file"),
+                "metadata_file": result.get("output", {}).get("llm_story_metadata_file")
+                or result.get("output", {}).get("metadata_file"),
                 "llm_story_file": result.get("output", {}).get("llm_story_file"),
+                "llm_free_metadata_file": result.get("output", {}).get("llm_free_metadata_file"),
+                "llm_free_story_file": result.get("output", {}).get("llm_free_story_file"),
                 "error": result.get("error"),
             }
             for result in results
@@ -1129,6 +1226,7 @@ def main() -> int:
         plot_prompt = load_prompt(config.plot_prompt_template, "Plot-extraction")
         style_prompt = load_prompt(config.style_prompt_template, "Style-profile extraction")
         generation_prompt_template = load_prompt(config.generation_prompt_template, "Generation")
+        free_generation_prompt = load_prompt(config.free_generation_prompt_template, "Free generation")
 
         if WORD_COUNT_PLACEHOLDER not in generation_prompt_template:
             raise ValueError(
@@ -1140,6 +1238,7 @@ def main() -> int:
             "plot_prompt_template_sha256": sha256_text(plot_prompt),
             "style_prompt_template_sha256": sha256_text(style_prompt),
             "generation_prompt_template_sha256": sha256_text(generation_prompt_template),
+            "free_generation_prompt_template_sha256": sha256_text(free_generation_prompt),
         }
 
         metadata_rows, metadata_ndjson_sha256 = load_metadata_rows(config)
@@ -1170,13 +1269,12 @@ def main() -> int:
                     plot_prompt=plot_prompt,
                     style_prompt=style_prompt,
                     generation_prompt_template=generation_prompt_template,
+                    free_generation_prompt=free_generation_prompt,
                     prompt_hashes=prompt_hashes,
                     environment_metadata=environment_metadata,
                 )
                 results.append(result)
         else:
-            # A shared OpenAI client is generally okay for simple use, but each
-            # worker creates its own request sequence independently.
             with concurrent.futures.ThreadPoolExecutor(max_workers=config.workers) as executor:
                 future_to_story = {
                     executor.submit(
@@ -1189,6 +1287,7 @@ def main() -> int:
                         plot_prompt=plot_prompt,
                         style_prompt=style_prompt,
                         generation_prompt_template=generation_prompt_template,
+                        free_generation_prompt=free_generation_prompt,
                         prompt_hashes=prompt_hashes,
                         environment_metadata=environment_metadata,
                     ): story_file
