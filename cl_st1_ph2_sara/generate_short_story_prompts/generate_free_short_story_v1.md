@@ -1,0 +1,1 @@
+Write a short story in English considering a length between 1913 and 5540 words, just provide the answer straightaway.
