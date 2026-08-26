@@ -5,10 +5,10 @@ This document records the main commands for running the Phase 2 short-story gene
 
 The pipeline creates two LLM-generated subcorpora aligned with the human-authored subcorpus:
 
-| Output | Purpose | Directory |
-|---|---|---|
-| Plot/style-guided LLM stories | Generated from extracted plot, extracted style profile, and target word count | `corpus/03_llm/` |
-| Free-generated LLM stories | Generated from a self-contained free-generation prompt only | `corpus/04_llm_free/` |
+| Output                        | Purpose                                                                       | Directory             |
+|-------------------------------|-------------------------------------------------------------------------------|-----------------------|
+| Plot/style-guided LLM stories | Generated from extracted plot, extracted style profile, and target word count | `corpus/03_llm/`      |
+| Free-generated LLM stories    | Generated from a self-contained free-generation prompt only                   | `corpus/04_llm_free/` |
 
 Intermediate plot and style-profile files are written to:
 
