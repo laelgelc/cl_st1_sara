@@ -287,113 +287,181 @@ data rotated3;
            AND abs(factor1) > abs(factor5) 
            AND abs(factor1) > abs(factor6) 
            AND abs(factor1) > abs(factor7) 
+           AND abs(factor1) > abs(factor8)
+           AND abs(factor1) > abs(factor9)
            AND factor1 > 0 AND abs(factor1) >= "&minloading" then do; factor = 'f1'; pole = 1;  loaded = 1; end ;
 
-   else if     abs(factor2) > abs(factor1) 
-           AND abs(factor2) > abs(factor3) 
-           AND abs(factor2) > abs(factor4) 
-           AND abs(factor2) > abs(factor5) 
-           AND abs(factor2) > abs(factor6) 
-           AND abs(factor2) > abs(factor7) 
+   else if     abs(factor2) > abs(factor1)
+           AND abs(factor2) > abs(factor3)
+           AND abs(factor2) > abs(factor4)
+           AND abs(factor2) > abs(factor5)
+           AND abs(factor2) > abs(factor6)
+           AND abs(factor2) > abs(factor7)
+           AND abs(factor2) > abs(factor8)
+           AND abs(factor2) > abs(factor9)
            AND factor2 > 0 AND abs(factor2) >= "&minloading" then do; factor = 'f2'; pole = 1;  loaded = 1; end ;
 
-   else if     abs(factor3) > abs(factor1) 
-           AND abs(factor3) > abs(factor2) 
-           AND abs(factor3) > abs(factor4) 
-           AND abs(factor3) > abs(factor5) 
-           AND abs(factor3) > abs(factor6) 
-           AND abs(factor3) > abs(factor7) 
+   else if     abs(factor3) > abs(factor1)
+           AND abs(factor3) > abs(factor2)
+           AND abs(factor3) > abs(factor4)
+           AND abs(factor3) > abs(factor5)
+           AND abs(factor3) > abs(factor6)
+           AND abs(factor3) > abs(factor7)
+           AND abs(factor3) > abs(factor8)
+           AND abs(factor3) > abs(factor9)
            AND factor3 > 0 AND abs(factor3) >= "&minloading" then do; factor = 'f3'; pole = 1;  loaded = 1; end ;
 
-   else if     abs(factor4) > abs(factor1) 
-           AND abs(factor4) > abs(factor2) 
-           AND abs(factor4) > abs(factor3) 
-           AND abs(factor4) > abs(factor5) 
-           AND abs(factor4) > abs(factor6) 
-           AND abs(factor4) > abs(factor7) 
+   else if     abs(factor4) > abs(factor1)
+           AND abs(factor4) > abs(factor2)
+           AND abs(factor4) > abs(factor3)
+           AND abs(factor4) > abs(factor5)
+           AND abs(factor4) > abs(factor6)
+           AND abs(factor4) > abs(factor7)
+           AND abs(factor4) > abs(factor8)
+           AND abs(factor4) > abs(factor9)
            AND factor4 > 0 AND abs(factor4) >= "&minloading" then do; factor = 'f4'; pole = 1;  loaded = 1; end ;
 
-   else if     abs(factor5) > abs(factor1) 
-           AND abs(factor5) > abs(factor2) 
-           AND abs(factor5) > abs(factor3) 
-           AND abs(factor5) > abs(factor4) 
-           AND abs(factor5) > abs(factor6) 
-           AND abs(factor5) > abs(factor7) 
+   else if     abs(factor5) > abs(factor1)
+           AND abs(factor5) > abs(factor2)
+           AND abs(factor5) > abs(factor3)
+           AND abs(factor5) > abs(factor4)
+           AND abs(factor5) > abs(factor6)
+           AND abs(factor5) > abs(factor7)
+           AND abs(factor5) > abs(factor8)
+           AND abs(factor5) > abs(factor9)
            AND factor5 > 0 AND abs(factor5) >= "&minloading" then do; factor = 'f5'; pole = 1;  loaded = 1; end ;
 
-   else if     abs(factor6) > abs(factor1) 
-           AND abs(factor6) > abs(factor2) 
-           AND abs(factor6) > abs(factor3) 
-           AND abs(factor6) > abs(factor4) 
-           AND abs(factor6) > abs(factor5) 
-           AND abs(factor6) > abs(factor7) 
+   else if     abs(factor6) > abs(factor1)
+           AND abs(factor6) > abs(factor2)
+           AND abs(factor6) > abs(factor3)
+           AND abs(factor6) > abs(factor4)
+           AND abs(factor6) > abs(factor5)
+           AND abs(factor6) > abs(factor7)
+           AND abs(factor6) > abs(factor8)
+           AND abs(factor6) > abs(factor9)
            AND factor6 > 0 AND abs(factor6) >= "&minloading" then do; factor = 'f6'; pole = 1;  loaded = 1; end ;
 
-   else if     abs(factor7) > abs(factor1) 
-           AND abs(factor7) > abs(factor2) 
-           AND abs(factor7) > abs(factor3) 
-           AND abs(factor7) > abs(factor4) 
-           AND abs(factor7) > abs(factor5) 
-           AND abs(factor7) > abs(factor6) 
+   else if     abs(factor7) > abs(factor1)
+           AND abs(factor7) > abs(factor2)
+           AND abs(factor7) > abs(factor3)
+           AND abs(factor7) > abs(factor4)
+           AND abs(factor7) > abs(factor5)
+           AND abs(factor7) > abs(factor6)
+           AND abs(factor7) > abs(factor8)
+           AND abs(factor7) > abs(factor9)
            AND factor7 > 0 AND abs(factor7) >= "&minloading" then do; factor = 'f7'; pole = 1;  loaded = 1; end ;
+
+   else if     abs(factor8) > abs(factor1)
+           AND abs(factor8) > abs(factor2)
+           AND abs(factor8) > abs(factor3)
+           AND abs(factor8) > abs(factor4)
+           AND abs(factor8) > abs(factor5)
+           AND abs(factor8) > abs(factor6)
+           AND abs(factor8) > abs(factor7)
+           AND abs(factor8) > abs(factor9)
+           AND factor8 > 0 AND abs(factor8) >= "&minloading" then do; factor = 'f8'; pole = 1;  loaded = 1; end ;
+
+   else if     abs(factor9) > abs(factor1)
+           AND abs(factor9) > abs(factor2)
+           AND abs(factor9) > abs(factor3)
+           AND abs(factor9) > abs(factor4)
+           AND abs(factor9) > abs(factor5)
+           AND abs(factor9) > abs(factor6)
+           AND abs(factor9) > abs(factor7)
+           AND abs(factor9) > abs(factor8)
+           AND factor9 > 0 AND abs(factor9) >= "&minloading" then do; factor = 'f9'; pole = 1;  loaded = 1; end ;
 
 /* Negative values */
 
-  else  if     abs(factor1) > abs(factor2) 
-           AND abs(factor1) > abs(factor3) 
-           AND abs(factor1) > abs(factor4) 
-           AND abs(factor1) > abs(factor5) 
-           AND abs(factor1) > abs(factor6) 
-           AND abs(factor1) > abs(factor7) 
+  else  if     abs(factor1) > abs(factor2)
+           AND abs(factor1) > abs(factor3)
+           AND abs(factor1) > abs(factor4)
+           AND abs(factor1) > abs(factor5)
+           AND abs(factor1) > abs(factor6)
+           AND abs(factor1) > abs(factor7)
+           AND abs(factor1) > abs(factor8)
+           AND abs(factor1) > abs(factor9)
            AND factor1 < 0 AND abs(factor1) >= "&minloading" then do; factor = 'f1'; pole = -1;  loaded = 1; end ;
 
-   else if     abs(factor2) > abs(factor1) 
-           AND abs(factor2) > abs(factor3) 
-           AND abs(factor2) > abs(factor4) 
-           AND abs(factor2) > abs(factor5) 
-           AND abs(factor2) > abs(factor6) 
-           AND abs(factor2) > abs(factor7) 
+   else if     abs(factor2) > abs(factor1)
+           AND abs(factor2) > abs(factor3)
+           AND abs(factor2) > abs(factor4)
+           AND abs(factor2) > abs(factor5)
+           AND abs(factor2) > abs(factor6)
+           AND abs(factor2) > abs(factor7)
+           AND abs(factor2) > abs(factor8)
+           AND abs(factor2) > abs(factor9)
            AND factor2 < 0 AND abs(factor2) >= "&minloading" then do; factor = 'f2'; pole = -1;  loaded = 1; end ;
 
-   else if     abs(factor3) > abs(factor1) 
-           AND abs(factor3) > abs(factor2) 
-           AND abs(factor3) > abs(factor4) 
-           AND abs(factor3) > abs(factor5) 
-           AND abs(factor3) > abs(factor6) 
-           AND abs(factor3) > abs(factor7) 
+   else if     abs(factor3) > abs(factor1)
+           AND abs(factor3) > abs(factor2)
+           AND abs(factor3) > abs(factor4)
+           AND abs(factor3) > abs(factor5)
+           AND abs(factor3) > abs(factor6)
+           AND abs(factor3) > abs(factor7)
+           AND abs(factor3) > abs(factor8)
+           AND abs(factor3) > abs(factor9)
            AND factor3 < 0 AND abs(factor3) >= "&minloading" then do; factor = 'f3'; pole = -1;  loaded = 1; end ;
 
-   else if     abs(factor4) > abs(factor1) 
-           AND abs(factor4) > abs(factor2) 
-           AND abs(factor4) > abs(factor3) 
-           AND abs(factor4) > abs(factor5) 
-           AND abs(factor4) > abs(factor6) 
-           AND abs(factor4) > abs(factor7) 
+   else if     abs(factor4) > abs(factor1)
+           AND abs(factor4) > abs(factor2)
+           AND abs(factor4) > abs(factor3)
+           AND abs(factor4) > abs(factor5)
+           AND abs(factor4) > abs(factor6)
+           AND abs(factor4) > abs(factor7)
+           AND abs(factor4) > abs(factor8)
+           AND abs(factor4) > abs(factor9)
            AND factor4 < 0 AND abs(factor4) >= "&minloading" then do; factor = 'f4'; pole = -1;  loaded = 1; end ;
 
-   else if     abs(factor5) > abs(factor1) 
-           AND abs(factor5) > abs(factor2) 
-           AND abs(factor5) > abs(factor3) 
-           AND abs(factor5) > abs(factor4) 
-           AND abs(factor5) > abs(factor6) 
-           AND abs(factor5) > abs(factor7) 
+   else if     abs(factor5) > abs(factor1)
+           AND abs(factor5) > abs(factor2)
+           AND abs(factor5) > abs(factor3)
+           AND abs(factor5) > abs(factor4)
+           AND abs(factor5) > abs(factor6)
+           AND abs(factor5) > abs(factor7)
+           AND abs(factor5) > abs(factor8)
+           AND abs(factor5) > abs(factor9)
            AND factor5 < 0 AND abs(factor5) >= "&minloading" then do; factor = 'f5'; pole = -1;  loaded = 1; end ;
 
-   else if     abs(factor6) > abs(factor1) 
-           AND abs(factor6) > abs(factor2) 
-           AND abs(factor6) > abs(factor3) 
-           AND abs(factor6) > abs(factor4) 
-           AND abs(factor6) > abs(factor5) 
-           AND abs(factor6) > abs(factor7) 
+   else if     abs(factor6) > abs(factor1)
+           AND abs(factor6) > abs(factor2)
+           AND abs(factor6) > abs(factor3)
+           AND abs(factor6) > abs(factor4)
+           AND abs(factor6) > abs(factor5)
+           AND abs(factor6) > abs(factor7)
+           AND abs(factor6) > abs(factor8)
+           AND abs(factor6) > abs(factor9)
            AND factor6 < 0 AND abs(factor6) >= "&minloading" then do; factor = 'f6'; pole = -1;  loaded = 1; end ;
 
-   else if     abs(factor7) > abs(factor1) 
-           AND abs(factor7) > abs(factor2) 
-           AND abs(factor7) > abs(factor3) 
-           AND abs(factor7) > abs(factor4) 
-           AND abs(factor7) > abs(factor5) 
-           AND abs(factor7) > abs(factor6) 
-           AND factor7 < 0 AND abs(factor7) >= "&minloading" then do; factor = 'f7'; pole = -1;  loaded = 1; end ;   
+   else if     abs(factor7) > abs(factor1)
+           AND abs(factor7) > abs(factor2)
+           AND abs(factor7) > abs(factor3)
+           AND abs(factor7) > abs(factor4)
+           AND abs(factor7) > abs(factor5)
+           AND abs(factor7) > abs(factor6)
+           AND abs(factor7) > abs(factor8)
+           AND abs(factor7) > abs(factor9)
+           AND factor7 < 0 AND abs(factor7) >= "&minloading" then do; factor = 'f7'; pole = -1;  loaded = 1; end ;
+
+   else if     abs(factor8) > abs(factor1)
+           AND abs(factor8) > abs(factor2)
+           AND abs(factor8) > abs(factor3)
+           AND abs(factor8) > abs(factor4)
+           AND abs(factor8) > abs(factor5)
+           AND abs(factor8) > abs(factor6)
+           AND abs(factor8) > abs(factor7)
+           AND abs(factor8) > abs(factor9)
+           AND factor8 < 0 AND abs(factor8) >= "&minloading" then do; factor = 'f8'; pole = -1;  loaded = 1; end ;
+
+   else if     abs(factor9) > abs(factor1)
+           AND abs(factor9) > abs(factor2)
+           AND abs(factor9) > abs(factor3)
+           AND abs(factor9) > abs(factor4)
+           AND abs(factor9) > abs(factor5)
+           AND abs(factor9) > abs(factor6)
+           AND abs(factor9) > abs(factor7)
+           AND abs(factor9) > abs(factor8)
+           AND factor9 < 0 AND abs(factor9) >= "&minloading" then do; factor = 'f9'; pole = -1;  loaded = 1; end ;
 run;
 
 data rotated4 ; set rotated3 (KEEP = _NAME_ loaded ); run;
@@ -578,118 +646,187 @@ data rotated3;
            AND abs(factor1) > abs(factor5) 
            AND abs(factor1) > abs(factor6) 
            AND abs(factor1) > abs(factor7) 
+           AND abs(factor1) > abs(factor8)
+           AND abs(factor1) > abs(factor9)
            AND factor1 > 0 AND abs(factor1) >= "&minloading" then do; factor = 'f1'; pole = 1;  loaded = 1; end ;
 
-   else if     abs(factor2) > abs(factor1) 
-           AND abs(factor2) > abs(factor3) 
-           AND abs(factor2) > abs(factor4) 
-           AND abs(factor2) > abs(factor5) 
-           AND abs(factor2) > abs(factor6) 
-           AND abs(factor2) > abs(factor7) 
+   else if     abs(factor2) > abs(factor1)
+           AND abs(factor2) > abs(factor3)
+           AND abs(factor2) > abs(factor4)
+           AND abs(factor2) > abs(factor5)
+           AND abs(factor2) > abs(factor6)
+           AND abs(factor2) > abs(factor7)
+           AND abs(factor2) > abs(factor8)
+           AND abs(factor2) > abs(factor9)
            AND factor2 > 0 AND abs(factor2) >= "&minloading" then do; factor = 'f2'; pole = 1;  loaded = 1; end ;
 
-   else if     abs(factor3) > abs(factor1) 
-           AND abs(factor3) > abs(factor2) 
-           AND abs(factor3) > abs(factor4) 
-           AND abs(factor3) > abs(factor5) 
-           AND abs(factor3) > abs(factor6) 
-           AND abs(factor3) > abs(factor7) 
+   else if     abs(factor3) > abs(factor1)
+           AND abs(factor3) > abs(factor2)
+           AND abs(factor3) > abs(factor4)
+           AND abs(factor3) > abs(factor5)
+           AND abs(factor3) > abs(factor6)
+           AND abs(factor3) > abs(factor7)
+           AND abs(factor3) > abs(factor8)
+           AND abs(factor3) > abs(factor9)
            AND factor3 > 0 AND abs(factor3) >= "&minloading" then do; factor = 'f3'; pole = 1;  loaded = 1; end ;
 
-   else if     abs(factor4) > abs(factor1) 
-           AND abs(factor4) > abs(factor2) 
-           AND abs(factor4) > abs(factor3) 
-           AND abs(factor4) > abs(factor5) 
-           AND abs(factor4) > abs(factor6) 
-           AND abs(factor4) > abs(factor7) 
+   else if     abs(factor4) > abs(factor1)
+           AND abs(factor4) > abs(factor2)
+           AND abs(factor4) > abs(factor3)
+           AND abs(factor4) > abs(factor5)
+           AND abs(factor4) > abs(factor6)
+           AND abs(factor4) > abs(factor7)
+           AND abs(factor4) > abs(factor8)
+           AND abs(factor4) > abs(factor9)
            AND factor4 > 0 AND abs(factor4) >= "&minloading" then do; factor = 'f4'; pole = 1;  loaded = 1; end ;
 
-   else if     abs(factor5) > abs(factor1) 
-           AND abs(factor5) > abs(factor2) 
-           AND abs(factor5) > abs(factor3) 
-           AND abs(factor5) > abs(factor4) 
-           AND abs(factor5) > abs(factor6) 
-           AND abs(factor5) > abs(factor7) 
+   else if     abs(factor5) > abs(factor1)
+           AND abs(factor5) > abs(factor2)
+           AND abs(factor5) > abs(factor3)
+           AND abs(factor5) > abs(factor4)
+           AND abs(factor5) > abs(factor6)
+           AND abs(factor5) > abs(factor7)
+           AND abs(factor5) > abs(factor8)
+           AND abs(factor5) > abs(factor9)
            AND factor5 > 0 AND abs(factor5) >= "&minloading" then do; factor = 'f5'; pole = 1;  loaded = 1; end ;
 
-   else if     abs(factor6) > abs(factor1) 
-           AND abs(factor6) > abs(factor2) 
-           AND abs(factor6) > abs(factor3) 
-           AND abs(factor6) > abs(factor4) 
-           AND abs(factor6) > abs(factor5) 
-           AND abs(factor6) > abs(factor7) 
+   else if     abs(factor6) > abs(factor1)
+           AND abs(factor6) > abs(factor2)
+           AND abs(factor6) > abs(factor3)
+           AND abs(factor6) > abs(factor4)
+           AND abs(factor6) > abs(factor5)
+           AND abs(factor6) > abs(factor7)
+           AND abs(factor6) > abs(factor8)
+           AND abs(factor6) > abs(factor9)
            AND factor6 > 0 AND abs(factor6) >= "&minloading" then do; factor = 'f6'; pole = 1;  loaded = 1; end ;
 
-   else if     abs(factor7) > abs(factor1) 
-           AND abs(factor7) > abs(factor2) 
-           AND abs(factor7) > abs(factor3) 
-           AND abs(factor7) > abs(factor4) 
-           AND abs(factor7) > abs(factor5) 
-           AND abs(factor7) > abs(factor6) 
+   else if     abs(factor7) > abs(factor1)
+           AND abs(factor7) > abs(factor2)
+           AND abs(factor7) > abs(factor3)
+           AND abs(factor7) > abs(factor4)
+           AND abs(factor7) > abs(factor5)
+           AND abs(factor7) > abs(factor6)
+           AND abs(factor7) > abs(factor8)
+           AND abs(factor7) > abs(factor9)
            AND factor7 > 0 AND abs(factor7) >= "&minloading" then do; factor = 'f7'; pole = 1;  loaded = 1; end ;
+
+   else if     abs(factor8) > abs(factor1)
+           AND abs(factor8) > abs(factor2)
+           AND abs(factor8) > abs(factor3)
+           AND abs(factor8) > abs(factor4)
+           AND abs(factor8) > abs(factor5)
+           AND abs(factor8) > abs(factor6)
+           AND abs(factor8) > abs(factor7)
+           AND abs(factor8) > abs(factor9)
+           AND factor8 > 0 AND abs(factor8) >= "&minloading" then do; factor = 'f8'; pole = 1;  loaded = 1; end ;
+
+   else if     abs(factor9) > abs(factor1)
+           AND abs(factor9) > abs(factor2)
+           AND abs(factor9) > abs(factor3)
+           AND abs(factor9) > abs(factor4)
+           AND abs(factor9) > abs(factor5)
+           AND abs(factor9) > abs(factor6)
+           AND abs(factor9) > abs(factor7)
+           AND abs(factor9) > abs(factor8)
+           AND factor9 > 0 AND abs(factor9) >= "&minloading" then do; factor = 'f9'; pole = 1;  loaded = 1; end ;
 
 /* Negative values */
 
-  else  if     abs(factor1) > abs(factor2) 
-           AND abs(factor1) > abs(factor3) 
-           AND abs(factor1) > abs(factor4) 
-           AND abs(factor1) > abs(factor5) 
-           AND abs(factor1) > abs(factor6) 
-           AND abs(factor1) > abs(factor7) 
+  else  if     abs(factor1) > abs(factor2)
+           AND abs(factor1) > abs(factor3)
+           AND abs(factor1) > abs(factor4)
+           AND abs(factor1) > abs(factor5)
+           AND abs(factor1) > abs(factor6)
+           AND abs(factor1) > abs(factor7)
+           AND abs(factor1) > abs(factor8)
+           AND abs(factor1) > abs(factor9)
            AND factor1 < 0 AND abs(factor1) >= "&minloading" then do; factor = 'f1'; pole = -1;  loaded = 1; end ;
 
-   else if     abs(factor2) > abs(factor1) 
-           AND abs(factor2) > abs(factor3) 
-           AND abs(factor2) > abs(factor4) 
-           AND abs(factor2) > abs(factor5) 
-           AND abs(factor2) > abs(factor6) 
-           AND abs(factor2) > abs(factor7) 
+   else if     abs(factor2) > abs(factor1)
+           AND abs(factor2) > abs(factor3)
+           AND abs(factor2) > abs(factor4)
+           AND abs(factor2) > abs(factor5)
+           AND abs(factor2) > abs(factor6)
+           AND abs(factor2) > abs(factor7)
+           AND abs(factor2) > abs(factor8)
+           AND abs(factor2) > abs(factor9)
            AND factor2 < 0 AND abs(factor2) >= "&minloading" then do; factor = 'f2'; pole = -1;  loaded = 1; end ;
 
-   else if     abs(factor3) > abs(factor1) 
-           AND abs(factor3) > abs(factor2) 
-           AND abs(factor3) > abs(factor4) 
-           AND abs(factor3) > abs(factor5) 
-           AND abs(factor3) > abs(factor6) 
-           AND abs(factor3) > abs(factor7) 
+   else if     abs(factor3) > abs(factor1)
+           AND abs(factor3) > abs(factor2)
+           AND abs(factor3) > abs(factor4)
+           AND abs(factor3) > abs(factor5)
+           AND abs(factor3) > abs(factor6)
+           AND abs(factor3) > abs(factor7)
+           AND abs(factor3) > abs(factor8)
+           AND abs(factor3) > abs(factor9)
            AND factor3 < 0 AND abs(factor3) >= "&minloading" then do; factor = 'f3'; pole = -1;  loaded = 1; end ;
 
-   else if     abs(factor4) > abs(factor1) 
-           AND abs(factor4) > abs(factor2) 
-           AND abs(factor4) > abs(factor3) 
-           AND abs(factor4) > abs(factor5) 
-           AND abs(factor4) > abs(factor6) 
-           AND abs(factor4) > abs(factor7) 
+   else if     abs(factor4) > abs(factor1)
+           AND abs(factor4) > abs(factor2)
+           AND abs(factor4) > abs(factor3)
+           AND abs(factor4) > abs(factor5)
+           AND abs(factor4) > abs(factor6)
+           AND abs(factor4) > abs(factor7)
+           AND abs(factor4) > abs(factor8)
+           AND abs(factor4) > abs(factor9)
            AND factor4 < 0 AND abs(factor4) >= "&minloading" then do; factor = 'f4'; pole = -1;  loaded = 1; end ;
 
-   else if     abs(factor5) > abs(factor1) 
-           AND abs(factor5) > abs(factor2) 
-           AND abs(factor5) > abs(factor3) 
-           AND abs(factor5) > abs(factor4) 
-           AND abs(factor5) > abs(factor6) 
-           AND abs(factor5) > abs(factor7) 
+   else if     abs(factor5) > abs(factor1)
+           AND abs(factor5) > abs(factor2)
+           AND abs(factor5) > abs(factor3)
+           AND abs(factor5) > abs(factor4)
+           AND abs(factor5) > abs(factor6)
+           AND abs(factor5) > abs(factor7)
+           AND abs(factor5) > abs(factor8)
+           AND abs(factor5) > abs(factor9)
            AND factor5 < 0 AND abs(factor5) >= "&minloading" then do; factor = 'f5'; pole = -1;  loaded = 1; end ;
 
-   else if     abs(factor6) > abs(factor1) 
-           AND abs(factor6) > abs(factor2) 
-           AND abs(factor6) > abs(factor3) 
-           AND abs(factor6) > abs(factor4) 
-           AND abs(factor6) > abs(factor5) 
-           AND abs(factor6) > abs(factor7) 
+   else if     abs(factor6) > abs(factor1)
+           AND abs(factor6) > abs(factor2)
+           AND abs(factor6) > abs(factor3)
+           AND abs(factor6) > abs(factor4)
+           AND abs(factor6) > abs(factor5)
+           AND abs(factor6) > abs(factor7)
+           AND abs(factor6) > abs(factor8)
+           AND abs(factor6) > abs(factor9)
            AND factor6 < 0 AND abs(factor6) >= "&minloading" then do; factor = 'f6'; pole = -1;  loaded = 1; end ;
 
-   else if     abs(factor7) > abs(factor1) 
-           AND abs(factor7) > abs(factor2) 
-           AND abs(factor7) > abs(factor3) 
-           AND abs(factor7) > abs(factor4) 
-           AND abs(factor7) > abs(factor5) 
-           AND abs(factor7) > abs(factor6) 
-           AND factor7 < 0 AND abs(factor7) >= "&minloading" then do; factor = 'f7'; pole = -1;  loaded = 1; end ;   
+   else if     abs(factor7) > abs(factor1)
+           AND abs(factor7) > abs(factor2)
+           AND abs(factor7) > abs(factor3)
+           AND abs(factor7) > abs(factor4)
+           AND abs(factor7) > abs(factor5)
+           AND abs(factor7) > abs(factor6)
+           AND abs(factor7) > abs(factor8)
+           AND abs(factor7) > abs(factor9)
+           AND factor7 < 0 AND abs(factor7) >= "&minloading" then do; factor = 'f7'; pole = -1;  loaded = 1; end ;
+
+   else if     abs(factor8) > abs(factor1)
+           AND abs(factor8) > abs(factor2)
+           AND abs(factor8) > abs(factor3)
+           AND abs(factor8) > abs(factor4)
+           AND abs(factor8) > abs(factor5)
+           AND abs(factor8) > abs(factor6)
+           AND abs(factor8) > abs(factor7)
+           AND abs(factor8) > abs(factor9)
+           AND factor8 < 0 AND abs(factor8) >= "&minloading" then do; factor = 'f8'; pole = -1;  loaded = 1; end ;
+
+   else if     abs(factor9) > abs(factor1)
+           AND abs(factor9) > abs(factor2)
+           AND abs(factor9) > abs(factor3)
+           AND abs(factor9) > abs(factor4)
+           AND abs(factor9) > abs(factor5)
+           AND abs(factor9) > abs(factor6)
+           AND abs(factor9) > abs(factor7)
+           AND abs(factor9) > abs(factor8)
+           AND factor9 < 0 AND abs(factor9) >= "&minloading" then do; factor = 'f9'; pole = -1;  loaded = 1; end ;
 run;
 
 data rotated4 ; set rotated3 ; if loaded = 1; run; quit;
 
 /* Labeling: https://stats.idre.ucla.edu/sas/modules/labeling/ */
+
 PROC FORMAT library=user ;
   VALUE  $featurelabels
 "abstrcn" = "Abstract nouns"
@@ -874,6 +1011,8 @@ data rotatedinterpr (drop = factor pole) ;
     if factor5 > 0 AND abs(factor5) >= "&minloading" then do; secfactor5 = 'f5'; secpolef5 = 1;  end ;
     if factor6 > 0 AND abs(factor6) >= "&minloading" then do; secfactor6 = 'f6'; secpolef6 = 1;  end ;
     if factor7 > 0 AND abs(factor7) >= "&minloading" then do; secfactor7 = 'f7'; secpolef7 = 1;  end ;
+    if factor8 > 0 AND abs(factor8) >= "&minloading" then do; secfactor8 = 'f8'; secpolef8 = 1;  end ;
+    if factor9 > 0 AND abs(factor9) >= "&minloading" then do; secfactor9 = 'f9'; secpolef9 = 1;  end ;
 
   /* Negative values */
 
@@ -884,6 +1023,8 @@ data rotatedinterpr (drop = factor pole) ;
     if factor5 < 0 AND abs(factor5) >= "&minloading" then do; secfactor5 = 'f5'; secpolef5 = -1;  end ;
     if factor6 < 0 AND abs(factor6) >= "&minloading" then do; secfactor6 = 'f6'; secpolef6 = -1;  end ;
     if factor7 < 0 AND abs(factor7) >= "&minloading" then do; secfactor7 = 'f7'; secpolef7 = -1;  end ;
+    if factor8 < 0 AND abs(factor8) >= "&minloading" then do; secfactor8 = 'f8'; secpolef8 = -1;  end ;
+    if factor9 < 0 AND abs(factor9) >= "&minloading" then do; secfactor9 = 'f9'; secpolef9 = -1;  end ;
 
  /* Cleanup */
 
@@ -894,6 +1035,8 @@ data rotatedinterpr (drop = factor pole) ;
     if factor = secfactor5 then do; secfactor5 = ' ' ; end;
     if factor = secfactor6 then do; secfactor6 = ' ' ; end;
     if factor = secfactor7 then do; secfactor7 = ' ' ; end;
+    if factor = secfactor8 then do; secfactor8 = ' ' ; end;
+    if factor = secfactor9 then do; secfactor9 = ' ' ; end;
 run;
 
 proc sql;
