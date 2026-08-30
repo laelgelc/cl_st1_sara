@@ -1222,13 +1222,19 @@ PROC EXPORT
 RUN;
 
 
+/* Combine base scores and additive scores for statistical testing */
+DATA scores_combined;
+  SET scores scores_add;
+RUN;
+
+
 /* Outlier texts, identify */
 
 %macro create(howmany);
 %do i=1 %to &howmany;
 
 %let VariableOfInterest= f&i ;  /* Enter variable here */
-%let dsn=&project._scores;
+%let dsn=scores_combined;  /* Use the combined dataset */
 
 data temp; set &dsn; run;
 
@@ -1264,7 +1270,7 @@ data outliers_to_del (keep= filename prompt source f1 f2) ; set outliers_f1 outl
 
 data outliers_to_del (keep= filename prompt source &factorvars) ; set outliers_f1 - outliers_f&extractfactors ; proc sort noduprecs; by filename; run; quit;  /* Keep only the columns we want */
 
-data &project._no_outliers; set &project._scores; run;
+data &project._no_outliers; set scores_combined; run;
 
 proc sql;
 delete from &project._no_outliers
@@ -1297,6 +1303,8 @@ PROC EXPORT
   REPLACE;
 RUN;
 
+/* Bypass outlier removal: just pass the combined dataset forward */
+data &project._no_outliers; set scores_combined; run;
 
 /* ANOVAS */
 
@@ -1310,16 +1318,16 @@ ods html file="&whereisit/&myfolder/glm_meta.html";
 OPTIONS VALIDVARNAME=ANY;
 ods graphics off; 
 
-proc GLM data=scores;
+proc GLM data=&project._no_outliers;
 ods output FitStatistics=r2_prompt_f&i ;
 ods output OverallANOVA=anova_prompt_f&i ;
 ods output Means=means_prompt_f&i ;
-	title GLM for dataset = &project._scores f&i ;
+	title GLM for dataset = &project._no_outliers f&i ;
 	class prompt source;
 	model f&i = prompt source prompt*source;
 	means prompt source ;
 	run;
-	
+
 ods graphics on;
 %end;
 %mend create;
@@ -1344,8 +1352,8 @@ https://www.researchgate.net/post/Difference_between_Type_I_and_Type_III_SS_deci
 ods listing gpath='&whereisit/&myfolder/';
 ods graphics / imagename="boxplot_f&i" imagefmt=png;
 title "Box plots";
-proc GLM data=scores;
-	title GLM for dataset = scores f&i ;
+proc GLM data=&project._no_outliers;
+	title GLM for dataset = &project._no_outliers f&i ;
 	class prompt;
 	model f&i = prompt;
 	means prompt ;
