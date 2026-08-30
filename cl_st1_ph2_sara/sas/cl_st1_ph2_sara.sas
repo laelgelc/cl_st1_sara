@@ -1,47 +1,37 @@
-/* ============================================================
+/* ==========================================================================
    Traditional Multi-Dimensional Analysis
-   with
-   Additive Multi-Dimensional Analysis
-   ============================================================ */
+   with Additive Multi-Dimensional Analysis
+   ========================================================================== */
 
-/* BEGINNING PART 1 */
-/* === EDIT BELOW ====*/
+/* ==========================================================================
+   SECTION 1: ENVIRONMENT SETUP AND MACROS
+   ========================================================================== */
 
 %let project = cl_st1_ph2_sara ;
-
 %let myfolder = &project ;
-
 %let sasusername = u63529080 ;
-
 %let whereisit = /home/&sasusername ;  /* Online */
 
 libname gelc "&whereisit/&myfolder";
 
-/* files will NOT be saved to the folder above unless you put in 'gelc.' before every destination */
-/* otherwise files are going to the work library and not saved to the current folder */
-/* this is needed to enable SGPLOT */
-/* otherwise if your run SGPLOT, SAS will throw up an error message and stop working ... */
+/* Files will NOT be saved to the folder above unless you put in 'gelc.' before every destination */
+/* Otherwise files are going to the work library and not saved to the current folder */
+/* This is needed to enable SGPLOT. Otherwise, SAS will throw up an error message */
 
 options fmtsearch=(work library);
 
-/* Enter number of factors to extract */
-
+/* Extraction & Cutoff Parameters */
 %let extractfactors = 9 ;
-
 %let factorvars = fac1-fac&extractfactors ;
-
-/* Enter min loading cutoff */
-
 %let minloading = .3 ;
-
-/* Enter min communality cutoff */
-
 %let communalcutoff = .15 ;
 
-/* ENDING PART 1 */
+
+/* ==========================================================================
+   SECTION 2: DATA INGESTION (HUMAN, AI-FREE, AND AI-GUIDED)
+   ========================================================================== */
 
 /* 1A: Ingest Human-Authored Subcorpus */
-
 DATA corp_human ;
     INFILE "&whereisit/&myfolder/01_human_counts.txt" TRUNCOVER;
     input filename $ 14-60 ttr 61-65 wrlengh 66-70 wcount 71-75
@@ -62,7 +52,6 @@ DATA corp_human ;
 RUN;
 
 /* 1B: Ingest LLM-Free Subcorpus */
-
 DATA corp_llm_free ;
     INFILE "&whereisit/&myfolder/04_llm_free_counts.txt" TRUNCOVER;
     input filename $ 14-60 ttr 61-65 wrlengh 66-70 wcount 71-75
@@ -83,7 +72,6 @@ DATA corp_llm_free ;
 RUN;
 
 /* 1C: Ingest LLM-Guided Subcorpus (For Additive Analysis) */
-
 DATA add_corpus ;
     INFILE "&whereisit/&myfolder/03_llm_counts.txt" TRUNCOVER;
     input filename $ 14-60 ttr 61-65 wrlengh 66-70 wcount 71-75
@@ -103,19 +91,17 @@ DATA add_corpus ;
     source = 'ai' ;
 RUN;
 
-/* Combine Base Corpora for Factor Extraction */
 
+/* ==========================================================================
+   SECTION 3: BASE CORPUS PREPARATION & INITIAL EXPORTS
+   ========================================================================== */
+
+/* Combine Base Corpora for Factor Extraction */
 DATA base_corpus;
     SET corp_human corp_llm_free;
 RUN;
 
-
-/* ================================================================== */
-/* STEP 2: PREPARE BASE CORPUS FOR FACTORING                          */
-/* ================================================================== */
-
 /* Exclude 1988 Dimensions from the base factoring */
-
 DATA &project (drop= dim1-dim5 pub_vb prv_vb);
   SET base_corpus;
 RUN;
@@ -123,7 +109,6 @@ RUN;
 DATA &project._add_corpus (drop= dim1-dim5 pub_vb prv_vb);
   SET add_corpus;
 RUN;
-
 
 ODS EXCLUDE NONE;
     proc print data = &project (FIRSTOBS=200 OBS=500);
@@ -136,7 +121,6 @@ PROC EXPORT
   OUTFILE="&whereisit/&myfolder/&project..csv"
   REPLACE;
 RUN;
-
 
 ODS EXCLUDE NONE;
     proc print data = &project._add_corpus (FIRSTOBS=200 OBS=500);
@@ -151,17 +135,20 @@ PROC EXPORT
 RUN;
 
 /* Drop summary variables  */
-
 DATA &project._no_sum_v (DROP = all_advl all_jth all_jto all_nth all_th all_to all_vth all_vto alladj allconj allmodal allpasv allpro allverb allwh allwhrel n );
   SET &project ;
 RUN;
 
-/* Unrotated Factor Analysis without summary vars, before dropping low communalities */
 
+/* ==========================================================================
+   SECTION 4: UNROTATED FACTOR ANALYSIS & COMMUNALITY CUTOFF
+   ========================================================================== */
+
+/* Unrotated Factor Analysis without summary vars, before dropping low communalities */
 OPTIONS VALIDVARNAME=ANY;
 
 ODS EXCLUDE NONE;
-ods html file='&whereisit/&myfolder/unrotated.html'; 
+ods html file='&whereisit/&myfolder/unrotated.html';
 ods trace on;
 
 proc factor
@@ -178,11 +165,11 @@ run;
 quit;
 
 ods trace off;
-ods html close; 
+ods html close;
 ODS EXCLUDE ALL;
 
 /*** Find low communalities ***/
-/*https://communities.sas.com/t5/SAS-Programming/How-do-I-delete-variables-based-on-their-values-in-an-outstat/m-p/675576#M203571*/
+/* https://communities.sas.com/t5/SAS-Programming/How-do-I-delete-variables-based-on-their-values-in-an-outstat/m-p/675576#M203571 */
 
 data fout2;
     set fout (where=(_TYPE_="COMMUNAL"));
@@ -195,14 +182,12 @@ proc sql;
         where communal < &communalcutoff ;
 quit;
 
-
 data &project._no_low_c ;
     set &project._no_sum_v ;
     drop &names;
 run;
 
 /* Save dropped variables to excel */
-
 PROC SORT Data=communal;   BY _NAME_; RUN;
 
 data communal_dropped ;
@@ -220,7 +205,6 @@ RUN;
 ODS EXCLUDE ALL;
 
 /* Scree plot */
-
 data fout2;
   set fout (where=(_TYPE_="EIGENVAL"));
 run;
@@ -245,13 +229,16 @@ run;
 title;
 ODS EXCLUDE ALL;
 
+
+/* ==========================================================================
+   SECTION 5: INITIAL ROTATED FACTOR ANALYSIS & VAR SELECTION
+   ========================================================================== */
+
 /* Rotated Factor Analysis without summary variables prior to summary variables check */
 
-/*ods select none; */
-
 ODS EXCLUDE ALL;
-
 OPTIONS VALIDVARNAME=ANY;
+
 proc factor
 OUTSTAT = rotated
 data=&project._no_low_c
@@ -270,7 +257,6 @@ quit;
 ods html close;
 
 /* Checking summary variables */
-
 OPTIONS VALIDVARNAME=ANY;
 data prerotat;
   set rotated (where=(_TYPE_="PREROTAT"));
@@ -284,12 +270,12 @@ OPTIONS VALIDVARNAME=ANY;
 data rotated3;
    set rotated2;
       loaded = 0 ;
-        if     abs(factor1) > abs(factor2) 
-           AND abs(factor1) > abs(factor3) 
-           AND abs(factor1) > abs(factor4) 
-           AND abs(factor1) > abs(factor5) 
-           AND abs(factor1) > abs(factor6) 
-           AND abs(factor1) > abs(factor7) 
+        if     abs(factor1) > abs(factor2)
+           AND abs(factor1) > abs(factor3)
+           AND abs(factor1) > abs(factor4)
+           AND abs(factor1) > abs(factor5)
+           AND abs(factor1) > abs(factor6)
+           AND abs(factor1) > abs(factor7)
            AND abs(factor1) > abs(factor8)
            AND abs(factor1) > abs(factor9)
            AND factor1 > 0 AND abs(factor1) >= "&minloading" then do; factor = 'f1'; pole = 1;  loaded = 1; end ;
@@ -371,7 +357,7 @@ data rotated3;
            AND abs(factor9) > abs(factor5)
            AND abs(factor9) > abs(factor6)
            AND abs(factor9) > abs(factor7)
-           AND abs(factor9) > abs(factor8)
+               AND abs(factor9) > abs(factor8)
            AND factor9 > 0 AND abs(factor9) >= "&minloading" then do; factor = 'f9'; pole = 1;  loaded = 1; end ;
 
 /* Negative values */
@@ -471,123 +457,117 @@ data rotated4 ; set rotated3 (KEEP = _NAME_ loaded ); run;
 proc transpose data=rotated4 out= rotated5 ; id _NAME_ ; run;
 
 /* Set a value = 0 to low comm vars dropped before to ensure sums are computed */
-
 proc sql;
     select _name_ into :lowcomm separated by ' ' from communal
         where communal < &communalcutoff ;
 quit;
 
-data sumdrop;    
+data sumdrop;
    set rotated5;
-
     array v &lowcomm ;
-    do over v ; 
-      v = 0;       
+    do over v ;
+      v = 0;
     end ;
-  
-    array w allmodal allconj allpasv allwh allwhrel allpro all_vth all_jth all_nth all_vto all_jto all_advl alladj allverb n all_th all_to  ;
-    do over w ; 
-      w = 0;       
-    end ; 
-    
-   allmodal = pos_mod + prd_mod + nec_mod ; 
-   allconj = o_and + p_and + sub_cnd + sub_cos  ; 
-   allpasv = agls_psv + by_pasv + whiz_vbn  ; 
-   allwh = wh_ques + wh_cl ; 
-   allwhrel = rel_obj + rel_subj + rel_pipe  ; 
-   allpro = pro1 + pro2 + pro3;
-   all_vth = nonf_vth + att_vth + fact_vth + lkly_vth ; 
-   all_jth = att_jth + fact_jth + lkly_jth ; 
-   all_nth = att_nth + fct_nth + lkly_nth + nfct_nth ; 
-   all_th = all_vth + all_nth + all_jth ; 
-   all_vto = dsre_vto + efrt_vto + mntl_vto + prob_vto + spch_vto  ; 
-   all_jto = x1_jto + x2_jto + x3_jto + x4_jto + x5_jto ; 
-   all_to = all_vto + all_jto + all_nto ; 
-   all_advl = nonfadvl + atadvl + fctadvl + lklydvl ; 
-   alladj =  colorj + evalj + relatnj + sizej + timej + topicj  ; 
-   allverb = act_ipv + act_tpv + actv + aspectv + be_state + causev + commpv + commv + copulapv + existv + have + inf + mentalpv + mentalv + occurpv + occurv + pasttnse + perfects + pres + pro_do + prv_vb + pub_vb + sua_vb + vprogrsv  ; 
-   n = humann + cognitn + concrtn + groupn + abstrcn + placen + prcessn + quann + tccncrt  ; 
-run;
 
-/* proc transpose data=sumdrop out= temp1 ; id _NAME_ ; run; */
+    array w allmodal allconj allpasv allwh allwhrel allpro all_vth all_jth all_nth all_vto all_jto all_advl alladj allverb n all_th all_to  ;
+    do over w ;
+      w = 0;
+    end ;
+
+   allmodal = pos_mod + prd_mod + nec_mod ;
+   allconj = o_and + p_and + sub_cnd + sub_cos  ;
+   allpasv = agls_psv + by_pasv + whiz_vbn  ;
+   allwh = wh_ques + wh_cl ;
+   allwhrel = rel_obj + rel_subj + rel_pipe  ;
+   allpro = pro1 + pro2 + pro3;
+   all_vth = nonf_vth + att_vth + fact_vth + lkly_vth ;
+   all_jth = att_jth + fact_jth + lkly_jth ;
+   all_nth = att_nth + fct_nth + lkly_nth + nfct_nth ;
+   all_th = all_vth + all_nth + all_jth ;
+   all_vto = dsre_vto + efrt_vto + mntl_vto + prob_vto + spch_vto  ;
+   all_jto = x1_jto + x2_jto + x3_jto + x4_jto + x5_jto ;
+   all_to = all_vto + all_jto + all_nto ;
+   all_advl = nonfadvl + atadvl + fctadvl + lklydvl ;
+   alladj =  colorj + evalj + relatnj + sizej + timej + topicj  ;
+   allverb = act_ipv + act_tpv + actv + aspectv + be_state + causev + commpv + commv + copulapv + existv + have + inf + mentalpv + mentalv + occurpv + occurv + pasttnse + perfects + pres + pro_do + prv_vb + pub_vb + sua_vb + vprogrsv  ;
+   n = humann + cognitn + concrtn + groupn + abstrcn + placen + prcessn + quann + tccncrt  ;
+run;
 
 data sumdrop2;
    set sumdrop;
-        if allmodal <  2 then do;  pos_mod = 0 ;  prd_mod = 0 ;  nec_mod = 0 ;  allmodal = 1; end; 
+        if allmodal <  2 then do;  pos_mod = 0 ;  prd_mod = 0 ;  nec_mod = 0 ;  allmodal = 1; end;
    else if allmodal >= 2 then do; allmodal = 0 ; end;
 
-        if allconj <  2 then do;  o_and = 0 ;  p_and = 0 ;  sub_cnd = 0 ;  sub_cos = 0 ;  sub_othr = 0 ;  allconj = 1; end; 
+        if allconj <  2 then do;  o_and = 0 ;  p_and = 0 ;  sub_cnd = 0 ;  sub_cos = 0 ;  sub_othr = 0 ;  allconj = 1; end;
    else if allconj >= 2 then do; allconj = 0 ; end;
 
-        if allpasv <  2 then do;  agls_psv = 0 ;  by_pasv = 0 ;  whiz_vbn = 0 ;  allpasv = 1; end; 
+        if allpasv <  2 then do;  agls_psv = 0 ;  by_pasv = 0 ;  whiz_vbn = 0 ;  allpasv = 1; end;
    else if allpasv >= 2 then do; allpasv = 0 ; end;
 
-        if allwh <  1 then do;  wh_ques = 0 ;  wh_cl = 0 ;  allwh = 1; end; 
+        if allwh <  1 then do;  wh_ques = 0 ;  wh_cl = 0 ;  allwh = 1; end;
    else if allwh >= 1 then do; allwh = 0 ; end;
 
-        if allwhrel <  2 then do;  rel_obj = 0 ;  rel_subj = 0 ;  rel_pipe = 0 ;  allwhrel = 1; end; 
+        if allwhrel <  2 then do;  rel_obj = 0 ;  rel_subj = 0 ;  rel_pipe = 0 ;  allwhrel = 1; end;
    else if allwhrel >= 2 then do; allwhrel = 0 ; end;
 
-        if allpro <  2 then do;  pro1 = 0 ;  pro2 = 0 ;  pro3 = 0 ;  allpro = 1; end; 
+        if allpro <  2 then do;  pro1 = 0 ;  pro2 = 0 ;  pro3 = 0 ;  allpro = 1; end;
    else if allpro >= 2 then do; allpro = 0 ; end;
 
-        if all_vth <  2 then do;  nonf_vth = 0 ;  att_vth = 0 ;  fact_vth = 0 ;  lkly_vth = 0 ;  all_vth = 1; end; 
+        if all_vth <  2 then do;  nonf_vth = 0 ;  att_vth = 0 ;  fact_vth = 0 ;  lkly_vth = 0 ;  all_vth = 1; end;
    else if all_vth >= 2 then do; all_vth = 0 ; end;
 
-        if all_jth <  2 then do;  att_jth = 0 ;  fact_jth = 0 ;  lkly_jth = 0 ;  all_jth = 1; end; 
+        if all_jth <  2 then do;  att_jth = 0 ;  fact_jth = 0 ;  lkly_jth = 0 ;  all_jth = 1; end;
    else if all_jth >= 2 then do; all_jth = 0 ; end;
 
-        if all_nth <  2 then do;  att_nth = 0 ;  fct_nth = 0 ;  lkly_nth = 0 ;  nfct_nth = 0 ;  all_nth = 1; end; 
+        if all_nth <  2 then do;  att_nth = 0 ;  fct_nth = 0 ;  lkly_nth = 0 ;  nfct_nth = 0 ;  all_nth = 1; end;
    else if all_nth >= 2 then do; all_nth = 0 ; end;
 
-        if all_vto <  2 then do;  dsre_vto = 0 ;  efrt_vto = 0 ;  mntl_vto = 0 ;  prob_vto = 0 ;  spch_vto = 0 ;  all_vto = 1; end; 
+        if all_vto <  2 then do;  dsre_vto = 0 ;  efrt_vto = 0 ;  mntl_vto = 0 ;  prob_vto = 0 ;  spch_vto = 0 ;  all_vto = 1; end;
    else if all_vto >= 2 then do; all_vto = 0 ; end;
 
-        if all_jto <  2 then do;  x1_jto = 0 ;  x2_jto = 0 ;  x3_jto = 0 ;  x4_jto = 0 ;  x5_jto = 0 ;  all_jto = 1; end; 
+        if all_jto <  2 then do;  x1_jto = 0 ;  x2_jto = 0 ;  x3_jto = 0 ;  x4_jto = 0 ;  x5_jto = 0 ;  all_jto = 1; end;
    else if all_jto >= 2 then do; all_jto = 0 ; end;
 
-        if all_advl <  2 then do;  nonfadvl = 0 ;  atadvl = 0 ;  fctadvl = 0 ;  lklydvl = 0 ;  all_advl = 1; end; 
+        if all_advl <  2 then do;  nonfadvl = 0 ;  atadvl = 0 ;  fctadvl = 0 ;  lklydvl = 0 ;  all_advl = 1; end;
    else if all_advl >= 2 then do; all_advl = 0 ; end;
 
-        if alladj <  2 then do;  colorj = 0 ;  evalj = 0 ;  relatnj = 0 ;  sizej = 0 ;  timej = 0 ;  topicj = 0 ;  alladj = 1; end; 
+        if alladj <  2 then do;  colorj = 0 ;  evalj = 0 ;  relatnj = 0 ;  sizej = 0 ;  timej = 0 ;  topicj = 0 ;  alladj = 1; end;
    else if alladj >= 2 then do; alladj = 0 ; end;
 
-        if allverb <  4 then do;  act_ipv = 0 ;  act_tpv = 0 ;  actv = 0 ;  aspectv = 0 ;  be_state = 0 ;  causev = 0 ;  commpv = 0 ;  commv = 0 ;  copulapv = 0 ;  existv = 0 ;  have = 0 ;  inf = 0 ;  mentalpv = 0 ;  mentalv = 0 ;  occurpv = 0 ;  occurv = 0 ;  pasttnse = 0 ;  perfects = 0 ;  pres = 0 ;  pro_do = 0 ; sua_vb = 0 ;  vprogrsv = 0 ;  allverb = 1; end; 
-      /* Above = removed  prv_vb = 0 ;  pub_vb = 0 ; */
-      /* If allverb <  4 then do;  act_ipv = 0 ;  act_tpv = 0 ;  actv = 0 ;  aspectv = 0 ;  be_state = 0 ;  causev = 0 ;  commpv = 0 ;  commv = 0 ;  copulapv = 0 ;  existv = 0 ;  have = 0 ;  inf = 0 ;  mentalpv = 0 ;  mentalv = 0 ;  occurpv = 0 ;  occurv = 0 ;  pasttnse = 0 ;  perfects = 0 ;  pres = 0 ;  pro_do = 0 ;  prv_vb = 0 ;  pub_vb = 0 ;  sua_vb = 0 ;  vprogrsv = 0 ;  allverb = 1; end; */
+        if allverb <  4 then do;  act_ipv = 0 ;  act_tpv = 0 ;  actv = 0 ;  aspectv = 0 ;  be_state = 0 ;  causev = 0 ;  commpv = 0 ;  commv = 0 ;  copulapv = 0 ;  existv = 0 ;  have = 0 ;  inf = 0 ;  mentalpv = 0 ;  mentalv = 0 ;  occurpv = 0 ;  occurv = 0 ;  pasttnse = 0 ;  perfects = 0 ;  pres = 0 ;  pro_do = 0 ; sua_vb = 0 ;  vprogrsv = 0 ;  allverb = 1; end;
    else if allverb >= 4 then do; allverb = 0 ; end;
 
-        if n <  2 then do;  humann = 0 ;  cognitn = 0 ;  concrtn = 0 ;  groupn = 0 ;  abstrcn = 0 ;  placen = 0 ;  prcessn = 0 ;  quann = 0 ;  tccncrt = 0 ;  n = 1; end; 
+        if n <  2 then do;  humann = 0 ;  cognitn = 0 ;  concrtn = 0 ;  groupn = 0 ;  abstrcn = 0 ;  placen = 0 ;  prcessn = 0 ;  quann = 0 ;  tccncrt = 0 ;  n = 1; end;
    else if n >= 2 then do; n = 0 ; end;
 
-        if all_th <  2 then do;  all_vth = 0 ;  all_nth = 0 ;  all_jth = 0 ;  all_th = 1; end; 
+        if all_th <  2 then do;  all_vth = 0 ;  all_nth = 0 ;  all_jth = 0 ;  all_th = 1; end;
    else if all_th >= 2 then do; all_th = 0 ; end;
 
-        if all_to <  2 then do;  all_vto = 0 ;  all_jto = 0 ;  all_nto = 0 ;  all_to = 1; end; 
+        if all_to <  2 then do;  all_vto = 0 ;  all_jto = 0 ;  all_nto = 0 ;  all_to = 1; end;
    else if all_to >= 2 then do; all_to = 0 ; end;
 
 run;
 
 proc transpose data=sumdrop2 out= varsdel ; id _NAME_ ; run;
 
-
 /* Drop variables based on summary variables check */
-
 proc sql;
     select _name_ into :sumcheck separated by ' ' from varsdel
         where loaded = 0;
 quit;
-
 
 data &project._sum_check ;
     set &project ;  /* The initial dataset with the summary variables counts */
      drop &sumcheck ;
 run;
 
-/* Final Rotated Fator Analysis after summary variables check */
+
+/* ==========================================================================
+   SECTION 6: FINAL ROTATED FACTOR ANALYSIS & LOADINGS TABLE
+   ========================================================================== */
 
 ODS EXCLUDE NONE;
-ods html file="&whereisit/&myfolder/rotated.html"; 
+ods html file="&whereisit/&myfolder/rotated.html";
 ods trace on;
 
 proc factor
@@ -610,26 +590,7 @@ ods trace off;
 ods html close;
 ODS EXCLUDE ALL;
 
-
-/* Loadings table */
-
-/*
- 
-https://stats.idre.ucla.edu/sas/output/factor-analysis/ 
-Rotated Factor Pattern – This table contains the rotated factor loadings, which are the correlations between the variable and the factor.  Because these are correlations, possible values range from -1 to +1. 
-in the outstat data file, the rotated factor pattern appears as PREROTAT. The standardized regression coefficients appear as PATTERN.
-Use PREROTAT in the outstat data file. 
-
-https://documentation.sas.com/?docsetId=statug&docsetTarget=statug_factor_details02.htm&docsetVersion=15.1&locale=en
-
-PREROTAT: prerotated factor pattern.
-PATTERN: factor pattern. (regression coefficients)
-
-PREROTAT: prerotated factor pattern. =>   Stat.Factor.OrthRotFactPat
-PATTERN: factor pattern. =>  Stat.Factor.ObliqueRotFactPat
-
-*/
-
+/* Reformat outstat to obtain rotated factor pattern */
 OPTIONS VALIDVARNAME=ANY;
 data rotated2;
   set rotatedfinal (where=(_TYPE_="PREROTAT"));
@@ -643,12 +604,12 @@ OPTIONS VALIDVARNAME=ANY;
 data rotated3;
    set rotated2;
       loaded = 0 ;
-        if     abs(factor1) > abs(factor2) 
-           AND abs(factor1) > abs(factor3) 
-           AND abs(factor1) > abs(factor4) 
-           AND abs(factor1) > abs(factor5) 
-           AND abs(factor1) > abs(factor6) 
-           AND abs(factor1) > abs(factor7) 
+        if     abs(factor1) > abs(factor2)
+           AND abs(factor1) > abs(factor3)
+           AND abs(factor1) > abs(factor4)
+           AND abs(factor1) > abs(factor5)
+           AND abs(factor1) > abs(factor6)
+           AND abs(factor1) > abs(factor7)
            AND abs(factor1) > abs(factor8)
            AND abs(factor1) > abs(factor9)
            AND factor1 > 0 AND abs(factor1) >= "&minloading" then do; factor = 'f1'; pole = 1;  loaded = 1; end ;
@@ -828,8 +789,7 @@ run;
 
 data rotated4 ; set rotated3 ; if loaded = 1; run; quit;
 
-/* Labeling: https://stats.idre.ucla.edu/sas/modules/labeling/ */
-
+/* Labeling */
 PROC FORMAT library=user ;
   VALUE  $featurelabels
 "abstrcn" = "Abstract nouns"
@@ -966,7 +926,7 @@ run;
 quit;
 
 ODS EXCLUDE NONE;
-ods html file="&whereisit/&myfolder/loadtable.html"; 
+ods html file="&whereisit/&myfolder/loadtable.html";
 %macro create(howmany);
 %do i=1 %to &howmany;
 
@@ -991,7 +951,7 @@ run;
 
 %end;
 %mend create;
-%create(&extractfactors) 
+%create(&extractfactors)
 ods html close;
 quit;
 
@@ -1003,7 +963,6 @@ PROC EXPORT
 RUN;
 
 /* All vars that loaded, for interpretation */
-
 OPTIONS VALIDVARNAME=ANY;
 data rotatedinterpr (drop = factor pole) ;
    set rotated3;
@@ -1043,12 +1002,12 @@ data rotatedinterpr (drop = factor pole) ;
 run;
 
 proc sql;
-    select memname into :names separated by ' ' from dictionary.tables 
+    select memname into :names separated by ' ' from dictionary.tables
     where libname = 'USER' AND  substr (memname,1,5) = 'TEMP_' ;
 quit;
 
 proc datasets library=user;
-delete 
+delete
 &names;
 run;
 
@@ -1056,7 +1015,7 @@ run;
 %do i=1 %to &howmany;
 data temp_f&i._prim_pos (keep = Factor&i factor pole type table _NAME_  RENAME = ( Factor&i=loading ) );
  set rotated4 (where=( factor = "f&i" AND pole = 1 ));
- type = 'primary'; 
+ type = 'primary';
  table = "f&i.pos" ;
  proc sort ; by descending loading;
 run;
@@ -1068,7 +1027,7 @@ data temp_f&i._sec_pos (keep = Factor&i type table _NAME_  RENAME = ( Factor&i=l
 run;
 data temp_f&i._prim_neg (keep = Factor&i factor pole type table _NAME_  RENAME = ( Factor&i=loading ) );
  set rotated4 (where=( factor = "f&i" AND pole = -1 ));
- type = 'primary'; 
+ type = 'primary';
  table = "f&i.neg" ;
   proc sort ; by loading;
 run;
@@ -1087,7 +1046,7 @@ proc sql ;
   create table mytables as
   select *
   from dictionary.tables
-  where ( libname = "USER" and substr (memname,1,6) = 'TEMP_F') 
+  where ( libname = "USER" and substr (memname,1,6) = 'TEMP_F')
   order by memname ;
 quit ;
 
@@ -1100,7 +1059,7 @@ data loadtableinterpr (drop = factor pole);
 run;
 
 ODS EXCLUDE NONE;
-ods html file='&whereisit/&myfolder/loadtable_for_interpretation.html'; 
+ods html file='&whereisit/&myfolder/loadtable_for_interpretation.html';
 PROC PRINT data=loadtableinterpr ; FORMAT _NAME_ $featurelabels. loading 9.2 ; run;
 ods html close;
 
@@ -1112,34 +1071,34 @@ PROC EXPORT
 RUN;
 
 proc sql;
-    select memname into :names separated by ' ' from dictionary.tables 
+    select memname into :names separated by ' ' from dictionary.tables
     where libname = 'USER' AND  substr (memname,1,5) = 'TEMP_' ;
 quit;
 
 proc datasets library=user;
-delete 
+delete
 &names;
 run;
 
 /* Adding metadata */
-
 DATA &project._meta;
 SET &project ;
 RUN;
 
 
-/* Scoring */
+/* ==========================================================================
+   SECTION 7: SCORING (BASE & ADDITIVE CORPORA)
+   ========================================================================== */
 
 ODS EXCLUDE NONE;
-ods html file="&whereisit/&myfolder/scoring.html"; 
+ods html file="&whereisit/&myfolder/scoring.html";
 proc print data=rotated3 ; run;
-ods html close; 
+ods html close;
 ODS EXCLUDE ALL;
 
 /* Automatic scoring */
 
 /* Standardize data using base corpus means and std devs */
-
 PROC STDIZE DATA=&project._meta METHOD=STD OUT=mdz OUTSTAT=meta_stats;
     var _NUMERIC_ ;
 RUN;
@@ -1150,7 +1109,6 @@ PROC STDIZE DATA=&project._add_corpus METHOD=IN(meta_stats) OUT=mdz_add;
 RUN;
 
 /* Factor scores */
-
 data rotated4; set rotated3; if loaded = 1; run;
 
 proc sort data=rotated4;
@@ -1179,19 +1137,16 @@ proc sort data = scores_add ; by filename; run;
 data scores_only_add (keep = filename prompt source &factorvars) ; set scores_add ; run;
 
 /* Overview of corpus */
-
 ODS EXCLUDE NONE;
 ods html file="&whereisit/&myfolder/corpus_size.html";
 proc means data=&project sum mean min max stddev; var wcount  ; run;
 RUN;
 
-/* Scores only */
-
-DATA scores_only 
- (KEEP = filename prompt source &factorvars );  /* Keep only the columns we want */
+/* Scores only (Base) */
+DATA scores_only
+ (KEEP = filename prompt source &factorvars );
 set scores;
 run;
-
 
 PROC EXPORT
   DATA= WORK.scores
@@ -1221,15 +1176,17 @@ PROC EXPORT
   REPLACE;
 RUN;
 
-
 /* Combine base scores and additive scores for statistical testing */
 DATA scores_combined;
   SET scores scores_add;
 RUN;
 
 
-/* Outlier texts, identify */
+/* ==========================================================================
+   SECTION 8: OUTLIER IDENTIFICATION AND REMOVAL
+   ========================================================================== */
 
+/* Outlier texts, identify */
 %macro create(howmany);
 %do i=1 %to &howmany;
 
@@ -1262,12 +1219,7 @@ run;
 %create( &extractfactors )  /* Number of factors extracted */
 quit;
 
-/* Outlier texts, remove */
-
-/*
-data outliers_to_del (keep= filename prompt source f1 f2) ; set outliers_f1 outliers_f2 ; proc sort noduprecs; by filename; run; quit;  /* Keep only the columns we want */
-*/
-
+/* Outlier texts, isolate for removal */
 data outliers_to_del (keep= filename prompt source &factorvars) ; set outliers_f1 - outliers_f&extractfactors ; proc sort noduprecs; by filename; run; quit;  /* Keep only the columns we want */
 
 data &project._no_outliers; set scores_combined; run;
@@ -1278,7 +1230,6 @@ delete from &project._no_outliers
 quit;
 
 /* Save outliers list to Excel */
-
 %macro create(howmany);
 %do i=1 %to &howmany;
 
@@ -1303,20 +1254,35 @@ PROC EXPORT
   REPLACE;
 RUN;
 
-/* Bypass outlier removal: just pass the combined dataset forward */
+
+/* ========================================================================= */
+/* ⚠️ OPTIONAL BYPASS: OUTLIER REMOVAL                                       */
+/* ------------------------------------------------------------------------- */
+/* If you wish to KEEP the outliers in your final analysis, leave the        */
+/* following DATA step active. It overwrites the outlier-trimmed dataset     */
+/* with the full, original dataset.                                          */
+/*                                                                           */
+/* If you wish to REMOVE outliers, COMMENT OUT or DELETE the DATA step below.*/
+/* ========================================================================= */
+
 data &project._no_outliers; set scores_combined; run;
 
-/* ANOVAS */
 
+
+/* ==========================================================================
+   SECTION 9: STATISTICAL ANALYSIS (ANOVAs & BOXPLOTS)
+   ========================================================================== */
+
+/* ANOVAS */
 /* ODS table names for GLM: */
 /*https://support.sas.com/documentation/cdl/en/statug/68162/HTML/default/viewer.htm#statug_glm_details70.htm*/
 
 ODS EXCLUDE NONE;
-ods html file="&whereisit/&myfolder/glm_meta.html"; 
+ods html file="&whereisit/&myfolder/glm_meta.html";
 %macro create(howmany);
 %do i=1 %to &howmany;
 OPTIONS VALIDVARNAME=ANY;
-ods graphics off; 
+ods graphics off;
 
 proc GLM data=&project._no_outliers;
 ods output FitStatistics=r2_prompt_f&i ;
@@ -1332,21 +1298,20 @@ ods graphics on;
 %end;
 %mend create;
 %create( &extractfactors )  /* Number of factors extracted */
-ods html close; 
+ods html close;
 quit;
 
 /*
-https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_glm_sect005.htm 
+https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_glm_sect005.htm
 
 If the interaction between A*B is not significant, this indicates that the effect of A does not depend on the level of B and vice versa.
 
 discussion:
 https://www.researchgate.net/post/Difference_between_Type_I_and_Type_III_SS_decision_tables_in_statistical_analyses
-
 */
 
-/* Boxplots */
 
+/* Boxplots */
 %macro create(howmany);
 %do i=1 %to &howmany;
 ods listing gpath='&whereisit/&myfolder/';

@@ -92,3 +92,30 @@ The resulting Phase 2 corpus structure therefore contains three aligned subcorpo
 - the human-authored subcorpus in `corpus/01_human/`;
 - the plot/style-guided LLM subcorpus in `corpus/03_llm/`;
 - the free-generation LLM subcorpus in `corpus/04_llm_free/`.
+
+The resulting Phase 2 corpus structure therefore contains three aligned subcorpora:
+
+- the human-authored subcorpus in `corpus/01_human/`;
+- the plot/style-guided LLM subcorpus in `corpus/03_llm/`;
+- the free-generation LLM subcorpus in `corpus/04_llm_free/`.
+
+### Linguistic Tagging
+
+Following the generation workflow, the three subcorpora were annotated using the Biber Tagger to extract the normed frequency counts of the relevant linguistic features. These normed counts serve as the input for the multidimensional analysis and are stored in the `sas/` directory:
+
+- `01_human_counts.txt`
+- `03_llm_counts.txt`
+- `04_llm_free_counts.txt`
+
+### Statistical Analysis: Traditional and Additive MDA (SAS)
+
+The quantitative comparison of the subcorpora is executed via the `cl_st1_ph2_sara.sas` script. This script applies a hybrid approach combining Traditional and Additive Multi-Dimensional Analysis (MDA) to map the AI-generated texts onto the human stylistic baseline.
+
+1. **Traditional MDA (Factor Extraction):** 
+   The Human-authored and LLM-Free subcorpora are merged to establish a foundational **Base Corpus**. A factor analysis (using Principal Components and Promax oblique rotation) is performed on this Base Corpus to extract 9 distinct dimensions of linguistic variation. Linguistic variables with low shared variance (communality < 0.15) are excluded. Features are assigned to the 9 factors based on their highest absolute loading, with a minimum inclusion threshold of 0.30.
+
+2. **Additive MDA (Scoring the Guided AI Texts):**
+   To directly compare the plot/style-guided LLM texts against the established dimensional space, an additive approach is used. The raw linguistic counts of the Base Corpus are standardized to z-scores. The LLM-Guided subcorpus is then standardized utilizing the exact means and standard deviations derived from the Base Corpus. Dimension scores are calculated for all texts by summing the z-scores of positive-loading features and subtracting those of negative-loading features.
+
+3. **Evaluation and Visualization:**
+   The script includes a dynamic outlier identification module (using the Interquartile Range method). A bypass is built into the pipeline allowing researchers to retain these outliers, as extreme stylometric deviations in LLM-generated texts can be analytically significant. Finally, the combined dimension scores for all three subcorpora are analyzed using General Linear Models (ANOVAs) and Boxplots to evaluate the main effects and interactions of the `prompt` (human, llm_free, llm) and `source` (human, ai) variables.
