@@ -1,6 +1,7 @@
 /* ============================================================
-   Traditional Multi-dimensional Analysis
-
+   Traditional Multi-Dimensional Analysis
+   with
+   Additive Multi-Dimensional Analysis
    ============================================================ */
 
 /* BEGINNING PART 1 */
@@ -37,6 +38,7 @@ options fmtsearch=(work library);
 
 %let communalcutoff = .15 ;
 
+/* ENDING PART 1 */
 
 /* 1A: Ingest Human-Authored Subcorpus */
 
@@ -1136,11 +1138,18 @@ ODS EXCLUDE ALL;
 
 /* Automatic scoring */
 
-/* Standardize data */
+/* Standardize data using base corpus means and std devs */
 
-PROC STANDARD DATA=&project._meta MEAN=0 STD=1 OUT=mdz; var _NUMERIC_  ; RUN;
+PROC STDIZE DATA=&project._meta METHOD=STD OUT=mdz OUTSTAT=meta_stats;
+    var _NUMERIC_ ;
+RUN;
 
-/* factor scores */
+/* Apply the exact same standardization to the additive corpus */
+PROC STDIZE DATA=&project._add_corpus METHOD=IN(meta_stats) OUT=mdz_add;
+    var _NUMERIC_ ;
+RUN;
+
+/* Factor scores */
 
 data rotated4; set rotated3; if loaded = 1; run;
 
@@ -1159,10 +1168,15 @@ data score;
   rename factor=_name_;
 run;
 
+/* Score the base corpus */
 proc score data=mdz score=score out=scores; run;
-proc sort data = scores ; by filename; run; 
+proc sort data = scores ; by filename; run;
 data scores_only (keep = filename prompt source &factorvars) ; set scores ; run;  /* Keep only the columns we want */
 
+/* Score the additive corpus */
+proc score data=mdz_add score=score out=scores_add; run;
+proc sort data = scores_add ; by filename; run;
+data scores_only_add (keep = filename prompt source &factorvars) ; set scores_add ; run;
 
 /* Overview of corpus */
 
@@ -1193,6 +1207,19 @@ PROC EXPORT
   REPLACE;
 RUN;
 
+PROC EXPORT
+  DATA= WORK.scores_add
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/&project._scores_add.csv"
+  REPLACE;
+RUN;
+
+PROC EXPORT
+  DATA= WORK.scores_only_add
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/&project._scores_only_add.csv"
+  REPLACE;
+RUN;
 
 
 /* Outlier texts, identify */
