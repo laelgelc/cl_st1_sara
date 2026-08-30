@@ -15,6 +15,7 @@
 %let whereisit = /home/&sasusername ;  /* Online */
 
 libname gelc "&whereisit/&myfolder";
+
 /* files will NOT be saved to the folder above unless you put in 'gelc.' before every destination */
 /* otherwise files are going to the work library and not saved to the current folder */
 /* this is needed to enable SGPLOT */
@@ -22,19 +23,23 @@ libname gelc "&whereisit/&myfolder";
 
 options fmtsearch=(work library);
 
-/* enter number of factors to extract */
+/* Enter number of factors to extract */
+
 %let extractfactors = 9 ;
 
 %let factorvars = fac1-fac&extractfactors ;
 
-/* enter min loading cutoff */
+/* Enter min loading cutoff */
+
 %let minloading = .3 ;
 
-/* enter min communality cutoff */
+/* Enter min communality cutoff */
+
 %let communalcutoff = .15 ;
 
 
 /* 1A: Ingest Human-Authored Subcorpus */
+
 DATA corp_human ;
     INFILE "&whereisit/&myfolder/01_human_counts.txt" TRUNCOVER;
     input filename $ 14-60 ttr 61-65 wrlengh 66-70 wcount 71-75
@@ -55,6 +60,7 @@ DATA corp_human ;
 RUN;
 
 /* 1B: Ingest LLM-Free Subcorpus */
+
 DATA corp_llm_free ;
     INFILE "&whereisit/&myfolder/04_llm_free_counts.txt" TRUNCOVER;
     input filename $ 14-60 ttr 61-65 wrlengh 66-70 wcount 71-75
@@ -75,6 +81,7 @@ DATA corp_llm_free ;
 RUN;
 
 /* 1C: Ingest LLM-Guided Subcorpus (For Additive Analysis) */
+
 DATA add_corpus ;
     INFILE "&whereisit/&myfolder/03_llm_counts.txt" TRUNCOVER;
     input filename $ 14-60 ttr 61-65 wrlengh 66-70 wcount 71-75
@@ -94,8 +101,8 @@ DATA add_corpus ;
     source = 'ai' ;
 RUN;
 
-
 /* Combine Base Corpora for Factor Extraction */
+
 DATA base_corpus;
     SET corp_human corp_llm_free;
 RUN;
@@ -533,7 +540,7 @@ ods html close;
 ODS EXCLUDE ALL;
 
 
-/* loadings table */
+/* Loadings table */
 
 /*
  
@@ -970,11 +977,8 @@ run;
 
 /* Adding metadata */
 
-DATA &project._meta (drop= seasontmp );
+DATA &project._meta;
 SET &project ;
-  showname = scan(filename, 1, '_');
-  seasontmp = scan(filename, 2, '_');
-  seasonid = substr(seasontmp, 2, 2);
 RUN;
 
 
@@ -1019,15 +1023,7 @@ data scores_only (keep = filename prompt source &factorvars) ; set scores ; run;
 /* Overview of corpus */
 
 ODS EXCLUDE NONE;
-ods html file="&whereisit/&myfolder/overview.html"; 
-PROC FREQ data=&project._meta; 
-TABLES showname ;
-TABLES  showname * seasonid ;
-RUN;
-
-
-ODS EXCLUDE NONE;
-ods html file="&whereisit/&myfolder/corpus_size.html"; 
+ods html file="&whereisit/&myfolder/corpus_size.html";
 proc means data=&project sum mean min max stddev; var wcount  ; run;
 RUN;
 
@@ -1052,6 +1048,8 @@ PROC EXPORT
   OUTFILE="&whereisit/&myfolder/&project._scores_only.csv"
   REPLACE;
 RUN;
+
+
 
 /* Outlier texts, identify */
 
@@ -1089,7 +1087,11 @@ quit;
 
 /* Outlier texts, remove */
 
-data outliers_to_del (keep= filename prompt source &factorvars) ; set outliers_f1 outliers_f2 ; proc sort noduprecs; by filename; run; quit;  /* Keep only the columns we want */
+/*
+data outliers_to_del (keep= filename prompt source f1 f2) ; set outliers_f1 outliers_f2 ; proc sort noduprecs; by filename; run; quit;  /* Keep only the columns we want */
+*/
+
+data outliers_to_del (keep= filename prompt source &factorvars) ; set outliers_f1 - outliers_f&extractfactors ; proc sort noduprecs; by filename; run; quit;  /* Keep only the columns we want */
 
 data &project._no_outliers; set &project._scores; run;
 
