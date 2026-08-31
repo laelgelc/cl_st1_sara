@@ -1152,20 +1152,31 @@ DATA scores_only
 set scores;
 run;
 
+/* Combine base scores and additive scores for statistical testing */
+DATA scores_combined;
+  SET scores scores_add;
+RUN;
+
+DATA scores_only_combined;
+  SET scores_only scores_only_add;
+RUN;
+
+/* Base TMDA Exports */
 PROC EXPORT
   DATA= WORK.scores
   DBMS=CSV
-  OUTFILE="&whereisit/&myfolder/&project._scores.csv"
+  OUTFILE="&whereisit/&myfolder/&project._scores_base.csv"
   REPLACE;
 RUN;
 
 PROC EXPORT
   DATA= WORK.scores_only
   DBMS=CSV
-  OUTFILE="&whereisit/&myfolder/&project._scores_only.csv"
+  OUTFILE="&whereisit/&myfolder/&project._scores_only_base.csv"
   REPLACE;
 RUN;
 
+/* Additive TMDA Exports */
 PROC EXPORT
   DATA= WORK.scores_add
   DBMS=CSV
@@ -1180,9 +1191,19 @@ PROC EXPORT
   REPLACE;
 RUN;
 
-/* Combine base scores and additive scores for statistical testing */
-DATA scores_combined;
-  SET scores scores_add;
+/* Combined TMDA Exports */
+PROC EXPORT
+  DATA= WORK.scores_combined
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/&project._scores.csv"
+  REPLACE;
+RUN;
+
+PROC EXPORT
+  DATA= WORK.scores_only_combined
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/&project._scores_only.csv"
+  REPLACE;
 RUN;
 
 
