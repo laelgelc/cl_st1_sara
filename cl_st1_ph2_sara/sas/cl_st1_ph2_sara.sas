@@ -22,7 +22,7 @@ options fmtsearch=(work library);
 
 /* Extraction & Cutoff Parameters */
 %let extractfactors = 4 ;
-%let factorvars = fac1-fac&extractfactors ;
+%let factorvars = f1-f&extractfactors ;
 %let minloading = .3 ;
 %let communalcutoff = .15 ;
 
@@ -1006,7 +1006,7 @@ run;
 
 proc sql;
     select memname into :names separated by ' ' from dictionary.tables
-    where libname = 'USER' AND  substr (memname,1,5) = 'TEMP_' ;
+    where libname = 'WORK' AND  substr (memname,1,5) = 'TEMP_' ;
 quit;
 
 proc datasets library=work;
@@ -1022,7 +1022,7 @@ data temp_f&i._prim_pos (keep = Factor&i factor pole type table _NAME_  RENAME =
  table = "f&i.pos" ;
  proc sort ; by descending loading;
 run;
-data temp_f&i._sec_pos (keep = Factor&i type table _NAME_  RENAME = ( Factor&i=loading secfactor&i =factor secpolef&i = pole) ) ;
+data temp_f&i._sec_pos (keep = Factor&i secfactor&i secpolef&i type table _NAME_  RENAME = ( Factor&i=loading secfactor&i =factor secpolef&i = pole) ) ;
  set rotatedinterpr (where=( secfactor&i = "f&i" AND secpolef&i = 1  ));
  type = 'secondary';
  table = "f&i.pos" ;
@@ -1034,7 +1034,7 @@ data temp_f&i._prim_neg (keep = Factor&i factor pole type table _NAME_  RENAME =
  table = "f&i.neg" ;
   proc sort ; by loading;
 run;
-data temp_f&i._sec_neg (keep = Factor&i type table _NAME_  RENAME = ( Factor&i=loading secfactor&i =factor secpolef&i = pole) ) ;
+data temp_f&i._sec_neg (keep = Factor&i secfactor&i secpolef&i type table _NAME_  RENAME = ( Factor&i=loading secfactor&i =factor secpolef&i = pole) ) ;
  set rotatedinterpr (where=( secfactor&i = "f&i" AND secpolef&i = -1  ));
  type = 'secondary';
  table = "f&i.neg" ;
@@ -1049,15 +1049,16 @@ proc sql ;
   create table mytables as
   select *
   from dictionary.tables
-  where ( libname = "USER" and substr (memname,1,6) = 'TEMP_F')
+  where ( libname = "WORK" and substr (memname,1,6) = 'TEMP_F')
   order by memname ;
 quit ;
 
 proc sql;
-    select memname into :names separated by ' ' from mytables
+    select memname into :names separated by ' ' from mytables;
 quit;
 
 data loadtableinterpr (drop = factor pole);
+ length type $15;
  set &names ;
 run;
 
@@ -1075,7 +1076,7 @@ RUN;
 
 proc sql;
     select memname into :names separated by ' ' from dictionary.tables
-    where libname = 'USER' AND  substr (memname,1,5) = 'TEMP_' ;
+    where libname = 'WORK' AND  substr (memname,1,5) = 'TEMP_' ;
 quit;
 
 proc datasets library=work;
