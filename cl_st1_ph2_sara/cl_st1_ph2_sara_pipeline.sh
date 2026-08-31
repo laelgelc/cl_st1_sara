@@ -78,25 +78,3 @@ python examples_md.py
 
 python anova_table_md.py
 # Output: anova_table_md/
-
-
-# ------------------------------------------------------------
-# 6. Build interpretation prompts
-#
-# ------------------------------------------------------------
-
-python interpretation_prompts.py
-# Output: interpretation/input/
-
-
-# ------------------------------------------------------------
-# 7. Submit interpretation prompts to GPT
-#
-# ------------------------------------------------------------
-
-python generate_interpretation_gpt.py \
-    --input interpretation/input \
-    --output interpretation/output \
-    --model gpt-5.5 \
-    --workers 4
-# Output: interpretation/output/

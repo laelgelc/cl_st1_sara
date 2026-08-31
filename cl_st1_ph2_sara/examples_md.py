@@ -223,13 +223,15 @@ def write_md_example(
     """Write one Markdown example file."""
     features_str = ", ".join(features)
 
+    # Using two spaces at the end of each line forces a line break in Markdown,
+    # preventing the header lines from being collapsed into a single paragraph.
     content = (
-        f"**Prompt:** {prompt}\n"
-        f"**Filepath**: {filepath.as_posix()}\n"
-        f"**Author**: {author}\n"
-        f"**Title:** {title}\n"
-        f"**Score ({label}):** {score:.2f}\n"
-        f"**Loading features ({label}), N={len(features)}:** {features_str}\n\n"
+        f"**Prompt:** {prompt}  \n"
+        f"**Filepath**: {filepath.as_posix()}  \n"
+        f"**Author**: {author}  \n"
+        f"**Title:** {title}  \n"
+        f"**Score ({label}):** {score:.2f}  \n"
+        f"**Loading features ({label}), N={len(features)}:** {features_str}  \n\n"
         f"---\n\n"
         f"{raw_text}\n"
     )
