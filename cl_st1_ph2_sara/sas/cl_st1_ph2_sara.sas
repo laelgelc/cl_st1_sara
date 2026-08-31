@@ -21,7 +21,7 @@ libname gelc "&whereisit/&myfolder";
 options fmtsearch=(work library);
 
 /* Extraction & Cutoff Parameters */
-%let extractfactors = 9 ;
+%let extractfactors = 4 ;
 %let factorvars = fac1-fac&extractfactors ;
 %let minloading = .3 ;
 %let communalcutoff = .15 ;
@@ -151,7 +151,7 @@ RUN;
 OPTIONS VALIDVARNAME=ANY;
 
 ODS EXCLUDE NONE;
-ods html file='&whereisit/&myfolder/unrotated.html';
+ods html file="&whereisit/&myfolder/unrotated.html";
 ods trace on;
 
 proc factor
@@ -223,7 +223,7 @@ if factor <= 20 ;
 run;
 
 ODS EXCLUDE NONE;
-ods listing gpath='&whereisit/&myfolder/';
+ods listing gpath="&whereisit/&myfolder/";
 ods graphics / imagename="scree" imagefmt=png;
 title "Scree plot";
 proc sgplot data= fout4 ;
@@ -1062,7 +1062,7 @@ data loadtableinterpr (drop = factor pole);
 run;
 
 ODS EXCLUDE NONE;
-ods html file='&whereisit/&myfolder/loadtable_for_interpretation.html';
+ods html file="&whereisit/&myfolder/loadtable_for_interpretation.html";
 PROC PRINT data=loadtableinterpr ; FORMAT _NAME_ $featurelabels. loading 9.2 ; run;
 ods html close;
 
@@ -1317,7 +1317,7 @@ https://www.researchgate.net/post/Difference_between_Type_I_and_Type_III_SS_deci
 /* Boxplots */
 %macro create(howmany);
 %do i=1 %to &howmany;
-ods listing gpath='&whereisit/&myfolder/';
+ods listing gpath="&whereisit/&myfolder/";
 ods graphics / imagename="boxplot_f&i" imagefmt=png;
 title "Box plots";
 proc GLM data=&project._no_outliers;
