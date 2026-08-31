@@ -58,12 +58,12 @@ python prepare_for_biber_tagger.py \
 
 
 # ------------------------------------------------------------
-# Run SAS
+# 3. Run SAS
 # ------------------------------------------------------------
 
 
 # ------------------------------------------------------------
-# 14. Generate Markdown example extracts
+# 4. Generate Markdown example extracts
 #
 # ------------------------------------------------------------
 
@@ -71,23 +71,18 @@ python examples_md.py
 # Output: examples_md/
 
 
-
 # ------------------------------------------------------------
-# 11. Generate LaTeX ANOVA table
+# 5. Generate Markdown ANOVA table
 #
-# Summarises decade effects for each factor using F, p, R², and
-# percent R².
 # ------------------------------------------------------------
 
-python latex_anova_table.py
-# Output: latex_tables/anova_decade.tex
+python anova_table_md.py
+# Output: anova_table_md/
 
 
 # ------------------------------------------------------------
-# 15. Build interpretation prompts
+# 6. Build interpretation prompts
 #
-# Combines factor loadings, mean decade scores, plaintext examples,
-# and score-details information into one prompt per factor pole.
 # ------------------------------------------------------------
 
 python interpretation_prompts.py
@@ -95,11 +90,8 @@ python interpretation_prompts.py
 
 
 # ------------------------------------------------------------
-# 16. Submit interpretation prompts to GPT
+# 7. Submit interpretation prompts to GPT
 #
-# Sends each prompt file to the configured GPT model and writes one
-# response file per factor pole. Requires OPENAI_API_KEY in the
-# environment or in env/.env.
 # ------------------------------------------------------------
 
 python generate_interpretation_gpt.py \
