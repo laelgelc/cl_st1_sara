@@ -33,6 +33,7 @@ options fmtsearch=(work library);
 
 /* 1A: Ingest Human-Authored Subcorpus */
 DATA corp_human ;
+    length prompt $10 source $10;
     INFILE "&whereisit/&myfolder/01_human_counts.txt" TRUNCOVER;
     input filename $ 14-60 ttr 61-65 wrlengh 66-70 wcount 71-75
     #2 prv_vb 1-5 that_del 6-10 contrac 11-15 pres 16-20 pro2 21-25 pro_do 26-30 pdem 31-35 gen_emph 36-40 pro1 41-45 it 46-50 be_state 51-55 sub_cos 56-60 prtcle 61-65 pany 66-70 gen_hdg 71-75
@@ -53,6 +54,7 @@ RUN;
 
 /* 1B: Ingest LLM-Free Subcorpus */
 DATA corp_llm_free ;
+    length prompt $10 source $10;
     INFILE "&whereisit/&myfolder/04_llm_free_counts.txt" TRUNCOVER;
     input filename $ 14-60 ttr 61-65 wrlengh 66-70 wcount 71-75
     #2 prv_vb 1-5 that_del 6-10 contrac 11-15 pres 16-20 pro2 21-25 pro_do 26-30 pdem 31-35 gen_emph 36-40 pro1 41-45 it 46-50 be_state 51-55 sub_cos 56-60 prtcle 61-65 pany 66-70 gen_hdg 71-75
@@ -73,6 +75,7 @@ RUN;
 
 /* 1C: Ingest LLM-Guided Subcorpus (For Additive Analysis) */
 DATA add_corpus ;
+    length prompt $10 source $10;
     INFILE "&whereisit/&myfolder/03_llm_counts.txt" TRUNCOVER;
     input filename $ 14-60 ttr 61-65 wrlengh 66-70 wcount 71-75
     #2 prv_vb 1-5 that_del 6-10 contrac 11-15 pres 16-20 pro2 21-25 pro_do 26-30 pdem 31-35 gen_emph 36-40 pro1 41-45 it 46-50 be_state 51-55 sub_cos 56-60 prtcle 61-65 pany 66-70 gen_hdg 71-75
