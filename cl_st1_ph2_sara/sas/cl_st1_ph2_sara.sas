@@ -1298,7 +1298,7 @@ data &project._no_outliers; set scores_combined; run;
    SECTION 9: STATISTICAL ANALYSIS (ANOVAs & BOXPLOTS)
    ========================================================================== */
 
-/* ANOVAs and Boxplots */
+/* ANOVAs */
 /* ODS table names for GLM: */
 /*https://support.sas.com/documentation/cdl/en/statug/68162/HTML/default/viewer.htm#statug_glm_details70.htm*/
 
@@ -1335,7 +1335,6 @@ discussion:
 https://www.researchgate.net/post/Difference_between_Type_I_and_Type_III_SS_decision_tables_in_statistical_analyses
 */
 
-/*
 /* Boxplots */
 %macro create(howmany);
 %do i=1 %to &howmany;
@@ -1353,7 +1352,6 @@ title;
 %mend create;
 %create( &extractfactors )  /* Number of factors extracted */
 quit;
-*/
 
 
 /* ==========================================================================
