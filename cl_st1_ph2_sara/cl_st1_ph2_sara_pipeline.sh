@@ -56,46 +56,20 @@ python prepare_for_biber_tagger.py \
     --input-dir corpus/04_llm_free \
     --output-dir corpus/05_tagged/04_llm_free_prep
 
+
 # ------------------------------------------------------------
 # Run SAS
 # ------------------------------------------------------------
 
 
 # ------------------------------------------------------------
-# 8. Build factor loading lists
+# 14. Generate Markdown example extracts
 #
-# Reads SAS factor outputs and produces readable positive/negative
-# loading lists for each factor.
 # ------------------------------------------------------------
 
-python factor_lists.py
-# Output: factors/
+python examples_md.py
+# Output: examples_md/
 
-
-# ------------------------------------------------------------
-# 9. Calculate corpus size summaries
-#
-# Produces corpus-size metadata for reporting and checking balance
-# across decades.
-# ------------------------------------------------------------
-
-python corpus_size.py
-# Output: corpus_size/corpus_size.tsv
-
-
-# ------------------------------------------------------------
-# 10. Generate LaTeX/TikZ boxplots
-#
-# Creates one boxplot per factor dimension and a combined mosaic
-# for use in slides or reports.
-# ------------------------------------------------------------
-
-cd latex_boxplots
-
-python latex_boxplots.py
-# Output: latex_boxplots/slides/
-
-cd ..
 
 
 # ------------------------------------------------------------
@@ -107,41 +81,6 @@ cd ..
 
 python latex_anova_table.py
 # Output: latex_tables/anova_decade.tex
-
-
-# ------------------------------------------------------------
-# 12. Generate LaTeX example extracts
-#
-# Selects representative high-scoring texts by factor pole and
-# decade, then writes LaTeX examples with factor-loading lemmas
-# highlighted.
-# ------------------------------------------------------------
-
-python examples.py
-# Output: examples/
-
-
-# ------------------------------------------------------------
-# 13. Generate score-details report
-#
-# Sanity-check report showing, for each text and factor, which
-# positive- and negative-pole loading words are present.
-# ------------------------------------------------------------
-
-python score_details.py
-# Output: examples/score_details.txt
-
-
-# ------------------------------------------------------------
-# 14. Generate plaintext example extracts
-#
-# Produces plain `.txt` versions of the selected examples, including
-# score metadata and loading words. These are useful for manual review
-# and for building interpretation prompts.
-# ------------------------------------------------------------
-
-python examples_txt.py
-# Output: examples_txt/
 
 
 # ------------------------------------------------------------
