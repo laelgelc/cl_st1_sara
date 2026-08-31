@@ -1298,7 +1298,7 @@ data &project._no_outliers; set scores_combined; run;
    SECTION 9: STATISTICAL ANALYSIS (ANOVAs & BOXPLOTS)
    ========================================================================== */
 
-/* ANOVAS & Boxplots */
+/* ANOVAs and Boxplots */
 /* ODS table names for GLM: */
 /*https://support.sas.com/documentation/cdl/en/statug/68162/HTML/default/viewer.htm#statug_glm_details70.htm*/
 
@@ -1307,22 +1307,19 @@ ods html file="&whereisit/&myfolder/glm_meta.html";
 %macro create(howmany);
 %do i=1 %to &howmany;
 OPTIONS VALIDVARNAME=ANY;
-
-ods listing gpath="&whereisit/&myfolder/";
-ods graphics on / reset imagename="boxplot_f&i" imagefmt=png;
+ods graphics off;
 
 proc GLM data=&project._no_outliers;
 ods output FitStatistics=r2_prompt_f&i ;
 ods output OverallANOVA=anova_prompt_f&i ;
 ods output Means=means_prompt_f&i ;
-    title GLM for dataset = &project._no_outliers f&i ;
-    class prompt ;
-    model f&i = prompt ;
-    means prompt ;
-    run;
+	title GLM for dataset = &project._no_outliers f&i ;
+	class prompt source;
+	model f&i = prompt source prompt*source;
+	means prompt source ;
+	run;
 
-ods graphics off;
-title;
+ods graphics on;
 %end;
 %mend create;
 %create( &extractfactors )  /* Number of factors extracted */
@@ -1336,6 +1333,26 @@ If the interaction between A*B is not significant, this indicates that the effec
 
 discussion:
 https://www.researchgate.net/post/Difference_between_Type_I_and_Type_III_SS_decision_tables_in_statistical_analyses
+*/
+
+/*
+/* Boxplots */
+%macro create(howmany);
+%do i=1 %to &howmany;
+ods listing gpath="&whereisit/&myfolder/";
+ods graphics / imagename="boxplot_f&i" imagefmt=png;
+title "Box plots";
+proc GLM data=&project._no_outliers;
+	title GLM for dataset = &project._no_outliers f&i ;
+	class prompt;
+	model f&i = prompt;
+	means prompt ;
+	run;
+title;
+%end;
+%mend create;
+%create( &extractfactors )  /* Number of factors extracted */
+quit;
 */
 
 
