@@ -1310,13 +1310,13 @@ OPTIONS VALIDVARNAME=ANY;
 ods graphics off;
 
 proc GLM data=&project._no_outliers;
-ods output FitStatistics=r2_prompt_f&i ;
-ods output OverallANOVA=anova_prompt_f&i ;
-ods output Means=means_prompt_f&i ;
-	title GLM for dataset = &project._no_outliers f&i ;
-	class prompt source;
-	model f&i = prompt source prompt*source;
-	means prompt source ;
+ods output FitStatistics=r2_prompt_f&i;
+ods output OverallANOVA=anova_prompt_f&i;
+ods output Means=means_prompt_f&i;
+	title GLM for dataset = &project._no_outliers f&i;
+	class prompt;
+	model f&i = prompt;
+	means prompt;
 	run;
 
 ods graphics on;
@@ -1340,13 +1340,13 @@ https://www.researchgate.net/post/Difference_between_Type_I_and_Type_III_SS_deci
 %macro create(howmany);
 %do i=1 %to &howmany;
 ods listing gpath="&whereisit/&myfolder/";
-ods graphics / imagename="boxplot_f&i" imagefmt=png;
+ods graphics / reset imagename="boxplot_f&i" imagefmt=png;
 title "Box plots";
 proc GLM data=&project._no_outliers;
-	title GLM for dataset = &project._no_outliers f&i ;
+	title GLM for dataset = &project._no_outliers f&i;
 	class prompt;
 	model f&i = prompt;
-	means prompt ;
+	means prompt;
 	run;
 title;
 %end;
