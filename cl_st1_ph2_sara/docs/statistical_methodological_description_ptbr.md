@@ -18,7 +18,7 @@ A análise fatorial é conduzida exclusivamente no Corpus Base para definir as d
 Uma análise inicial de componentes principais (não rotacionada) é realizada para avaliar a variância capturada pelas características linguísticas. Variáveis que demonstram baixa variância compartilhada — especificamente aquelas com estimativas de comunalidade inferiores a **0,15** — são excluídas do modelo final para garantir a robustez. Um gráfico de sedimentação (*scree plot*) de autovalores também é gerado para avaliar visualmente o número ideal de fatores.
 
 **3.2. Análise Fatorial Rotacionada**
-Uma análise fatorial final é realizada com as variáveis restantes, utilizando a extração de Componentes Principais e uma rotação **Promax (oblíqua)**. Com base nos parâmetros do estudo, exatamente **9 fatores** são extraídos.
+Uma análise fatorial final é realizada com as variáveis restantes, utilizando a extração de Componentes Principais e uma rotação **Promax (oblíqua)**. Com base nos parâmetros do estudo, exatamente **4 fatores** são extraídos.
 
 As características (*features*) são atribuídas a um fator específico com base na sua maior carga absoluta, com um limite mínimo de inclusão de **0,30**. Variáveis que carregam em múltiplos fatores são estritamente atribuídas ao fator onde sua carga é matematicamente maior, mantendo a clareza ortogonal na pontuação final. Ambos os polos (positivo e negativo) são identificados para cada fator.
 
@@ -39,5 +39,5 @@ A metodologia inclui uma estrutura robusta para identificar e lidar com *outlier
 ## 6. Análise Estatística e Visualização
 Para determinar se existem diferenças significativas na variação linguística entre os diferentes subcorpora, os escores dimensionais combinados (abrangendo tanto o corpus Base quanto o Aditivo) são analisados usando Modelos Lineares Generalizados (GLMs).
 
-*   **ANOVAs** são executadas para testar os efeitos principais das variáveis independentes (`prompt` e `source`) e a sua interação (`prompt*source`) em cada uma das 9 dimensões extraídas.
+*   **ANOVAs** são executadas para testar os efeitos principais das variáveis independentes (`prompt` e `source`) e a sua interação (`prompt*source`) em cada uma das 4 dimensões extraídas.
 *   **Boxplots** são gerados dinamicamente para cada dimensão a fim de avaliar visualmente a distribuição, a mediana e a variância dos escores dimensionais entre as diferentes condições de *prompt*.

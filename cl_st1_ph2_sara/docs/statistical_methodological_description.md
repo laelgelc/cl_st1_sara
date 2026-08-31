@@ -18,7 +18,7 @@ Factor analysis is conducted exclusively on the Base Corpus to define the underl
 An initial, unrotated principal component analysis is performed to evaluate the variance captured by the linguistic features. Variables demonstrating low shared variance—specifically those with communality estimates below **0.15**—are excluded from the final model to ensure robustness. A scree plot of eigenvalues is also generated to visually assess the optimal number of factors.
 
 **3.2. Rotated Factor Analysis**
-A final factor analysis is performed on the remaining variables using Principal Component extraction and a **Promax (oblique)** rotation. Based on the study's parameters, exactly **9 factors** are extracted. 
+A final factor analysis is performed on the remaining variables using Principal Component extraction and a **Promax (oblique)** rotation. Based on the study's parameters, exactly **4 factors** are extracted. 
 
 Features are assigned to a specific factor based on their highest absolute loading, with a minimum inclusion threshold of **0.30**. Variables that load on multiple factors are strictly assigned to the factor where their loading is mathematically highest, maintaining orthogonal clarity in the final scoring. Both positive and negative poles are identified for each factor.
 
@@ -39,5 +39,5 @@ The methodology includes a robust framework for identifying and handling outlier
 ## 6. Statistical Analysis and Visualization
 To determine whether significant differences in linguistic variation exist between the different subcorpora, the combined dimension scores (spanning both the Base and Additive corpora) are analyzed using General Linear Models (GLMs).
 
-*   **ANOVAs** are executed to test the main effects of the independent variables (`prompt` and `source`) and their interaction (`prompt*source`) on each of the 9 extracted dimensions. 
+*   **ANOVAs** are executed to test the main effects of the independent variables (`prompt` and `source`) and their interaction (`prompt*source`) on each of the 4 extracted dimensions. 
 *   **Boxplots** are dynamically generated for each dimension to visually evaluate the distribution, median, and variance of the dimension scores across the different prompt conditions.
