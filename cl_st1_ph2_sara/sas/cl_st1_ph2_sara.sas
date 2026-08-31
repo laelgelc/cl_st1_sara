@@ -1263,7 +1263,7 @@ data outliers_f&i (keep= filename prompt source f&i) ; set outliers_f&i ; proc s
 PROC EXPORT
   DATA= WORK.outliers_f&i
   DBMS=CSV
-  OUTFILE="&whereisit/&myfolder/outliers_deleted_f&i.csv"
+  OUTFILE="&whereisit/&myfolder/outliers_deleted_f&i..csv"
   REPLACE;
 RUN;
 
