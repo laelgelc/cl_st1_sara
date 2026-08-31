@@ -793,7 +793,7 @@ run;
 data rotated4 ; set rotated3 ; if loaded = 1; run; quit;
 
 /* Labeling */
-PROC FORMAT library=user ;
+PROC FORMAT library=work ;
   VALUE  $featurelabels
 "abstrcn" = "Abstract nouns"
 "act_ipv" = "Intransitive phrasal activity verbs"
@@ -1009,7 +1009,7 @@ proc sql;
     where libname = 'USER' AND  substr (memname,1,5) = 'TEMP_' ;
 quit;
 
-proc datasets library=user;
+proc datasets library=work;
 delete
 &names;
 run;
@@ -1078,7 +1078,7 @@ proc sql;
     where libname = 'USER' AND  substr (memname,1,5) = 'TEMP_' ;
 quit;
 
-proc datasets library=user;
+proc datasets library=work;
 delete
 &names;
 run;
