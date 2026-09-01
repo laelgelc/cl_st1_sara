@@ -1,14 +1,10 @@
 # ============================================================
-# Project pipeline for CL-ST1 Phase 2
+# Project pipeline for cl_st1_ph2_sara
 #
 # Run this script from the project phase directory, e.g.:
 #
 #   cl_st1_ph2_sara/
 #
-# The pipeline prepares the corpus, selects keywords, builds the
-# SAS input files, generates post-SAS factor outputs, creates
-# visualisations and examples, and finally prepares/interprets
-# factor-pole prompts.
 # ============================================================
 
 # ------------------------------------------------------------
