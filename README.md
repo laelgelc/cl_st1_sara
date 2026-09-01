@@ -111,11 +111,19 @@ Following the generation workflow, the three subcorpora were annotated using the
 
 The quantitative comparison of the subcorpora is executed via the `cl_st1_ph2_sara.sas` script. This script applies a hybrid approach combining Traditional and Additive Multi-Dimensional Analysis (MDA) to map the AI-generated texts onto the human stylistic baseline.
 
-1. **Traditional MDA (Factor Extraction):** 
+1. **Traditional MDA (Factor Extraction):**
    The Human-authored and LLM-Free subcorpora are merged to establish a foundational **Base Corpus**. A factor analysis (using Principal Components and Promax oblique rotation) is performed on this Base Corpus to extract 4 distinct dimensions of linguistic variation. Linguistic variables with low shared variance (communality < 0.15) are excluded. Features are assigned to the 4 factors based on their highest absolute loading, with a minimum inclusion threshold of 0.30.
 
 2. **Additive MDA (Scoring the Guided AI Texts):**
    To directly compare the plot/style-guided LLM texts against the established dimensional space, an additive approach is used. The raw linguistic counts of the Base Corpus are standardized to z-scores. The LLM-Guided subcorpus is then standardized utilizing the exact means and standard deviations derived from the Base Corpus. Dimension scores are calculated for all texts by summing the z-scores of positive-loading features and subtracting those of negative-loading features.
 
 3. **Evaluation and Visualization:**
-   The script includes a dynamic outlier identification module (using the Interquartile Range method). A bypass is built into the pipeline allowing researchers to retain these outliers, as extreme stylometric deviations in LLM-generated texts can be analytically significant. Finally, the combined dimension scores for all three subcorpora are analyzed using General Linear Models (ANOVAs) and Boxplots to evaluate the main effects and interactions of the `prompt` (human, llm_free, llm) and `source` (human, ai) variables.
+   The script includes a dynamic outlier identification module (using the Interquartile Range method). A bypass is built into the pipeline allowing researchers to retain these outliers, as extreme stylometric deviations in LLM-generated texts can be analytically significant. Finally, the combined dimension scores for all three subcorpora are analyzed using General Linear Models (ANOVAs) and Boxplots to evaluate the main effect of the `prompt` (human, llm_free, llm) variable.
+
+### Examples Generation
+
+To support the qualitative interpretation of the extracted factor dimensions, the `examples_md.py` script generates readable Markdown examples for each factor pole. It calculates the mean factor scores for each prompt condition and selects the texts with the most extreme scores. These are compiled into the `examples_md/` directory, providing original text extracts annotated with their respective prompt, file path, scores, and loading linguistic features.
+
+### ANOVA Table Generation
+
+The `anova_table_md.py` script automatically parses the HTML GLM output from SAS (`sas/output_cl_st1_ph2_sara/glm_meta.html`) and constructs a clean Markdown summary table of the ANOVA results for all dimensions, capturing the F-value, p-value, and R-Square percentage. The generated table is stored in the `anova_table_md/` directory.
