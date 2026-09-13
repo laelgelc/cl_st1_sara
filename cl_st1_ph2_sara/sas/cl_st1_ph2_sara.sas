@@ -262,7 +262,7 @@ ods html close;
 /* Checking summary variables */
 OPTIONS VALIDVARNAME=ANY;
 data prerotat;
-  set rotated (where=(_TYPE_="PREROTAT"));
+  set rotated (where=(_TYPE_="PATTERN"));
 run;
 
 proc transpose data=prerotat out= rotated2 ;
@@ -596,7 +596,7 @@ ODS EXCLUDE ALL;
 /* Reformat outstat to obtain rotated factor pattern */
 OPTIONS VALIDVARNAME=ANY;
 data rotated2;
-  set rotatedfinal (where=(_TYPE_="PREROTAT"));
+  set rotatedfinal (where=(_TYPE_="PATTERN"));
 run;
 
 proc transpose data=rotated2 out= rotated2 ;
