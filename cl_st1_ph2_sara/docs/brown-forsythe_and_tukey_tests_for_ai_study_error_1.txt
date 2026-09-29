@@ -1,0 +1,2373 @@
+ 1          OPTIONS NONOTES NOSTIMER NOSOURCE NOSYNTAXCHECK;
+ NOTE: ODS statements in the SAS Studio environment may disable some output features.
+ 69
+ 70         /* --------------------------------------------------------------------------
+ 71            9.2. ANOVAs, Brown-Forsythe, Welch, and Tukey tests
+ 72            -------------------------------------------------------------------------- */
+ 73
+ 74         ODS EXCLUDE NONE;
+ 75         ods html file="&whereisit/&myfolder/glm_meta.html";
+ NOTE: Writing HTML Body file: /home/u63529080/cl_st1_ph2_sara/glm_meta.html
+ 76
+ 77         %macro create_glm_tests(howmany);
+ 78         %do i=1 %to &howmany;
+ 79
+ 80         OPTIONS VALIDVARNAME=ANY;
+ 81         ods graphics off;
+ 82
+ 83         title "GLM, Brown-Forsythe, Welch, and Tukey tests for f&i";
+ 84
+ 85         proc GLM data=&project._no_outliers;
+ 86             class prompt;
+ 87             model f&i = prompt;
+ 88
+ 89             ods output
+ 90                 FitStatistics = r2_prompt_f&i
+ 91                 OverallANOVA  = anova_prompt_f&i
+ 92                 Means         = means_prompt_f&i
+ 93                 HOVFTest      = brown_forsythe_prompt_f&i
+ 94                 Welch         = welch_prompt_f&i
+ 95                 CLDiffs       = tukey_cldiff_prompt_f&i;
+ 96
+ 97             means prompt / hovtest=bf welch tukey cldiff;
+ 98         run;
+ 99         quit;
+ 100
+ 101        PROC EXPORT
+ 102          DATA=WORK.r2_prompt_f&i
+ 103          DBMS=CSV
+ 104          OUTFILE="&whereisit/&myfolder/r2_prompt_f&i..csv"
+ 105          REPLACE;
+ 106        RUN;
+ 107
+ 108        PROC EXPORT
+ 109          DATA=WORK.anova_prompt_f&i
+ 110          DBMS=CSV
+ 111          OUTFILE="&whereisit/&myfolder/anova_prompt_f&i..csv"
+ 112          REPLACE;
+ 113        RUN;
+ 114
+ 115        PROC EXPORT
+ 116          DATA=WORK.means_prompt_f&i
+ 117          DBMS=CSV
+ 118          OUTFILE="&whereisit/&myfolder/means_prompt_f&i..csv"
+ 119          REPLACE;
+ 120        RUN;
+ 121
+ 122        PROC EXPORT
+ 123          DATA=WORK.brown_forsythe_prompt_f&i
+ 124          DBMS=CSV
+ 125          OUTFILE="&whereisit/&myfolder/brown_forsythe_prompt_f&i..csv"
+ 126          REPLACE;
+ 127        RUN;
+ 128
+ 129        PROC EXPORT
+ 130          DATA=WORK.welch_prompt_f&i
+ 131          DBMS=CSV
+ 132          OUTFILE="&whereisit/&myfolder/welch_prompt_f&i..csv"
+ 133          REPLACE;
+ 134        RUN;
+ 135
+ 136        PROC EXPORT
+ 137          DATA=WORK.tukey_cldiff_prompt_f&i
+ 138          DBMS=CSV
+ 139          OUTFILE="&whereisit/&myfolder/tukey_cldiff_prompt_f&i..csv"
+ 140          REPLACE;
+ 141        RUN;
+ 142
+ 143        ods graphics on;
+ 144
+ 145        %end;
+ 146        %mend create_glm_tests;
+ 147
+ 148        %create_glm_tests(&extractfactors)
+
+ NOTE: The data set WORK.TUKEY_CLDIFF_PROMPT_F1 has 6 observations and 8 variables.
+ NOTE: The data set WORK.WELCH_PROMPT_F1 has 2 observations and 6 variables.
+ NOTE: The data set WORK.BROWN_FORSYTHE_PROMPT_F1 has 2 observations and 9 variables.
+ NOTE: The data set WORK.ANOVA_PROMPT_F1 has 3 observations and 7 variables.
+ NOTE: The data set WORK.R2_PROMPT_F1 has 1 observations and 5 variables.
+
+ WARNING: Output 'Means' was not created.  Make sure that the output object name, label, or path is spelled correctly.  Also, verify
+          that the appropriate procedure options are used to produce the requested output object.  For example, verify that the
+          NOPRINT option is not used.
+ NOTE: PROCEDURE GLM used (Total process time):
+       real time           0.08 seconds
+       user cpu time       0.09 seconds
+       system cpu time     0.01 seconds
+       memory              7604.78k
+       OS Memory           38864.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        533  Switch Count  13
+       Page Faults                       0
+       Page Reclaims                     1258
+       Page Swaps                        0
+       Voluntary Context Switches        81
+       Involuntary Context Switches      2
+       Block Input Operations            0
+       Block Output Operations           1720
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 149         /**********************************************************************
+ 150         *   PRODUCT:   SAS
+ 151         *   VERSION:   9.4
+ 152         *   CREATOR:   External File Interface
+ 153         *   DATE:      29SEP26
+ 154         *   DESC:      Generated SAS Datastep Code
+ 155         *   TEMPLATE SOURCE:  (None Specified.)
+ 156         ***********************************************************************/
+ 157            data _null_;
+ 158            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 159            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 160            file '/home/u63529080/cl_st1_ph2_sara/r2_prompt_f1.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 161            if _n_ = 1 then        /* write column names or labels */
+ 162             do;
+ 163               put
+ 164                  "Dependent"
+ 165               ','
+ 166                  "RSquare"
+ 167               ','
+ 168                  "CV"
+ 169               ','
+ 170                  "RootMSE"
+ 171               ','
+ 172                  "DepMean"
+ 173               ;
+ 174             end;
+ 175           set  WORK.R2_PROMPT_F1   end=EFIEOD;
+ 176               format Dependent $8. ;
+ 177               format RSquare 8.6 ;
+ 178               format CV 10.4 ;
+ 179               format RootMSE 10.6 ;
+ 180               format DepMean 10.6 ;
+ 181             do;
+ 182               EFIOUT + 1;
+ 183               put Dependent $ @;
+ 184               put RSquare @;
+ 185               put CV @;
+ 186               put RootMSE @;
+ 187               put DepMean ;
+ 188               ;
+ 189             end;
+ 190            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 191            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 192            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/r2_prompt_f1.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/r2_prompt_f1.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 2 records were written to the file '/home/u63529080/cl_st1_ph2_sara/r2_prompt_f1.csv'.
+       The minimum record length was 36.
+       The maximum record length was 40.
+ NOTE: There were 1 observations read from the data set WORK.R2_PROMPT_F1.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.00 seconds
+       memory              9298.00k
+       OS Memory           42016.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        534  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     96
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+ 1 records created in /home/u63529080/cl_st1_ph2_sara/r2_prompt_f1.csv from WORK.R2_PROMPT_F1.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/r2_prompt_f1.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.00 seconds
+       memory              9298.00k
+       OS Memory           42276.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        534  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1333
+       Page Swaps                        0
+       Voluntary Context Switches        73
+       Involuntary Context Switches      2
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 193         /**********************************************************************
+ 194         *   PRODUCT:   SAS
+ 195         *   VERSION:   9.4
+ 196         *   CREATOR:   External File Interface
+ 197         *   DATE:      29SEP26
+ 198         *   DESC:      Generated SAS Datastep Code
+ 199         *   TEMPLATE SOURCE:  (None Specified.)
+ 200         ***********************************************************************/
+ 201            data _null_;
+ 202            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 203            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 204            file '/home/u63529080/cl_st1_ph2_sara/anova_prompt_f1.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 205            if _n_ = 1 then        /* write column names or labels */
+ 206             do;
+ 207               put
+ 208                  "Dependent"
+ 209               ','
+ 210                  "Source"
+ 211               ','
+ 212                  "DF"
+ 213               ','
+ 214                  "SS"
+ 215               ','
+ 216                  "MS"
+ 217               ','
+ 218                  "FValue"
+ 219               ','
+ 220                  "ProbF"
+ 221               ;
+ 222             end;
+ 223           set  WORK.ANOVA_PROMPT_F1   end=EFIEOD;
+ 224               format Dependent $8. ;
+ 225               format Source $20. ;
+ 226               format DF best6. ;
+ 227               format SS 12.4 ;
+ 228               format MS 12.4 ;
+ 229               format FValue 7.2 ;
+ 230               format ProbF pvalue6.4 ;
+ 231             do;
+ 232               EFIOUT + 1;
+ 233               put Dependent $ @;
+ 234               put Source $ @;
+ 235               put DF @;
+ 236               put SS @;
+ 237               put MS @;
+ 238               put FValue @;
+ 239               put ProbF ;
+ 240               ;
+ 241             end;
+ 242            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 243            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 244            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/anova_prompt_f1.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/anova_prompt_f1.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 4 records were written to the file '/home/u63529080/cl_st1_ph2_sara/anova_prompt_f1.csv'.
+       The minimum record length was 37.
+       The maximum record length was 49.
+ NOTE: There were 3 observations read from the data set WORK.ANOVA_PROMPT_F1.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.00 seconds
+       memory              9196.50k
+       OS Memory           42016.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        535  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     87
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+ 3 records created in /home/u63529080/cl_st1_ph2_sara/anova_prompt_f1.csv from WORK.ANOVA_PROMPT_F1.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/anova_prompt_f1.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.01 seconds
+       memory              9196.50k
+       OS Memory           42276.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        535  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1111
+       Page Swaps                        0
+       Voluntary Context Switches        70
+       Involuntary Context Switches      4
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ ERROR: File WORK.MEANS_PROMPT_F1.DATA does not exist.
+ ERROR: Export unsuccessful.  See SAS Log for details.
+ NOTE: The SAS System stopped processing this step because of errors.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.01 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.00 seconds
+       memory              8327.28k
+       OS Memory           41244.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        536  Switch Count  5
+       Page Faults                       0
+       Page Reclaims                     841
+       Page Swaps                        0
+       Voluntary Context Switches        35
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 245         /**********************************************************************
+ 246         *   PRODUCT:   SAS
+ 247         *   VERSION:   9.4
+ 248         *   CREATOR:   External File Interface
+ 249         *   DATE:      29SEP26
+ 250         *   DESC:      Generated SAS Datastep Code
+ 251         *   TEMPLATE SOURCE:  (None Specified.)
+ 252         ***********************************************************************/
+ 253            data _null_;
+ 254            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 255            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 256            file '/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f1.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 257            if _n_ = 1 then        /* write column names or labels */
+ 258             do;
+ 259               put
+ 260                  "Effect"
+ 261               ','
+ 262                  "Dependent"
+ 263               ','
+ 264                  "Method"
+ 265               ','
+ 266                  "Source"
+ 267               ','
+ 268                  "DF"
+ 269               ','
+ 270                  "SS"
+ 271               ','
+ 272                  "MS"
+ 273               ','
+ 274                  "FValue"
+ 275               ','
+ 276                  "ProbF"
+ 277               ;
+ 278             end;
+ 279           set  WORK.BROWN_FORSYTHE_PROMPT_F1   end=EFIEOD;
+ 280               format Effect $9. ;
+ 281               format Dependent $8. ;
+ 282               format Method $2. ;
+ 283               format Source $6. ;
+ 284               format DF best6. ;
+ 285               format SS d8.3 ;
+ 286               format MS d8.3 ;
+ 287               format FValue 7.2 ;
+ 288               format ProbF pvalue6.4 ;
+ 289             do;
+ 290               EFIOUT + 1;
+ 291               put Effect $ @;
+ 292               put Dependent $ @;
+ 293               put Method $ @;
+ 294               put Source $ @;
+ 295               put DF @;
+ 296               put SS @;
+ 297               put MS @;
+ 298               put FValue @;
+ 299               put ProbF ;
+ 300               ;
+ 301             end;
+ 302            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 303            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 304            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f1.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f1.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 3 records were written to the file '/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f1.csv'.
+       The minimum record length was 43.
+       The maximum record length was 52.
+ NOTE: There were 2 observations read from the data set WORK.BROWN_FORSYTHE_PROMPT_F1.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.00 seconds
+       memory              9316.65k
+       OS Memory           42016.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        537  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     90
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           8
+
+
+ 2 records created in /home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f1.csv from WORK.BROWN_FORSYTHE_PROMPT_F1.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f1.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.00 seconds
+       memory              9316.65k
+       OS Memory           42276.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        537  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1034
+       Page Swaps                        0
+       Voluntary Context Switches        75
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 305         /**********************************************************************
+ 306         *   PRODUCT:   SAS
+ 307         *   VERSION:   9.4
+ 308         *   CREATOR:   External File Interface
+ 309         *   DATE:      29SEP26
+ 310         *   DESC:      Generated SAS Datastep Code
+ 311         *   TEMPLATE SOURCE:  (None Specified.)
+ 312         ***********************************************************************/
+ 313            data _null_;
+ 314            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 315            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 316            file '/home/u63529080/cl_st1_ph2_sara/welch_prompt_f1.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 317            if _n_ = 1 then        /* write column names or labels */
+ 318             do;
+ 319               put
+ 320                  "Effect"
+ 321               ','
+ 322                  "Dependent"
+ 323               ','
+ 324                  "Source"
+ 325               ','
+ 326                  "DF"
+ 327               ','
+ 328                  "FValue"
+ 329               ','
+ 330                  "ProbF"
+ 331               ;
+ 332             end;
+ 333           set  WORK.WELCH_PROMPT_F1   end=EFIEOD;
+ 334               format Effect $9. ;
+ 335               format Dependent $8. ;
+ 336               format Source $6. ;
+ 337               format DF d8.3 ;
+ 338               format FValue 7.2 ;
+ 339               format ProbF pvalue6.4 ;
+ 340             do;
+ 341               EFIOUT + 1;
+ 342               put Effect $ @;
+ 343               put Dependent $ @;
+ 344               put Source $ @;
+ 345               put DF @;
+ 346               put FValue @;
+ 347               put ProbF ;
+ 348               ;
+ 349             end;
+ 350            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 351            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 352            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/welch_prompt_f1.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/welch_prompt_f1.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 3 records were written to the file '/home/u63529080/cl_st1_ph2_sara/welch_prompt_f1.csv'.
+       The minimum record length was 26.
+       The maximum record length was 39.
+ NOTE: There were 2 observations read from the data set WORK.WELCH_PROMPT_F1.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.00 seconds
+       memory              9302.75k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        538  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     91
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+ 2 records created in /home/u63529080/cl_st1_ph2_sara/welch_prompt_f1.csv from WORK.WELCH_PROMPT_F1.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/welch_prompt_f1.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.03 seconds
+       system cpu time     0.00 seconds
+       memory              9302.75k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        538  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1100
+       Page Swaps                        0
+       Voluntary Context Switches        72
+       Involuntary Context Switches      5
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 353         /**********************************************************************
+ 354         *   PRODUCT:   SAS
+ 355         *   VERSION:   9.4
+ 356         *   CREATOR:   External File Interface
+ 357         *   DATE:      29SEP26
+ 358         *   DESC:      Generated SAS Datastep Code
+ 359         *   TEMPLATE SOURCE:  (None Specified.)
+ 360         ***********************************************************************/
+ 361            data _null_;
+ 362            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 363            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 364            file '/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f1.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 365            if _n_ = 1 then        /* write column names or labels */
+ 366             do;
+ 367               put
+ 368                  "Effect"
+ 369               ','
+ 370                  "Dependent"
+ 371               ','
+ 372                  "Method"
+ 373               ','
+ 374                  "Comparison"
+ 375               ','
+ 376                  "LowerCL"
+ 377               ','
+ 378                  "Difference"
+ 379               ','
+ 380                  "UpperCL"
+ 381               ','
+ 382                  "Significance"
+ 383               ;
+ 384             end;
+ 385           set  WORK.TUKEY_CLDIFF_PROMPT_F1   end=EFIEOD;
+ 386               format Effect $9. ;
+ 387               format Dependent $8. ;
+ 388               format Method $8. ;
+ 389               format Comparison $19. ;
+ 390               format LowerCL 9.4 ;
+ 391               format Difference 9.4 ;
+ 392               format UpperCL 9.4 ;
+ 393               format Significance best8. ;
+ 394             do;
+ 395               EFIOUT + 1;
+ 396               put Effect $ @;
+ 397               put Dependent $ @;
+ 398               put Method $ @;
+ 399               put Comparison $ @;
+ 400               put LowerCL @;
+ 401               put Difference @;
+ 402               put UpperCL @;
+ 403               put Significance ;
+ 404               ;
+ 405             end;
+ 406            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 407            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 408            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f1.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f1.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 7 records were written to the file '/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f1.csv'.
+       The minimum record length was 56.
+       The maximum record length was 74.
+ NOTE: There were 6 observations read from the data set WORK.TUKEY_CLDIFF_PROMPT_F1.
+ NOTE: DATA statement used (Total process time):
+       real time           0.01 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.00 seconds
+       memory              9313.84k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        539  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     92
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+ 6 records created in /home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f1.csv from WORK.TUKEY_CLDIFF_PROMPT_F1.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f1.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.01 seconds
+       memory              9313.84k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        539  Switch Count  8
+       Page Faults                       0
+       Page Reclaims                     1091
+       Page Swaps                        0
+       Voluntary Context Switches        71
+       Involuntary Context Switches      3
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: The data set WORK.TUKEY_CLDIFF_PROMPT_F2 has 6 observations and 8 variables.
+ NOTE: The data set WORK.WELCH_PROMPT_F2 has 2 observations and 6 variables.
+ NOTE: The data set WORK.BROWN_FORSYTHE_PROMPT_F2 has 2 observations and 9 variables.
+ NOTE: The data set WORK.ANOVA_PROMPT_F2 has 3 observations and 7 variables.
+ NOTE: The data set WORK.R2_PROMPT_F2 has 1 observations and 5 variables.
+
+ WARNING: Output 'Means' was not created.  Make sure that the output object name, label, or path is spelled correctly.  Also, verify
+          that the appropriate procedure options are used to produce the requested output object.  For example, verify that the
+          NOPRINT option is not used.
+ NOTE: PROCEDURE GLM used (Total process time):
+       real time           0.08 seconds
+       user cpu time       0.08 seconds
+       system cpu time     0.01 seconds
+       memory              5128.87k
+       OS Memory           40144.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        540  Switch Count  13
+       Page Faults                       0
+       Page Reclaims                     744
+       Page Swaps                        0
+       Voluntary Context Switches        86
+       Involuntary Context Switches      4
+       Block Input Operations            0
+       Block Output Operations           1664
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 409         /**********************************************************************
+ 410         *   PRODUCT:   SAS
+ 411         *   VERSION:   9.4
+ 412         *   CREATOR:   External File Interface
+ 413         *   DATE:      29SEP26
+ 414         *   DESC:      Generated SAS Datastep Code
+ 415         *   TEMPLATE SOURCE:  (None Specified.)
+ 416         ***********************************************************************/
+ 417            data _null_;
+ 418            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 419            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 420            file '/home/u63529080/cl_st1_ph2_sara/r2_prompt_f2.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 421            if _n_ = 1 then        /* write column names or labels */
+ 422             do;
+ 423               put
+ 424                  "Dependent"
+ 425               ','
+ 426                  "RSquare"
+ 427               ','
+ 428                  "CV"
+ 429               ','
+ 430                  "RootMSE"
+ 431               ','
+ 432                  "DepMean"
+ 433               ;
+ 434             end;
+ 435           set  WORK.R2_PROMPT_F2   end=EFIEOD;
+ 436               format Dependent $8. ;
+ 437               format RSquare 8.6 ;
+ 438               format CV 10.4 ;
+ 439               format RootMSE 10.6 ;
+ 440               format DepMean 10.6 ;
+ 441             do;
+ 442               EFIOUT + 1;
+ 443               put Dependent $ @;
+ 444               put RSquare @;
+ 445               put CV @;
+ 446               put RootMSE @;
+ 447               put DepMean ;
+ 448               ;
+ 449             end;
+ 450            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 451            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 452            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/r2_prompt_f2.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/r2_prompt_f2.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 2 records were written to the file '/home/u63529080/cl_st1_ph2_sara/r2_prompt_f2.csv'.
+       The minimum record length was 36.
+       The maximum record length was 38.
+ NOTE: There were 1 observations read from the data set WORK.R2_PROMPT_F2.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.01 seconds
+       system cpu time     0.00 seconds
+       memory              9297.53k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        541  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     90
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           8
+
+
+ 1 records created in /home/u63529080/cl_st1_ph2_sara/r2_prompt_f2.csv from WORK.R2_PROMPT_F2.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/r2_prompt_f2.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.00 seconds
+       memory              9297.53k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        541  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1079
+       Page Swaps                        0
+       Voluntary Context Switches        69
+       Involuntary Context Switches      2
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 453         /**********************************************************************
+ 454         *   PRODUCT:   SAS
+ 455         *   VERSION:   9.4
+ 456         *   CREATOR:   External File Interface
+ 457         *   DATE:      29SEP26
+ 458         *   DESC:      Generated SAS Datastep Code
+ 459         *   TEMPLATE SOURCE:  (None Specified.)
+ 460         ***********************************************************************/
+ 461            data _null_;
+ 462            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 463            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 464            file '/home/u63529080/cl_st1_ph2_sara/anova_prompt_f2.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 465            if _n_ = 1 then        /* write column names or labels */
+ 466             do;
+ 467               put
+ 468                  "Dependent"
+ 469               ','
+ 470                  "Source"
+ 471               ','
+ 472                  "DF"
+ 473               ','
+ 474                  "SS"
+ 475               ','
+ 476                  "MS"
+ 477               ','
+ 478                  "FValue"
+ 479               ','
+ 480                  "ProbF"
+ 481               ;
+ 482             end;
+ 483           set  WORK.ANOVA_PROMPT_F2   end=EFIEOD;
+ 484               format Dependent $8. ;
+ 485               format Source $20. ;
+ 486               format DF best6. ;
+ 487               format SS 12.4 ;
+ 488               format MS 12.4 ;
+ 489               format FValue 7.2 ;
+ 490               format ProbF pvalue6.4 ;
+ 491             do;
+ 492               EFIOUT + 1;
+ 493               put Dependent $ @;
+ 494               put Source $ @;
+ 495               put DF @;
+ 496               put SS @;
+ 497               put MS @;
+ 498               put FValue @;
+ 499               put ProbF ;
+ 500               ;
+ 501             end;
+ 502            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 503            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 504            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/anova_prompt_f2.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/anova_prompt_f2.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 4 records were written to the file '/home/u63529080/cl_st1_ph2_sara/anova_prompt_f2.csv'.
+       The minimum record length was 37.
+       The maximum record length was 47.
+ NOTE: There were 3 observations read from the data set WORK.ANOVA_PROMPT_F2.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.00 seconds
+       memory              9308.40k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        542  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     88
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           8
+
+
+ 3 records created in /home/u63529080/cl_st1_ph2_sara/anova_prompt_f2.csv from WORK.ANOVA_PROMPT_F2.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/anova_prompt_f2.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.01 seconds
+       memory              9308.40k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        542  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1068
+       Page Swaps                        0
+       Voluntary Context Switches        70
+       Involuntary Context Switches      3
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ ERROR: File WORK.MEANS_PROMPT_F2.DATA does not exist.
+ ERROR: Export unsuccessful.  See SAS Log for details.
+ NOTE: The SAS System stopped processing this step because of errors.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.01 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.00 seconds
+       memory              8327.06k
+       OS Memory           41500.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        543  Switch Count  5
+       Page Faults                       0
+       Page Reclaims                     841
+       Page Swaps                        0
+       Voluntary Context Switches        36
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           8
+
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 505         /**********************************************************************
+ 506         *   PRODUCT:   SAS
+ 507         *   VERSION:   9.4
+ 508         *   CREATOR:   External File Interface
+ 509         *   DATE:      29SEP26
+ 510         *   DESC:      Generated SAS Datastep Code
+ 511         *   TEMPLATE SOURCE:  (None Specified.)
+ 512         ***********************************************************************/
+ 513            data _null_;
+ 514            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 515            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 516            file '/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f2.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 517            if _n_ = 1 then        /* write column names or labels */
+ 518             do;
+ 519               put
+ 520                  "Effect"
+ 521               ','
+ 522                  "Dependent"
+ 523               ','
+ 524                  "Method"
+ 525               ','
+ 526                  "Source"
+ 527               ','
+ 528                  "DF"
+ 529               ','
+ 530                  "SS"
+ 531               ','
+ 532                  "MS"
+ 533               ','
+ 534                  "FValue"
+ 535               ','
+ 536                  "ProbF"
+ 537               ;
+ 538             end;
+ 539           set  WORK.BROWN_FORSYTHE_PROMPT_F2   end=EFIEOD;
+ 540               format Effect $9. ;
+ 541               format Dependent $8. ;
+ 542               format Method $2. ;
+ 543               format Source $6. ;
+ 544               format DF best6. ;
+ 545               format SS d8.3 ;
+ 546               format MS d8.3 ;
+ 547               format FValue 7.2 ;
+ 548               format ProbF pvalue6.4 ;
+ 549             do;
+ 550               EFIOUT + 1;
+ 551               put Effect $ @;
+ 552               put Dependent $ @;
+ 553               put Method $ @;
+ 554               put Source $ @;
+ 555               put DF @;
+ 556               put SS @;
+ 557               put MS @;
+ 558               put FValue @;
+ 559               put ProbF ;
+ 560               ;
+ 561             end;
+ 562            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 563            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 564            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f2.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f2.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 3 records were written to the file '/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f2.csv'.
+       The minimum record length was 42.
+       The maximum record length was 52.
+ NOTE: There were 2 observations read from the data set WORK.BROWN_FORSYTHE_PROMPT_F2.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.00 seconds
+       memory              9316.43k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        544  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     90
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+ 2 records created in /home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f2.csv from WORK.BROWN_FORSYTHE_PROMPT_F2.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f2.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.01 seconds
+       memory              9316.43k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        544  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1020
+       Page Swaps                        0
+       Voluntary Context Switches        68
+       Involuntary Context Switches      2
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 565         /**********************************************************************
+ 566         *   PRODUCT:   SAS
+ 567         *   VERSION:   9.4
+ 568         *   CREATOR:   External File Interface
+ 569         *   DATE:      29SEP26
+ 570         *   DESC:      Generated SAS Datastep Code
+ 571         *   TEMPLATE SOURCE:  (None Specified.)
+ 572         ***********************************************************************/
+ 573            data _null_;
+ 574            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 575            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 576            file '/home/u63529080/cl_st1_ph2_sara/welch_prompt_f2.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 577            if _n_ = 1 then        /* write column names or labels */
+ 578             do;
+ 579               put
+ 580                  "Effect"
+ 581               ','
+ 582                  "Dependent"
+ 583               ','
+ 584                  "Source"
+ 585               ','
+ 586                  "DF"
+ 587               ','
+ 588                  "FValue"
+ 589               ','
+ 590                  "ProbF"
+ 591               ;
+ 592             end;
+ 593           set  WORK.WELCH_PROMPT_F2   end=EFIEOD;
+ 594               format Effect $9. ;
+ 595               format Dependent $8. ;
+ 596               format Source $6. ;
+ 597               format DF d8.3 ;
+ 598               format FValue 7.2 ;
+ 599               format ProbF pvalue6.4 ;
+ 600             do;
+ 601               EFIOUT + 1;
+ 602               put Effect $ @;
+ 603               put Dependent $ @;
+ 604               put Source $ @;
+ 605               put DF @;
+ 606               put FValue @;
+ 607               put ProbF ;
+ 608               ;
+ 609             end;
+ 610            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 611            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 612            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/welch_prompt_f2.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/welch_prompt_f2.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 3 records were written to the file '/home/u63529080/cl_st1_ph2_sara/welch_prompt_f2.csv'.
+       The minimum record length was 26.
+       The maximum record length was 39.
+ NOTE: There were 2 observations read from the data set WORK.WELCH_PROMPT_F2.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.00 seconds
+       memory              9302.53k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        545  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     84
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+ 2 records created in /home/u63529080/cl_st1_ph2_sara/welch_prompt_f2.csv from WORK.WELCH_PROMPT_F2.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/welch_prompt_f2.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.03 seconds
+       system cpu time     0.00 seconds
+       memory              9302.53k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        545  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1066
+       Page Swaps                        0
+       Voluntary Context Switches        68
+       Involuntary Context Switches      2
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 613         /**********************************************************************
+ 614         *   PRODUCT:   SAS
+ 615         *   VERSION:   9.4
+ 616         *   CREATOR:   External File Interface
+ 617         *   DATE:      29SEP26
+ 618         *   DESC:      Generated SAS Datastep Code
+ 619         *   TEMPLATE SOURCE:  (None Specified.)
+ 620         ***********************************************************************/
+ 621            data _null_;
+ 622            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 623            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 624            file '/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f2.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 625            if _n_ = 1 then        /* write column names or labels */
+ 626             do;
+ 627               put
+ 628                  "Effect"
+ 629               ','
+ 630                  "Dependent"
+ 631               ','
+ 632                  "Method"
+ 633               ','
+ 634                  "Comparison"
+ 635               ','
+ 636                  "LowerCL"
+ 637               ','
+ 638                  "Difference"
+ 639               ','
+ 640                  "UpperCL"
+ 641               ','
+ 642                  "Significance"
+ 643               ;
+ 644             end;
+ 645           set  WORK.TUKEY_CLDIFF_PROMPT_F2   end=EFIEOD;
+ 646               format Effect $9. ;
+ 647               format Dependent $8. ;
+ 648               format Method $8. ;
+ 649               format Comparison $19. ;
+ 650               format LowerCL 9.4 ;
+ 651               format Difference 9.4 ;
+ 652               format UpperCL 9.4 ;
+ 653               format Significance best8. ;
+ 654             do;
+ 655               EFIOUT + 1;
+ 656               put Effect $ @;
+ 657               put Dependent $ @;
+ 658               put Method $ @;
+ 659               put Comparison $ @;
+ 660               put LowerCL @;
+ 661               put Difference @;
+ 662               put UpperCL @;
+ 663               put Significance ;
+ 664               ;
+ 665             end;
+ 666            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 667            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 668            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f2.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f2.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 7 records were written to the file '/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f2.csv'.
+       The minimum record length was 53.
+       The maximum record length was 74.
+ NOTE: There were 6 observations read from the data set WORK.TUKEY_CLDIFF_PROMPT_F2.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.01 seconds
+       system cpu time     0.00 seconds
+       memory              9201.50k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        546  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     92
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+ 6 records created in /home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f2.csv from WORK.TUKEY_CLDIFF_PROMPT_F2.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f2.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.01 seconds
+       memory              9201.50k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        546  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1078
+       Page Swaps                        0
+       Voluntary Context Switches        68
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: The data set WORK.TUKEY_CLDIFF_PROMPT_F3 has 6 observations and 8 variables.
+ NOTE: The data set WORK.WELCH_PROMPT_F3 has 2 observations and 6 variables.
+ NOTE: The data set WORK.BROWN_FORSYTHE_PROMPT_F3 has 2 observations and 9 variables.
+ NOTE: The data set WORK.ANOVA_PROMPT_F3 has 3 observations and 7 variables.
+ NOTE: The data set WORK.R2_PROMPT_F3 has 1 observations and 5 variables.
+
+ WARNING: Output 'Means' was not created.  Make sure that the output object name, label, or path is spelled correctly.  Also, verify
+          that the appropriate procedure options are used to produce the requested output object.  For example, verify that the
+          NOPRINT option is not used.
+ NOTE: PROCEDURE GLM used (Total process time):
+       real time           0.08 seconds
+       user cpu time       0.08 seconds
+       system cpu time     0.01 seconds
+       memory              5016.68k
+       OS Memory           40144.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        547  Switch Count  13
+       Page Faults                       0
+       Page Reclaims                     733
+       Page Swaps                        0
+       Voluntary Context Switches        91
+       Involuntary Context Switches      2
+       Block Input Operations            0
+       Block Output Operations           1640
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 669         /**********************************************************************
+ 670         *   PRODUCT:   SAS
+ 671         *   VERSION:   9.4
+ 672         *   CREATOR:   External File Interface
+ 673         *   DATE:      29SEP26
+ 674         *   DESC:      Generated SAS Datastep Code
+ 675         *   TEMPLATE SOURCE:  (None Specified.)
+ 676         ***********************************************************************/
+ 677            data _null_;
+ 678            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 679            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 680            file '/home/u63529080/cl_st1_ph2_sara/r2_prompt_f3.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 681            if _n_ = 1 then        /* write column names or labels */
+ 682             do;
+ 683               put
+ 684                  "Dependent"
+ 685               ','
+ 686                  "RSquare"
+ 687               ','
+ 688                  "CV"
+ 689               ','
+ 690                  "RootMSE"
+ 691               ','
+ 692                  "DepMean"
+ 693               ;
+ 694             end;
+ 695           set  WORK.R2_PROMPT_F3   end=EFIEOD;
+ 696               format Dependent $8. ;
+ 697               format RSquare 8.6 ;
+ 698               format CV 10.3 ;
+ 699               format RootMSE 10.6 ;
+ 700               format DepMean 10.6 ;
+ 701             do;
+ 702               EFIOUT + 1;
+ 703               put Dependent $ @;
+ 704               put RSquare @;
+ 705               put CV @;
+ 706               put RootMSE @;
+ 707               put DepMean ;
+ 708               ;
+ 709             end;
+ 710            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 711            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 712            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/r2_prompt_f3.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/r2_prompt_f3.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 2 records were written to the file '/home/u63529080/cl_st1_ph2_sara/r2_prompt_f3.csv'.
+       The minimum record length was 36.
+       The maximum record length was 40.
+ NOTE: There were 1 observations read from the data set WORK.R2_PROMPT_F3.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.00 seconds
+       memory              9299.43k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        548  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     65
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           8
+
+
+ 1 records created in /home/u63529080/cl_st1_ph2_sara/r2_prompt_f3.csv from WORK.R2_PROMPT_F3.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/r2_prompt_f3.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.00 seconds
+       memory              9299.43k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        548  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1045
+       Page Swaps                        0
+       Voluntary Context Switches        65
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 713         /**********************************************************************
+ 714         *   PRODUCT:   SAS
+ 715         *   VERSION:   9.4
+ 716         *   CREATOR:   External File Interface
+ 717         *   DATE:      29SEP26
+ 718         *   DESC:      Generated SAS Datastep Code
+ 719         *   TEMPLATE SOURCE:  (None Specified.)
+ 720         ***********************************************************************/
+ 721            data _null_;
+ 722            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 723            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 724            file '/home/u63529080/cl_st1_ph2_sara/anova_prompt_f3.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 725            if _n_ = 1 then        /* write column names or labels */
+ 726             do;
+ 727               put
+ 728                  "Dependent"
+ 729               ','
+ 730                  "Source"
+ 731               ','
+ 732                  "DF"
+ 733               ','
+ 734                  "SS"
+ 735               ','
+ 736                  "MS"
+ 737               ','
+ 738                  "FValue"
+ 739               ','
+ 740                  "ProbF"
+ 741               ;
+ 742             end;
+ 743           set  WORK.ANOVA_PROMPT_F3   end=EFIEOD;
+ 744               format Dependent $8. ;
+ 745               format Source $20. ;
+ 746               format DF best6. ;
+ 747               format SS 12.4 ;
+ 748               format MS 12.4 ;
+ 749               format FValue 7.2 ;
+ 750               format ProbF pvalue6.4 ;
+ 751             do;
+ 752               EFIOUT + 1;
+ 753               put Dependent $ @;
+ 754               put Source $ @;
+ 755               put DF @;
+ 756               put SS @;
+ 757               put MS @;
+ 758               put FValue @;
+ 759               put ProbF ;
+ 760               ;
+ 761             end;
+ 762            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 763            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 764            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/anova_prompt_f3.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/anova_prompt_f3.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 4 records were written to the file '/home/u63529080/cl_st1_ph2_sara/anova_prompt_f3.csv'.
+       The minimum record length was 37.
+       The maximum record length was 46.
+ NOTE: There were 3 observations read from the data set WORK.ANOVA_PROMPT_F3.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.01 seconds
+       system cpu time     0.00 seconds
+       memory              9309.84k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        549  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     87
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           8
+
+
+ 3 records created in /home/u63529080/cl_st1_ph2_sara/anova_prompt_f3.csv from WORK.ANOVA_PROMPT_F3.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/anova_prompt_f3.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.00 seconds
+       memory              9309.84k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        549  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1085
+       Page Swaps                        0
+       Voluntary Context Switches        69
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           24
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ ERROR: File WORK.MEANS_PROMPT_F3.DATA does not exist.
+ ERROR: Export unsuccessful.  See SAS Log for details.
+ NOTE: The SAS System stopped processing this step because of errors.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.01 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.00 seconds
+       memory              8328.50k
+       OS Memory           41500.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        550  Switch Count  5
+       Page Faults                       0
+       Page Reclaims                     841
+       Page Swaps                        0
+       Voluntary Context Switches        38
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           8
+
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 765         /**********************************************************************
+ 766         *   PRODUCT:   SAS
+ 767         *   VERSION:   9.4
+ 768         *   CREATOR:   External File Interface
+ 769         *   DATE:      29SEP26
+ 770         *   DESC:      Generated SAS Datastep Code
+ 771         *   TEMPLATE SOURCE:  (None Specified.)
+ 772         ***********************************************************************/
+ 773            data _null_;
+ 774            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 775            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 776            file '/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f3.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 777            if _n_ = 1 then        /* write column names or labels */
+ 778             do;
+ 779               put
+ 780                  "Effect"
+ 781               ','
+ 782                  "Dependent"
+ 783               ','
+ 784                  "Method"
+ 785               ','
+ 786                  "Source"
+ 787               ','
+ 788                  "DF"
+ 789               ','
+ 790                  "SS"
+ 791               ','
+ 792                  "MS"
+ 793               ','
+ 794                  "FValue"
+ 795               ','
+ 796                  "ProbF"
+ 797               ;
+ 798             end;
+ 799           set  WORK.BROWN_FORSYTHE_PROMPT_F3   end=EFIEOD;
+ 800               format Effect $9. ;
+ 801               format Dependent $8. ;
+ 802               format Method $2. ;
+ 803               format Source $6. ;
+ 804               format DF best6. ;
+ 805               format SS d8.3 ;
+ 806               format MS d8.3 ;
+ 807               format FValue 7.2 ;
+ 808               format ProbF pvalue6.4 ;
+ 809             do;
+ 810               EFIOUT + 1;
+ 811               put Effect $ @;
+ 812               put Dependent $ @;
+ 813               put Method $ @;
+ 814               put Source $ @;
+ 815               put DF @;
+ 816               put SS @;
+ 817               put MS @;
+ 818               put FValue @;
+ 819               put ProbF ;
+ 820               ;
+ 821             end;
+ 822            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 823            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 824            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f3.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f3.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 3 records were written to the file '/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f3.csv'.
+       The minimum record length was 43.
+       The maximum record length was 52.
+ NOTE: There were 2 observations read from the data set WORK.BROWN_FORSYTHE_PROMPT_F3.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.01 seconds
+       memory              9317.90k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        551  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     72
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+ 2 records created in /home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f3.csv from WORK.BROWN_FORSYTHE_PROMPT_F3.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f3.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.01 seconds
+       memory              9317.90k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        551  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1003
+       Page Swaps                        0
+       Voluntary Context Switches        67
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 825         /**********************************************************************
+ 826         *   PRODUCT:   SAS
+ 827         *   VERSION:   9.4
+ 828         *   CREATOR:   External File Interface
+ 829         *   DATE:      29SEP26
+ 830         *   DESC:      Generated SAS Datastep Code
+ 831         *   TEMPLATE SOURCE:  (None Specified.)
+ 832         ***********************************************************************/
+ 833            data _null_;
+ 834            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 835            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 836            file '/home/u63529080/cl_st1_ph2_sara/welch_prompt_f3.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 837            if _n_ = 1 then        /* write column names or labels */
+ 838             do;
+ 839               put
+ 840                  "Effect"
+ 841               ','
+ 842                  "Dependent"
+ 843               ','
+ 844                  "Source"
+ 845               ','
+ 846                  "DF"
+ 847               ','
+ 848                  "FValue"
+ 849               ','
+ 850                  "ProbF"
+ 851               ;
+ 852             end;
+ 853           set  WORK.WELCH_PROMPT_F3   end=EFIEOD;
+ 854               format Effect $9. ;
+ 855               format Dependent $8. ;
+ 856               format Source $6. ;
+ 857               format DF d8.3 ;
+ 858               format FValue 7.2 ;
+ 859               format ProbF pvalue6.4 ;
+ 860             do;
+ 861               EFIOUT + 1;
+ 862               put Effect $ @;
+ 863               put Dependent $ @;
+ 864               put Source $ @;
+ 865               put DF @;
+ 866               put FValue @;
+ 867               put ProbF ;
+ 868               ;
+ 869             end;
+ 870            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 871            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 872            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/welch_prompt_f3.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/welch_prompt_f3.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:37
+
+ NOTE: 3 records were written to the file '/home/u63529080/cl_st1_ph2_sara/welch_prompt_f3.csv'.
+       The minimum record length was 26.
+       The maximum record length was 39.
+ NOTE: There were 2 observations read from the data set WORK.WELCH_PROMPT_F3.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.00 seconds
+       memory              9303.96k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        552  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     84
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+ 2 records created in /home/u63529080/cl_st1_ph2_sara/welch_prompt_f3.csv from WORK.WELCH_PROMPT_F3.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/welch_prompt_f3.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.03 seconds
+       system cpu time     0.00 seconds
+       memory              9303.96k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:37 PM
+       Step Count                        552  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1082
+       Page Swaps                        0
+       Voluntary Context Switches        70
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 873         /**********************************************************************
+ 874         *   PRODUCT:   SAS
+ 875         *   VERSION:   9.4
+ 876         *   CREATOR:   External File Interface
+ 877         *   DATE:      29SEP26
+ 878         *   DESC:      Generated SAS Datastep Code
+ 879         *   TEMPLATE SOURCE:  (None Specified.)
+ 880         ***********************************************************************/
+ 881            data _null_;
+ 882            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 883            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 884            file '/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f3.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 885            if _n_ = 1 then        /* write column names or labels */
+ 886             do;
+ 887               put
+ 888                  "Effect"
+ 889               ','
+ 890                  "Dependent"
+ 891               ','
+ 892                  "Method"
+ 893               ','
+ 894                  "Comparison"
+ 895               ','
+ 896                  "LowerCL"
+ 897               ','
+ 898                  "Difference"
+ 899               ','
+ 900                  "UpperCL"
+ 901               ','
+ 902                  "Significance"
+ 903               ;
+ 904             end;
+ 905           set  WORK.TUKEY_CLDIFF_PROMPT_F3   end=EFIEOD;
+ 906               format Effect $9. ;
+ 907               format Dependent $8. ;
+ 908               format Method $8. ;
+ 909               format Comparison $19. ;
+ 910               format LowerCL 8.4 ;
+ 911               format Difference 8.4 ;
+ 912               format UpperCL 8.4 ;
+ 913               format Significance best8. ;
+ 914             do;
+ 915               EFIOUT + 1;
+ 916               put Effect $ @;
+ 917               put Dependent $ @;
+ 918               put Method $ @;
+ 919               put Comparison $ @;
+ 920               put LowerCL @;
+ 921               put Difference @;
+ 922               put UpperCL @;
+ 923               put Significance ;
+ 924               ;
+ 925             end;
+ 926            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 927            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 928            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f3.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f3.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:38
+
+ NOTE: 7 records were written to the file '/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f3.csv'.
+       The minimum record length was 53.
+       The maximum record length was 74.
+ NOTE: There were 6 observations read from the data set WORK.TUKEY_CLDIFF_PROMPT_F3.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.01 seconds
+       memory              9315.06k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        553  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     91
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+ 6 records created in /home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f3.csv from WORK.TUKEY_CLDIFF_PROMPT_F3.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f3.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.01 seconds
+       memory              9315.06k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        553  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1077
+       Page Swaps                        0
+       Voluntary Context Switches        69
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: The data set WORK.TUKEY_CLDIFF_PROMPT_F4 has 6 observations and 8 variables.
+ NOTE: The data set WORK.WELCH_PROMPT_F4 has 2 observations and 6 variables.
+ NOTE: The data set WORK.BROWN_FORSYTHE_PROMPT_F4 has 2 observations and 9 variables.
+ NOTE: The data set WORK.ANOVA_PROMPT_F4 has 3 observations and 7 variables.
+ NOTE: The data set WORK.R2_PROMPT_F4 has 1 observations and 5 variables.
+
+ WARNING: Output 'Means' was not created.  Make sure that the output object name, label, or path is spelled correctly.  Also, verify
+          that the appropriate procedure options are used to produce the requested output object.  For example, verify that the
+          NOPRINT option is not used.
+ NOTE: PROCEDURE GLM used (Total process time):
+       real time           0.08 seconds
+       user cpu time       0.08 seconds
+       system cpu time     0.00 seconds
+       memory              5022.43k
+       OS Memory           40144.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        554  Switch Count  13
+       Page Faults                       0
+       Page Reclaims                     734
+       Page Swaps                        0
+       Voluntary Context Switches        85
+       Involuntary Context Switches      3
+       Block Input Operations            0
+       Block Output Operations           1664
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 929         /**********************************************************************
+ 930         *   PRODUCT:   SAS
+ 931         *   VERSION:   9.4
+ 932         *   CREATOR:   External File Interface
+ 933         *   DATE:      29SEP26
+ 934         *   DESC:      Generated SAS Datastep Code
+ 935         *   TEMPLATE SOURCE:  (None Specified.)
+ 936         ***********************************************************************/
+ 937            data _null_;
+ 938            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 939            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 940            file '/home/u63529080/cl_st1_ph2_sara/r2_prompt_f4.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 941            if _n_ = 1 then        /* write column names or labels */
+ 942             do;
+ 943               put
+ 944                  "Dependent"
+ 945               ','
+ 946                  "RSquare"
+ 947               ','
+ 948                  "CV"
+ 949               ','
+ 950                  "RootMSE"
+ 951               ','
+ 952                  "DepMean"
+ 953               ;
+ 954             end;
+ 955           set  WORK.R2_PROMPT_F4   end=EFIEOD;
+ 956               format Dependent $8. ;
+ 957               format RSquare 8.6 ;
+ 958               format CV 10.3 ;
+ 959               format RootMSE 10.6 ;
+ 960               format DepMean 10.6 ;
+ 961             do;
+ 962               EFIOUT + 1;
+ 963               put Dependent $ @;
+ 964               put RSquare @;
+ 965               put CV @;
+ 966               put RootMSE @;
+ 967               put DepMean ;
+ 968               ;
+ 969             end;
+ 970            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 971            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 972            run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/r2_prompt_f4.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/r2_prompt_f4.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:38
+
+ NOTE: 2 records were written to the file '/home/u63529080/cl_st1_ph2_sara/r2_prompt_f4.csv'.
+       The minimum record length was 36.
+       The maximum record length was 40.
+ NOTE: There were 1 observations read from the data set WORK.R2_PROMPT_F4.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.00 seconds
+       memory              9310.87k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        555  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     86
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           8
+
+
+ 1 records created in /home/u63529080/cl_st1_ph2_sara/r2_prompt_f4.csv from WORK.R2_PROMPT_F4.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/r2_prompt_f4.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.01 seconds
+       memory              9310.87k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        555  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1066
+       Page Swaps                        0
+       Voluntary Context Switches        70
+       Involuntary Context Switches      2
+       Block Input Operations            0
+       Block Output Operations           24
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 973         /**********************************************************************
+ 974         *   PRODUCT:   SAS
+ 975         *   VERSION:   9.4
+ 976         *   CREATOR:   External File Interface
+ 977         *   DATE:      29SEP26
+ 978         *   DESC:      Generated SAS Datastep Code
+ 979         *   TEMPLATE SOURCE:  (None Specified.)
+ 980         ***********************************************************************/
+ 981            data _null_;
+ 982            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 983            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 984            file '/home/u63529080/cl_st1_ph2_sara/anova_prompt_f4.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 985            if _n_ = 1 then        /* write column names or labels */
+ 986             do;
+ 987               put
+ 988                  "Dependent"
+ 989               ','
+ 990                  "Source"
+ 991               ','
+ 992                  "DF"
+ 993               ','
+ 994                  "SS"
+ 995               ','
+ 996                  "MS"
+ 997               ','
+ 998                  "FValue"
+ 999               ','
+ 1000                 "ProbF"
+ 1001              ;
+ 1002            end;
+ 1003          set  WORK.ANOVA_PROMPT_F4   end=EFIEOD;
+ 1004              format Dependent $8. ;
+ 1005              format Source $20. ;
+ 1006              format DF best6. ;
+ 1007              format SS 12.5 ;
+ 1008              format MS 12.5 ;
+ 1009              format FValue 7.2 ;
+ 1010              format ProbF pvalue6.4 ;
+ 1011            do;
+ 1012              EFIOUT + 1;
+ 1013              put Dependent $ @;
+ 1014              put Source $ @;
+ 1015              put DF @;
+ 1016              put SS @;
+ 1017              put MS @;
+ 1018              put FValue @;
+ 1019              put ProbF ;
+ 1020              ;
+ 1021            end;
+ 1022           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 1023           if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 1024           run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/anova_prompt_f4.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/anova_prompt_f4.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:38
+
+ NOTE: 4 records were written to the file '/home/u63529080/cl_st1_ph2_sara/anova_prompt_f4.csv'.
+       The minimum record length was 37.
+       The maximum record length was 41.
+ NOTE: There were 3 observations read from the data set WORK.ANOVA_PROMPT_F4.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.01 seconds
+       system cpu time     0.00 seconds
+       memory              9322.46k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        556  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     91
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           8
+
+
+ 3 records created in /home/u63529080/cl_st1_ph2_sara/anova_prompt_f4.csv from WORK.ANOVA_PROMPT_F4.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/anova_prompt_f4.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.00 seconds
+       memory              9322.46k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        556  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1076
+       Page Swaps                        0
+       Voluntary Context Switches        73
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ ERROR: File WORK.MEANS_PROMPT_F4.DATA does not exist.
+ ERROR: Export unsuccessful.  See SAS Log for details.
+ NOTE: The SAS System stopped processing this step because of errors.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.01 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.00 seconds
+       memory              8341.43k
+       OS Memory           41500.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        557  Switch Count  5
+       Page Faults                       0
+       Page Reclaims                     841
+       Page Swaps                        0
+       Voluntary Context Switches        39
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           8
+
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 1025        /**********************************************************************
+ 1026        *   PRODUCT:   SAS
+ 1027        *   VERSION:   9.4
+ 1028        *   CREATOR:   External File Interface
+ 1029        *   DATE:      29SEP26
+ 1030        *   DESC:      Generated SAS Datastep Code
+ 1031        *   TEMPLATE SOURCE:  (None Specified.)
+ 1032        ***********************************************************************/
+ 1033           data _null_;
+ 1034           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 1035           %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 1036           file '/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f4.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 1037           if _n_ = 1 then        /* write column names or labels */
+ 1038            do;
+ 1039              put
+ 1040                 "Effect"
+ 1041              ','
+ 1042                 "Dependent"
+ 1043              ','
+ 1044                 "Method"
+ 1045              ','
+ 1046                 "Source"
+ 1047              ','
+ 1048                 "DF"
+ 1049              ','
+ 1050                 "SS"
+ 1051              ','
+ 1052                 "MS"
+ 1053              ','
+ 1054                 "FValue"
+ 1055              ','
+ 1056                 "ProbF"
+ 1057              ;
+ 1058            end;
+ 1059          set  WORK.BROWN_FORSYTHE_PROMPT_F4   end=EFIEOD;
+ 1060              format Effect $9. ;
+ 1061              format Dependent $8. ;
+ 1062              format Method $2. ;
+ 1063              format Source $6. ;
+ 1064              format DF best6. ;
+ 1065              format SS d8.3 ;
+ 1066              format MS d8.3 ;
+ 1067              format FValue 7.2 ;
+ 1068              format ProbF pvalue6.4 ;
+ 1069            do;
+ 1070              EFIOUT + 1;
+ 1071              put Effect $ @;
+ 1072              put Dependent $ @;
+ 1073              put Method $ @;
+ 1074              put Source $ @;
+ 1075              put DF @;
+ 1076              put SS @;
+ 1077              put MS @;
+ 1078              put FValue @;
+ 1079              put ProbF ;
+ 1080              ;
+ 1081            end;
+ 1082           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 1083           if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 1084           run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f4.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f4.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:38
+
+ NOTE: 3 records were written to the file '/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f4.csv'.
+       The minimum record length was 42.
+       The maximum record length was 52.
+ NOTE: There were 2 observations read from the data set WORK.BROWN_FORSYTHE_PROMPT_F4.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.01 seconds
+       system cpu time     0.00 seconds
+       memory              9330.62k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        558  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     94
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+ 2 records created in /home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f4.csv from WORK.BROWN_FORSYTHE_PROMPT_F4.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/brown_forsythe_prompt_f4.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.00 seconds
+       memory              9330.62k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        558  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1019
+       Page Swaps                        0
+       Voluntary Context Switches        68
+       Involuntary Context Switches      2
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 1085        /**********************************************************************
+ 1086        *   PRODUCT:   SAS
+ 1087        *   VERSION:   9.4
+ 1088        *   CREATOR:   External File Interface
+ 1089        *   DATE:      29SEP26
+ 1090        *   DESC:      Generated SAS Datastep Code
+ 1091        *   TEMPLATE SOURCE:  (None Specified.)
+ 1092        ***********************************************************************/
+ 1093           data _null_;
+ 1094           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 1095           %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 1096           file '/home/u63529080/cl_st1_ph2_sara/welch_prompt_f4.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 1097           if _n_ = 1 then        /* write column names or labels */
+ 1098            do;
+ 1099              put
+ 1100                 "Effect"
+ 1101              ','
+ 1102                 "Dependent"
+ 1103              ','
+ 1104                 "Source"
+ 1105              ','
+ 1106                 "DF"
+ 1107              ','
+ 1108                 "FValue"
+ 1109              ','
+ 1110                 "ProbF"
+ 1111              ;
+ 1112            end;
+ 1113          set  WORK.WELCH_PROMPT_F4   end=EFIEOD;
+ 1114              format Effect $9. ;
+ 1115              format Dependent $8. ;
+ 1116              format Source $6. ;
+ 1117              format DF d8.3 ;
+ 1118              format FValue 7.2 ;
+ 1119              format ProbF pvalue6.4 ;
+ 1120            do;
+ 1121              EFIOUT + 1;
+ 1122              put Effect $ @;
+ 1123              put Dependent $ @;
+ 1124              put Source $ @;
+ 1125              put DF @;
+ 1126              put FValue @;
+ 1127              put ProbF ;
+ 1128              ;
+ 1129            end;
+ 1130           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 1131           if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 1132           run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/welch_prompt_f4.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/welch_prompt_f4.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:38
+
+ NOTE: 3 records were written to the file '/home/u63529080/cl_st1_ph2_sara/welch_prompt_f4.csv'.
+       The minimum record length was 26.
+       The maximum record length was 39.
+ NOTE: There were 2 observations read from the data set WORK.WELCH_PROMPT_F4.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.00 seconds
+       memory              9315.87k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        559  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     90
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+ 2 records created in /home/u63529080/cl_st1_ph2_sara/welch_prompt_f4.csv from WORK.WELCH_PROMPT_F4.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/welch_prompt_f4.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.03 seconds
+       system cpu time     0.01 seconds
+       memory              9315.87k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        559  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1067
+       Page Swaps                        0
+       Voluntary Context Switches        67
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to
+ WORK.PARMS.PARMS.SLIST.
+ 1133        /**********************************************************************
+ 1134        *   PRODUCT:   SAS
+ 1135        *   VERSION:   9.4
+ 1136        *   CREATOR:   External File Interface
+ 1137        *   DATE:      29SEP26
+ 1138        *   DESC:      Generated SAS Datastep Code
+ 1139        *   TEMPLATE SOURCE:  (None Specified.)
+ 1140        ***********************************************************************/
+ 1141           data _null_;
+ 1142           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 1143           %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 1144           file '/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f4.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 1145           if _n_ = 1 then        /* write column names or labels */
+ 1146            do;
+ 1147              put
+ 1148                 "Effect"
+ 1149              ','
+ 1150                 "Dependent"
+ 1151              ','
+ 1152                 "Method"
+ 1153              ','
+ 1154                 "Comparison"
+ 1155              ','
+ 1156                 "LowerCL"
+ 1157              ','
+ 1158                 "Difference"
+ 1159              ','
+ 1160                 "UpperCL"
+ 1161              ','
+ 1162                 "Significance"
+ 1163              ;
+ 1164            end;
+ 1165          set  WORK.TUKEY_CLDIFF_PROMPT_F4   end=EFIEOD;
+ 1166              format Effect $9. ;
+ 1167              format Dependent $8. ;
+ 1168              format Method $8. ;
+ 1169              format Comparison $19. ;
+ 1170              format LowerCL 7.4 ;
+ 1171              format Difference 7.4 ;
+ 1172              format UpperCL 7.4 ;
+ 1173              format Significance best8. ;
+ 1174            do;
+ 1175              EFIOUT + 1;
+ 1176              put Effect $ @;
+ 1177              put Dependent $ @;
+ 1178              put Method $ @;
+ 1179              put Comparison $ @;
+ 1180              put LowerCL @;
+ 1181              put Difference @;
+ 1182              put UpperCL @;
+ 1183              put Significance ;
+ 1184              ;
+ 1185            end;
+ 1186           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 1187           if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 1188           run;
+
+ NOTE: The file '/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f4.csv' is:
+       Filename=/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f4.csv,
+       Owner Name=u63529080,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29 September 2026 11:02:38
+
+ NOTE: 7 records were written to the file '/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f4.csv'.
+       The minimum record length was 54.
+       The maximum record length was 74.
+ NOTE: There were 6 observations read from the data set WORK.TUKEY_CLDIFF_PROMPT_F4.
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.01 seconds
+       system cpu time     0.00 seconds
+       memory              9216.06k
+       OS Memory           42272.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        560  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     90
+       Page Swaps                        0
+       Voluntary Context Switches        8
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           16
+
+
+ 6 records created in /home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f4.csv from WORK.TUKEY_CLDIFF_PROMPT_F4.
+
+
+ NOTE: "/home/u63529080/cl_st1_ph2_sara/tukey_cldiff_prompt_f4.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.00 seconds
+       memory              9216.06k
+       OS Memory           42532.00k
+       Timestamp           29/09/2026 02:02:38 PM
+       Step Count                        560  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1071
+       Page Swaps                        0
+       Voluntary Context Switches        69
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           32
+
+
+ 1189
+ 1190       ods html close;
+ 1191       title;
+ 1192
+ 1193       OPTIONS NONOTES NOSTIMER NOSOURCE NOSYNTAXCHECK;
+ 1203
