@@ -1,5 +1,5 @@
 ## Me
-Hi! How are you doing, AI Assistant? Please have a look at `docs/testes_brown-forsyth_e_tukey_no_sas_chat.md` (attached). Here Sara asks me about the applicability of the Brown-Forsythe (BF) and Tukey tests to this project. As you can see, I also found one BF application by Professor Berber Sardinha on his `AI and Human Oral Histories` study. She also provided me with a chat with Claude (`docs/testes_brown-forsyth_e_tukey_no_sas.md`, attached) in which the LLM Assistant discusses the applicability.
+Hi! How are you doing, AI Assistant? Please have a look at `cl_st1_ph2_sara/docs/testes_brown-forsyth_e_tukey_no_sas_chat.md` (attached). Here Sara asks me about the applicability of the Brown-Forsythe (BF) and Tukey tests to this project. As you can see, I also found one BF application by Professor Berber Sardinha on his `AI and Human Oral Histories` study. She also provided me with a chat with Claude (`cl_st1_ph2_sara/docs/testes_brown-forsyth_e_tukey_no_sas.md`, attached) in which the LLM Assistant discusses the applicability.
 
 I have also attached this project's SAS script and its respective development specification to this message:
 
