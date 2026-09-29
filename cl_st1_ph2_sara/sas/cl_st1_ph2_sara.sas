@@ -1384,7 +1384,6 @@ proc GLM data=&project._no_outliers;
     ods output
         FitStatistics = r2_prompt_f&i
         OverallANOVA  = anova_prompt_f&i
-        Means         = means_prompt_f&i
         HOVFTest      = brown_forsythe_prompt_f&i
         Welch         = welch_prompt_f&i
         CLDiffs       = tukey_cldiff_prompt_f&i;
@@ -1404,13 +1403,6 @@ PROC EXPORT
   DATA=WORK.anova_prompt_f&i
   DBMS=CSV
   OUTFILE="&whereisit/&myfolder/anova_prompt_f&i..csv"
-  REPLACE;
-RUN;
-
-PROC EXPORT
-  DATA=WORK.means_prompt_f&i
-  DBMS=CSV
-  OUTFILE="&whereisit/&myfolder/means_prompt_f&i..csv"
   REPLACE;
 RUN;
 
