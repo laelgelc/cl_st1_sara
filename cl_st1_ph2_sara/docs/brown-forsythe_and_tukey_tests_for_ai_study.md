@@ -59,12 +59,12 @@ However, Tukey should **not** be described as confirming whether “everything f
 
 So I would separate the logic as follows:
 
-| Test           | Main question                                                  | Relevance here                                 |
-|----------------|----------------------------------------------------------------|------------------------------------------------|
-| ANOVA          | Do the groups differ in mean dimension score?                  | Useful for central tendency                    |
-| Tukey          | Which pairs of groups differ in mean score?                    | Useful after/alongside ANOVA                   |
-| Brown–Forsythe | Do the groups differ in variance/dispersion?                   | Highly relevant to AI homogenisation/dispersal |
-| Welch ANOVA    | Do the groups differ in mean score when variances are unequal? | Useful robustness check                        |
+| Test | Main question | Relevance here |
+|---|---|---|
+| ANOVA | Do the groups differ in mean dimension score? | Useful for central tendency |
+| Tukey | Which pairs of groups differ in mean score? | Useful after/alongside ANOVA |
+| Brown–Forsythe | Do the groups differ in variance/dispersion? | Highly relevant to AI homogenisation/dispersal |
+| Welch ANOVA | Do the groups differ in mean score when variances are unequal? | Useful robustness check |
 
 ## Brown–Forsythe should not be described only as an “assumption test”
 
@@ -768,3 +768,138 @@ Then leave the existing ZIP section exactly after this block:
 
 
 One small caveat: if SAS Studio reports that one of the ODS table names is unavailable — most likely `CLDiffs`, depending on SAS version/output settings — turn `ods trace on;` temporarily inside the GLM block for one factor and adjust the ODS table name to the one shown in the log. The Brown–Forsythe and Welch additions themselves are in the right place.
+
+## Me
+Look! I got the following error messages:
+
+- [brown-forsythe_and_tukey_tests_for_ai_study_error_1.txt](https://github.com/laelgelc/cl_st1_sara/blob/main/cl_st1_ph2_sara/docs/brown-forsythe_and_tukey_tests_for_ai_study_error_1.txt)
+
+## AI Assistant
+Yes — I see the problem. The important part is this:
+
+```plain text
+WARNING: Output 'Means' was not created.
+...
+ERROR: File WORK.MEANS_PROMPT_F1.DATA does not exist.
+ERROR: Export unsuccessful.
+```
+
+
+The Brown–Forsythe, Welch, ANOVA, R-square, and Tukey outputs **are being created correctly**. The only failing part is the attempted export of `means_prompt_f&i`, because `PROC GLM` is not creating an ODS object called `Means` under this `MEANS prompt / hovtest=bf welch tukey cldiff;` configuration.
+
+Since we already added a separate descriptive-statistics block with `PROC MEANS`, the cleanest fix is to **remove the `Means = means_prompt_f&i` ODS capture and remove the `means_prompt_f&i` export** from the GLM macro.
+
+In other words, keep the descriptive statistics from `desc_prompt_f&i..csv`, and do not ask `PROC GLM` to export a non-existent `Means` table.
+
+Replace only subsection **9.2** with this corrected version:
+
+```
+/* --------------------------------------------------------------------------
+   9.2. ANOVAs, Brown-Forsythe, Welch, and Tukey tests
+   -------------------------------------------------------------------------- */
+
+ODS EXCLUDE NONE;
+ods html file="&whereisit/&myfolder/glm_meta.html";
+
+%macro create_glm_tests(howmany);
+%do i=1 %to &howmany;
+
+OPTIONS VALIDVARNAME=ANY;
+ods graphics off;
+
+title "GLM, Brown-Forsythe, Welch, and Tukey tests for f&i";
+
+proc GLM data=&project._no_outliers;
+    class prompt;
+    model f&i = prompt;
+
+    ods output
+        FitStatistics = r2_prompt_f&i
+        OverallANOVA  = anova_prompt_f&i
+        HOVFTest      = brown_forsythe_prompt_f&i
+        Welch         = welch_prompt_f&i
+        CLDiffs       = tukey_cldiff_prompt_f&i;
+
+    means prompt / hovtest=bf welch tukey cldiff;
+run;
+quit;
+
+PROC EXPORT
+  DATA=WORK.r2_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/r2_prompt_f&i..csv"
+  REPLACE;
+RUN;
+
+PROC EXPORT
+  DATA=WORK.anova_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/anova_prompt_f&i..csv"
+  REPLACE;
+RUN;
+
+PROC EXPORT
+  DATA=WORK.brown_forsythe_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/brown_forsythe_prompt_f&i..csv"
+  REPLACE;
+RUN;
+
+PROC EXPORT
+  DATA=WORK.welch_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/welch_prompt_f&i..csv"
+  REPLACE;
+RUN;
+
+PROC EXPORT
+  DATA=WORK.tukey_cldiff_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/tukey_cldiff_prompt_f&i..csv"
+  REPLACE;
+RUN;
+
+ods graphics on;
+
+%end;
+%mend create_glm_tests;
+
+%create_glm_tests(&extractfactors)
+
+ods html close;
+title;
+```
+
+
+Also, remove or ignore any `means_prompt_f&i` export block like this:
+
+```
+PROC EXPORT
+  DATA=WORK.means_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/means_prompt_f&i..csv"
+  REPLACE;
+RUN;
+```
+
+
+You do **not** need it anymore, because the group means and standard deviations are already exported by subsection **9.1** as:
+
+```plain text
+desc_prompt_f1.csv
+desc_prompt_f2.csv
+desc_prompt_f3.csv
+desc_prompt_f4.csv
+```
+
+
+So the corrected interpretation is:
+
+- `desc_prompt_f*.csv` → group N, mean, SD, variance, quartiles, min/max;
+- `anova_prompt_f*.csv` → classical ANOVA;
+- `brown_forsythe_prompt_f*.csv` → Brown–Forsythe variance test;
+- `welch_prompt_f*.csv` → Welch robust mean test;
+- `tukey_cldiff_prompt_f*.csv` → Tukey pairwise mean comparisons;
+- `sd_ratios_prompt_f*.csv` → descriptive SD ratios.
+
+The warning/error is therefore not about Brown–Forsythe or Tukey failing. Those worked. It is just the unnecessary `Means` ODS object.

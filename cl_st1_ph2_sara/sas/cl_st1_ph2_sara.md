@@ -3,7 +3,7 @@
 ## 1. Overview and Objectives
 The `cl_st1_ph2_sara.sas` script executes a hybrid statistical pipeline combining Traditional Multi-Dimensional Analysis (MDA) and Additive Multi-Dimensional Analysis. The objective is to identify and compare dimensions of linguistic variation between human-authored short stories and two AI-generated subcorpora (LLM-Free and LLM-Guided). 
 
-The pipeline ingests raw linguistic feature counts (Biber Tagger outputs), extracts underlying stylistic factors from a foundational "Base Corpus", and maps the LLM-Guided texts onto this dimensional space using an additive scoring methodology. It concludes with statistical evaluation (ANOVA) and automated output packaging.
+The pipeline ingests raw linguistic feature counts (Biber Tagger outputs), extracts underlying stylistic factors from a foundational "Base Corpus", and maps the LLM-Guided texts onto this dimensional space using an additive scoring methodology. It concludes with statistical evaluation, including mean-comparison and dispersion-comparison tests, and automated output packaging.
 
 ## 2. Environment and Parameters
 *   **Target Environment:** SAS Studio (Online).
@@ -55,16 +55,37 @@ The script ingests three fixed-width text files containing normalized frequency 
 *   **Identification:** Flags texts lying outside the upper/lower bounds for any of the 4 factors and outputs the lists to CSV.
 *   **Bypass:** The script implements a deliberate bypass (`data &project._no_outliers; set scores_combined; run;`) that explicitly retains outliers for the final statistical analysis, given the analytical significance of AI-generated extremes.
 
-## 5. Statistical Analysis & Visualization
+## 5. Statistical Analysis & Visualization (Section 9)
+
+The statistical-analysis section was expanded to evaluate both **central tendency** and **dispersion** across the three `prompt` conditions (`human`, `llm_free`, and `llm`). The grouping variable for these tests is `prompt`, because it distinguishes the three analytical conditions more precisely than `source`.
+
 *   **Descriptive Statistics:** For each extracted factor score (`f1-f4`), the script calculates group-level descriptive statistics by `prompt`, including N, mean, standard deviation, variance, quartiles, median, minimum, and maximum.
-*   **General Linear Models (ANOVA):** Runs `PROC GLM` on the combined scores dataset.
+    *   Exported outputs: `desc_prompt_f1.csv` through `desc_prompt_f4.csv`.
+    *   These descriptive tables provide the group means and dispersion measures used for interpretation.
+
+*   **General Linear Models (Classical ANOVA):** Runs `PROC GLM` on the retained combined scores dataset.
     *   *Model:* `f&i = prompt`
-    *   Extracts Fit Statistics, Overall ANOVA tables, and group means to HTML and CSV outputs.
-*   **Brown-Forsythe Tests:** For each factor, Brown-Forsythe tests (`HOVTEST=BF`) assess whether the three prompt conditions differ in the dispersion/variance of their dimension scores. In this project, these tests are substantively relevant because they evaluate whether AI-generated subcorpora reproduce, compress, or expand the variation observed in human-authored texts.
+    *   Tests whether mean factor scores differ across the three prompt conditions.
+    *   Exported outputs: `anova_prompt_f1.csv` through `anova_prompt_f4.csv`, plus `r2_prompt_f1.csv` through `r2_prompt_f4.csv`.
+
+*   **Brown-Forsythe Tests:** For each factor, Brown-Forsythe tests (`HOVTEST=BF`) assess whether the three prompt conditions differ in the dispersion/variance of their dimension scores.
+    *   These tests are substantively relevant because the project investigates whether AI-generated subcorpora reproduce, compress, or expand the stylistic variation observed in human-authored texts.
+    *   Exported outputs: `brown_forsythe_prompt_f1.csv` through `brown_forsythe_prompt_f4.csv`.
+
 *   **Welch Tests:** Welch ANOVA is produced as a robust mean-comparison test when the homogeneity-of-variance assumption is not met.
+    *   Exported outputs: `welch_prompt_f1.csv` through `welch_prompt_f4.csv`.
+
 *   **Tukey Post-Hoc Comparisons:** Tukey-adjusted pairwise comparisons identify which prompt pairs differ in mean factor scores.
+    *   Exported outputs: `tukey_cldiff_prompt_f1.csv` through `tukey_cldiff_prompt_f4.csv`.
+
 *   **Dispersion Magnitude:** Standard-deviation ratios are exported for the main prompt-pair comparisons to support interpretation of Brown-Forsythe results beyond p-values.
-*   **Boxplots:** Generates `PROC GLM` boxplots for each factor by `prompt`, outputting as `.png` files.
+    *   Pairwise ratios include `human / llm_free`, `human / llm`, and `llm_free / llm`.
+    *   Exported outputs: `sd_ratios_prompt_f1.csv` through `sd_ratios_prompt_f4.csv`.
+
+*   **Boxplots:** Generates `PROC GLM` boxplots for each factor by `prompt`, outputting `.png` files.
+    *   The boxplots visually support interpretation of both mean differences and dispersion differences.
+
+*   **Implementation Note:** The final working version does not export a `means_prompt_f&i` table from `PROC GLM`, because SAS did not create a `Means` ODS object under the combined `HOVTEST=BF`, `WELCH`, `TUKEY`, and `CLDIFF` options. Group means and dispersion statistics are instead exported through the dedicated descriptive-statistics step (`desc_prompt_f*.csv`), which is more appropriate for reporting both central tendency and variation.
 
 ## 6. Output Packaging and Cleanup
 *   **ZIP Archive:** A custom `DATA _NULL_` routine recursively iterates through the working directory and compresses all relevant outputs into a single ZIP file (`output_cl_st1_ph2_sara.zip`).
