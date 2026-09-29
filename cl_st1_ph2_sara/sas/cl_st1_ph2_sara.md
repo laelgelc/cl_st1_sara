@@ -55,11 +55,16 @@ The script ingests three fixed-width text files containing normalized frequency 
 *   **Identification:** Flags texts lying outside the upper/lower bounds for any of the 4 factors and outputs the lists to CSV.
 *   **Bypass:** The script implements a deliberate bypass (`data &project._no_outliers; set scores_combined; run;`) that explicitly retains outliers for the final statistical analysis, given the analytical significance of AI-generated extremes.
 
-## 5. Statistical Analysis & Visualization (Section 9)
+## 5. Statistical Analysis & Visualization
+*   **Descriptive Statistics:** For each extracted factor score (`f1-f4`), the script calculates group-level descriptive statistics by `prompt`, including N, mean, standard deviation, variance, quartiles, median, minimum, and maximum.
 *   **General Linear Models (ANOVA):** Runs `PROC GLM` on the combined scores dataset.
-    *   *Model:* `f&i = prompt source prompt*source`
-    *   Extracts Fit Statistics, Overall ANOVA tables, and Means to HTML (`glm_meta.html`).
-*   **Boxplots:** Generates `PROC SGPLOT` (via GLM graphics) boxplots for each factor by `prompt`, outputting as `.png` files.
+    *   *Model:* `f&i = prompt`
+    *   Extracts Fit Statistics, Overall ANOVA tables, and group means to HTML and CSV outputs.
+*   **Brown-Forsythe Tests:** For each factor, Brown-Forsythe tests (`HOVTEST=BF`) assess whether the three prompt conditions differ in the dispersion/variance of their dimension scores. In this project, these tests are substantively relevant because they evaluate whether AI-generated subcorpora reproduce, compress, or expand the variation observed in human-authored texts.
+*   **Welch Tests:** Welch ANOVA is produced as a robust mean-comparison test when the homogeneity-of-variance assumption is not met.
+*   **Tukey Post-Hoc Comparisons:** Tukey-adjusted pairwise comparisons identify which prompt pairs differ in mean factor scores.
+*   **Dispersion Magnitude:** Standard-deviation ratios are exported for the main prompt-pair comparisons to support interpretation of Brown-Forsythe results beyond p-values.
+*   **Boxplots:** Generates `PROC GLM` boxplots for each factor by `prompt`, outputting as `.png` files.
 
 ## 6. Output Packaging and Cleanup
 *   **ZIP Archive:** A custom `DATA _NULL_` routine recursively iterates through the working directory and compresses all relevant outputs into a single ZIP file (`output_cl_st1_ph2_sara.zip`).

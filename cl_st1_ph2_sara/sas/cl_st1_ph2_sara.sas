@@ -1295,63 +1295,249 @@ data &project._no_outliers; set scores_combined; run;
 
 
 /* ==========================================================================
-   SECTION 9: STATISTICAL ANALYSIS (ANOVAs & BOXPLOTS)
+   SECTION 9: STATISTICAL ANALYSIS
+   ANOVAs, BROWN-FORSYTHE TESTS, WELCH TESTS, TUKEY POST-HOC TESTS & BOXPLOTS
    ========================================================================== */
 
-/* ANOVAs */
-/* ODS table names for GLM: */
-/*https://support.sas.com/documentation/cdl/en/statug/68162/HTML/default/viewer.htm#statug_glm_details70.htm*/
+/*
+   The final statistical analysis uses the dimension scores retained in
+   &project._no_outliers. Because the outlier-removal bypass in Section 8 is
+   active, this dataset contains the full combined score dataset.
+
+   For each factor score f1-f&extractfactors, the following are produced:
+
+   1. Descriptive statistics by prompt:
+      N, mean, standard deviation, variance, min, quartiles, median, and max.
+
+   2. Classical one-way GLM/ANOVA:
+      Tests whether mean factor scores differ across prompt groups.
+
+   3. Brown-Forsythe test:
+      Tests whether the dispersion/variance of factor scores differs across
+      prompt groups. In this study, this is a substantive test of variation,
+      not only an ANOVA assumption check.
+
+   4. Welch ANOVA:
+      Provides a robust mean-comparison test when variances are unequal.
+
+   5. Tukey post-hoc comparisons:
+      Identifies which prompt pairs differ in mean factor scores.
+
+   The grouping variable is prompt, because it distinguishes the three
+   analytical conditions: human, llm_free, and llm.
+*/
+
+
+/* --------------------------------------------------------------------------
+   9.1. Descriptive statistics by prompt
+   -------------------------------------------------------------------------- */
+
+ODS EXCLUDE NONE;
+ods html file="&whereisit/&myfolder/descriptive_stats_prompt.html";
+
+%macro create_descriptives(howmany);
+%do i=1 %to &howmany;
+
+title "Descriptive statistics by prompt for f&i";
+
+proc means data=&project._no_outliers n mean std var min q1 median q3 max maxdec=4;
+    class prompt;
+    var f&i;
+    ods output Summary=desc_prompt_f&i;
+run;
+
+PROC EXPORT
+  DATA=WORK.desc_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/desc_prompt_f&i..csv"
+  REPLACE;
+RUN;
+
+%end;
+%mend create_descriptives;
+
+%create_descriptives(&extractfactors)
+
+ods html close;
+title;
+
+
+/* --------------------------------------------------------------------------
+   9.2. ANOVAs, Brown-Forsythe, Welch, and Tukey tests
+   -------------------------------------------------------------------------- */
 
 ODS EXCLUDE NONE;
 ods html file="&whereisit/&myfolder/glm_meta.html";
-%macro create(howmany);
+
+%macro create_glm_tests(howmany);
 %do i=1 %to &howmany;
+
 OPTIONS VALIDVARNAME=ANY;
 ods graphics off;
 
+title "GLM, Brown-Forsythe, Welch, and Tukey tests for f&i";
+
 proc GLM data=&project._no_outliers;
-ods output FitStatistics=r2_prompt_f&i;
-ods output OverallANOVA=anova_prompt_f&i;
-ods output Means=means_prompt_f&i;
-	title GLM for dataset = &project._no_outliers f&i;
-	class prompt;
-	model f&i = prompt;
-	means prompt;
-	run;
+    class prompt;
+    model f&i = prompt;
+
+    ods output
+        FitStatistics = r2_prompt_f&i
+        OverallANOVA  = anova_prompt_f&i
+        Means         = means_prompt_f&i
+        HOVFTest      = brown_forsythe_prompt_f&i
+        Welch         = welch_prompt_f&i
+        CLDiffs       = tukey_cldiff_prompt_f&i;
+
+    means prompt / hovtest=bf welch tukey cldiff;
+run;
+quit;
+
+PROC EXPORT
+  DATA=WORK.r2_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/r2_prompt_f&i..csv"
+  REPLACE;
+RUN;
+
+PROC EXPORT
+  DATA=WORK.anova_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/anova_prompt_f&i..csv"
+  REPLACE;
+RUN;
+
+PROC EXPORT
+  DATA=WORK.means_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/means_prompt_f&i..csv"
+  REPLACE;
+RUN;
+
+PROC EXPORT
+  DATA=WORK.brown_forsythe_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/brown_forsythe_prompt_f&i..csv"
+  REPLACE;
+RUN;
+
+PROC EXPORT
+  DATA=WORK.welch_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/welch_prompt_f&i..csv"
+  REPLACE;
+RUN;
+
+PROC EXPORT
+  DATA=WORK.tukey_cldiff_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/tukey_cldiff_prompt_f&i..csv"
+  REPLACE;
+RUN;
 
 ods graphics on;
+
 %end;
-%mend create;
-%create( &extractfactors )  /* Number of factors extracted */
+%mend create_glm_tests;
+
+%create_glm_tests(&extractfactors)
+
 ods html close;
-quit;
+title;
+
+
+/* --------------------------------------------------------------------------
+   9.3. Standard-deviation ratios by prompt
+   -------------------------------------------------------------------------- */
 
 /*
-https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_glm_sect005.htm
+   These ratios help interpret the magnitude and direction of dispersion
+   differences alongside the Brown-Forsythe p-values.
 
-If the interaction between A*B is not significant, this indicates that the effect of A does not depend on the level of B and vice versa.
-
-discussion:
-https://www.researchgate.net/post/Difference_between_Type_I_and_Type_III_SS_decision_tables_in_statistical_analyses
+   They are descriptive:
+   - Values above 1 indicate that the first group has a larger standard
+     deviation than the second group.
+   - Values below 1 indicate that the first group has a smaller standard
+     deviation than the second group.
 */
 
-/* Boxplots */
-%macro create(howmany);
+%macro create_sd_ratios(howmany);
 %do i=1 %to &howmany;
+
+proc sort data=&project._no_outliers out=stats_input_f&i;
+    by prompt;
+run;
+
+proc means data=stats_input_f&i noprint;
+    by prompt;
+    var f&i;
+    output out=sd_by_prompt_f&i(drop=_TYPE_ _FREQ_) n=n std=std;
+run;
+
+proc transpose data=sd_by_prompt_f&i out=sd_wide_f&i prefix=std_;
+    id prompt;
+    var std;
+run;
+
+data sd_ratios_prompt_f&i;
+    length factor $10 comparison $40;
+    set sd_wide_f&i;
+
+    factor = "f&i";
+
+    comparison = "human / llm_free";
+    sd_ratio = std_human / std_llm_free;
+    output;
+
+    comparison = "human / llm";
+    sd_ratio = std_human / std_llm;
+    output;
+
+    comparison = "llm_free / llm";
+    sd_ratio = std_llm_free / std_llm;
+    output;
+
+    keep factor comparison sd_ratio std_human std_llm_free std_llm;
+run;
+
+PROC EXPORT
+  DATA=WORK.sd_ratios_prompt_f&i
+  DBMS=CSV
+  OUTFILE="&whereisit/&myfolder/sd_ratios_prompt_f&i..csv"
+  REPLACE;
+RUN;
+
+%end;
+%mend create_sd_ratios;
+
+%create_sd_ratios(&extractfactors)
+
+
+/* --------------------------------------------------------------------------
+   9.4. Boxplots
+   -------------------------------------------------------------------------- */
+
+%macro create_boxplots(howmany);
+%do i=1 %to &howmany;
+
 ods listing gpath="&whereisit/&myfolder/";
 ods graphics / imagename="boxplot_f&i" imagefmt=png;
-title "Box plots";
+
+title "Box plot for f&i by prompt";
+
 proc GLM data=&project._no_outliers;
-	title GLM for dataset = &project._no_outliers f&i;
-	class prompt;
-	model f&i = prompt;
-	means prompt;
-	run;
-title;
-%end;
-%mend create;
-%create( &extractfactors )  /* Number of factors extracted */
+    class prompt;
+    model f&i = prompt;
+    means prompt / hovtest=bf welch tukey cldiff;
+run;
 quit;
+
+title;
+
+%end;
+%mend create_boxplots;
+
+%create_boxplots(&extractfactors)
 
 
 /* ==========================================================================
