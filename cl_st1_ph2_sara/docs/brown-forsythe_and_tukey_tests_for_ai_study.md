@@ -6,7 +6,7 @@ I have also attached this project's SAS script and its respective development sp
 - `cl_st1_ph2_sara/sas/cl_st1_ph2_sara.sas`
 - `cl_st1_ph2_sara/sas/cl_st1_ph2_sara.md`
 
-Before get down to make any changes to the script, I'd like to discuss the matter with you. What are your views on it?
+Before getting down to make any changes to the script, I'd like to discuss the matter with you. What are your views on it?
 
 ## AI Assistant
 Hi! I’m doing well, thanks — and this is a very good methodological question. My view is that **Brown–Forsythe is highly relevant to Sara’s project**, while **Tukey is useful but more conditional**. I would not treat the two tests as equally central.
