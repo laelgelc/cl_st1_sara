@@ -117,13 +117,123 @@ The quantitative comparison of the subcorpora is executed via the `cl_st1_ph2_sa
 2. **Additive MDA (Scoring the Guided AI Texts):**
    To directly compare the plot/style-guided LLM texts against the established dimensional space, an additive approach is used. The raw linguistic counts of the Base Corpus are standardized to z-scores. The LLM-Guided subcorpus is then standardized utilizing the exact means and standard deviations derived from the Base Corpus. Dimension scores are calculated for all texts by summing the z-scores of positive-loading features and subtracting those of negative-loading features.
 
-3. **Evaluation and Visualization:**
-   The script includes a dynamic outlier identification module (using the Interquartile Range method). A bypass is built into the pipeline allowing researchers to retain these outliers, as extreme stylometric deviations in LLM-generated texts can be analytically significant. Finally, the combined dimension scores for all three subcorpora are analyzed using General Linear Models (ANOVAs) and Boxplots to evaluate the main effect of the `prompt` (human, llm_free, llm) variable.
+3. **Evaluation, Dispersion Testing, and Visualization:**
+   The script includes a dynamic outlier identification module using the Interquartile Range method. A bypass is built into the pipeline allowing researchers to retain these outliers, as extreme stylometric deviations in LLM-generated texts can be analytically significant.
+
+   The retained combined dimension scores for the three subcorpora are analyzed by `prompt` (`human`, `llm_free`, `llm`). The statistical analysis now includes:
+
+   - descriptive statistics by prompt for each extracted factor (`f1-f4`), including N, mean, standard deviation, variance, quartiles, median, minimum, and maximum;
+   - classical one-way GLM/ANOVA tests to evaluate whether mean factor scores differ across the three prompt conditions;
+   - Brown-Forsythe tests to evaluate whether the prompt conditions differ in dispersion/variance of their factor scores;
+   - Welch tests as robust mean-comparison tests when the homogeneity-of-variance assumption is not met;
+   - Tukey-adjusted pairwise post-hoc comparisons to identify which prompt pairs differ in mean factor scores;
+   - standard-deviation ratios for the main pairwise prompt comparisons, supporting interpretation of Brown-Forsythe results beyond p-values;
+   - boxplots for each factor by prompt.
+
+   The Brown-Forsythe tests are substantively important to the project because they assess whether AI-generated subcorpora reproduce, compress, or expand the range of stylistic variation observed in human-authored texts. Tukey tests, by contrast, are used for pairwise comparisons of mean factor scores.
+
+   The main SAS statistical outputs are written to:
+
+   ```plain text
+   cl_st1_ph2_sara/sas/output_cl_st1_ph2_sara/
+   ```
+
+   These include:
+
+   ```plain text
+   desc_prompt_f1.csv
+   desc_prompt_f2.csv
+   desc_prompt_f3.csv
+   desc_prompt_f4.csv
+
+   anova_prompt_f1.csv
+   anova_prompt_f2.csv
+   anova_prompt_f3.csv
+   anova_prompt_f4.csv
+
+   brown_forsythe_prompt_f1.csv
+   brown_forsythe_prompt_f2.csv
+   brown_forsythe_prompt_f3.csv
+   brown_forsythe_prompt_f4.csv
+
+   welch_prompt_f1.csv
+   welch_prompt_f2.csv
+   welch_prompt_f3.csv
+   welch_prompt_f4.csv
+
+   tukey_cldiff_prompt_f1.csv
+   tukey_cldiff_prompt_f2.csv
+   tukey_cldiff_prompt_f3.csv
+   tukey_cldiff_prompt_f4.csv
+
+   sd_ratios_prompt_f1.csv
+   sd_ratios_prompt_f2.csv
+   sd_ratios_prompt_f3.csv
+   sd_ratios_prompt_f4.csv
+   ```
 
 ### Examples Generation
 
 To support the qualitative interpretation of the extracted factor dimensions, the `examples_md.py` script generates readable Markdown examples for each factor pole. It calculates the mean factor scores for each prompt condition and selects the texts with the most extreme scores. These are compiled into the `examples_md/` directory, providing original text extracts annotated with their respective prompt, file path, scores, and loading linguistic features.
 
-### ANOVA Table Generation
+### Statistical Results Table Generation with Jupyter Notebook
 
-The `anova_table_md.py` script automatically parses the HTML GLM output from SAS (`sas/output_cl_st1_ph2_sara/glm_meta.html`) and constructs a clean Markdown summary table of the ANOVA results for all dimensions, capturing the F-value, p-value, and R-Square percentage. The generated table is stored in the `anova_table_md/` directory.
+The SAS statistical outputs are now converted into publication-oriented Markdown and LaTeX tables using the Jupyter Notebook:
+
+```plain text
+cl_st1_ph2_sara/cl_st1_ph2_sara_sas.ipynb
+```
+
+The notebook uses a Python dictionary, `sas_outputs`, to map human-readable table titles to the relative paths of the corresponding SAS CSV output files. It reads each CSV file, converts it into both Markdown and LaTeX formats, and writes the resulting tables to:
+
+```plain text
+cl_st1_ph2_sara/sas_results/
+```
+
+For each SAS CSV file listed in `sas_outputs`, the notebook creates two table files named after the CSV file stem:
+
+```plain text
+<csv_stem>.md
+<csv_stem>.tex
+```
+
+For example:
+
+```plain text
+sas/output_cl_st1_ph2_sara/desc_prompt_f1.csv
+```
+
+is rendered as:
+
+```plain text
+sas_results/desc_prompt_f1.md
+sas_results/desc_prompt_f1.tex
+```
+
+The generated tables cover the expanded statistical analysis, including:
+
+- descriptive statistics by prompt;
+- classical ANOVA results;
+- R-square / model fit statistics;
+- Brown-Forsythe dispersion tests;
+- Welch robust mean-comparison tests;
+- Tukey-adjusted pairwise comparisons;
+- standard-deviation ratios by prompt.
+
+This notebook-based workflow replaces the earlier ANOVA-only table-generation workflow and supports the broader statistical design now implemented in SAS.
+
+### ANOVA Table Generation (Deprecated)
+
+The `anova_table_md.py` script previously parsed the HTML GLM output from SAS (`sas/output_cl_st1_ph2_sara/glm_meta.html`) and constructed a Markdown summary table of ANOVA results for all dimensions, capturing the F-value, p-value, and R-Square percentage.
+
+This workflow is now **deprecated** because the statistical analysis has been expanded beyond classical ANOVA to include Brown-Forsythe tests, Welch tests, Tukey post-hoc comparisons, descriptive statistics, and standard-deviation ratios. The replacement workflow is implemented in:
+
+```plain text
+cl_st1_ph2_sara/cl_st1_ph2_sara_sas.ipynb
+```
+
+and writes Markdown and LaTeX result tables to:
+
+```plain text
+cl_st1_ph2_sara/sas_results/
+```
