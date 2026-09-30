@@ -69,7 +69,13 @@ python examples_md.py
 
 Output: `examples_md/`
 
-## 5. Generate Markdown ANOVA table
+## 5. Generate SAS CSV Results as Markdown and LaTeX Tables
+
+Jupyter Notebook: `cl_st1_ph2_sara_sas.ipynb`
+
+Output: `sas_results/`
+
+## 5. Generate Markdown ANOVA table (deprecated)
 
 ```shell script
 python anova_table_md.py
