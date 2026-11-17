@@ -47,7 +47,8 @@ run;
 filename scorecsv clear;
 
 ods graphics off;
-ods html file="&output_dir./glm_meta.html" style=HTMLBlue;
+ods html(id=report) file="&output_dir./glm_meta_pdiff_tukey.html" style=HTMLBlue;
+ods html(id=report) select all;
 
 /* Review group sizes and missing factor scores before interpreting tests. */
 title "Input validation: observations by prompt";
@@ -126,12 +127,12 @@ run;
 
 %run_tukey_pdiff;
 
-ods html close;
+ods html(id=report) close;
 ods graphics on;
 title;
 
 /*
-   Outputs: glm_meta.html and seven CSV tables per factor (f1-f4).
+   Outputs: glm_meta_pdiff_tukey.html and seven CSV tables per factor (f1-f4).
    tukey_diff_prompt_f*.csv contains the Tukey-adjusted pairwise p-values;
    use lsmeans_prompt_f*.csv to map Diff matrix indices to prompt groups.
    The comparisons use the pooled model error variance, and Tukey adjustment
