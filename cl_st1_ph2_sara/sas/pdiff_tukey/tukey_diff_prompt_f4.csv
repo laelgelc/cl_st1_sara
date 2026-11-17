@@ -1,0 +1,4 @@
+Effect,Dependent,RowName,1,2,3
+prompt,f4,1,_,0.0706,0.9078
+prompt,f4,2,0.0706,_,0.1747
+prompt,f4,3,0.9078,0.1747,_

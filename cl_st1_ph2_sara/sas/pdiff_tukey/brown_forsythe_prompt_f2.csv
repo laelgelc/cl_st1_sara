@@ -1,0 +1,3 @@
+Effect,Dependent,Method,Source,DF,SS,MS,FValue,ProbF
+prompt,f2,BF,prompt,2,27937.0,13968.5,348.75,<.0001
+prompt,f2,BF,Error,3036,121600,40.0527,_,_

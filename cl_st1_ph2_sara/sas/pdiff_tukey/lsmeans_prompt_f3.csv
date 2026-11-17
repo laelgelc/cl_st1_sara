@@ -1,0 +1,4 @@
+Effect,Dependent,prompt,LSMean,LSMeanNumber
+prompt,f3,human,-4.12429148,1
+prompt,f3,llm,-0.46880522,2
+prompt,f3,llm_free,4.12429148,3

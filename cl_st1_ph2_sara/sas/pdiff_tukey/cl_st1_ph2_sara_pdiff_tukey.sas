@@ -13,7 +13,7 @@
 options validvarname=any;
 
 /* Update this to the uploaded CSV's folder in SAS OnDemand. */
-%let data_dir=/home/your-user/pdiff_tukey;
+%let data_dir=/home/u63529080/cl_st1_ph2_sara_pdiff_tukey;
 %let input_csv=&data_dir./cl_st1_ph2_sara_scores_only.csv;
 
 /* The output folder must already exist and be writable. */
